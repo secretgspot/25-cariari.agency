@@ -1,0 +1,247 @@
+:root {
+	--color-white: hsl(0, 0%, 100%);
+	--color-black: hsl(0, 0%, 0%);
+
+	--primary: hsl(var(--p) / var(--bg-opacity, 1));
+	/* Primary color  */
+	--primary-focus: hsl(var(--pf) / var(--bg-opacity, 1));
+	/* Primary color when focused  */
+	--primary-content: hsl(var(--pc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on primary color  */
+	--secondary: hsl(var(--s) / var(--bg-opacity, 1));
+	/* Secondary color  */
+	--secondary-focus: hsl(var(--sf) / var(--bg-opacity, 1));
+	/* Secondary color when focused  */
+	--secondary-content: hsl(var(--sc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on secondary color  */
+	--accent: hsl(var(--a) / var(--bg-opacity, 1));
+	/* Accent color */
+	--accent-focus: hsl(var(--af) / var(--bg-opacity, 1));
+	/* Accent color when focused  */
+	--accent-content: hsl(var(--ac) / var(--txt-opacity, 1));
+	/* Foreground content color to use on accent color  */
+	--neutral: hsl(var(--n) / var(--bg-opacity, 1));
+	/* Neutral color  */
+	--neutral-focus: hsl(var(--nf) / var(--bg-opacity, 1));
+	/* Neutral color when focused  */
+	--neutral-content: hsl(var(--nc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on neutral color  */
+	--base: hsl(var(--b) / var(--bg-opacity, 1));
+	/* Base color of page, used for main background */
+	--base-100: hsl(var(--b1) / var(--bg-opacity, 1));
+	/* Base color of page, used for blank backgrounds */
+	--base-200: hsl(var(--b2) / var(--bg-opacity, 1));
+	/* Base color, a little darker  */
+	--base-300: hsl(var(--b3) / var(--bg-opacity, 1));
+	/* Base color, even more darker  */
+	--base-content: hsl(var(--bc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on base color */
+	--info: hsl(var(--in) / var(--bg-opacity, 1));
+	/* Info color  */
+	--info-content: hsl(var(--inc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on info color */
+	--success: hsl(var(--su) / var(--bg-opacity, 1));
+	/* Success color  */
+	--success-content: hsl(var(--suc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on success color */
+	--warning: hsl(var(--wa) / var(--bg-opacity, 1));
+	/* Warning color */
+	--warning-content: hsl(var(--wac) / var(--txt-opacity, 1));
+	/* Foreground content color to use on warning color */
+	--error: hsl(var(--er) / var(--bg-opacity, 1));
+	/* Error color */
+	--error-content: hsl(var(--erc) / var(--txt-opacity, 1));
+	/* Foreground content color to use on error color */
+
+	/* GAP */
+	--gap-large: 90px;
+	--gap-medium: 33px;
+	--gap-small: 21px;
+	--gap-extra-small: 9px;
+
+	/* PADDING */
+	--padding-large: 3rem;
+	--padding-medium: 2rem;
+	--padding-small: 1rem;
+	--padding-extra-small: .5rem;
+
+	/* BORDER */
+	--border-color: var(--neutral);
+	--border-radius: 6px;
+	--border-radius-full: 50%;
+	--border: 1px dotted var(--border-color);
+
+	/* SHADOW */
+	--shadow-large: 0 3px 6px hsl(var(--b3) / 1);
+	--shadow-medium: 0 2px 3px hsl(var(--b3) / 1);
+	--shadow-small: 0 1px 2px hsl(var(--b3) / 1);
+	--shadow-button: 0 3px 5px -2px hsl(var(--b3) / 3%),
+		0 6px 15px -6px hsl(var(--a) / 6%), 0 1px hsl(var(--b3)),
+		0 0 0 0px hsl(var(--a) / 25%);
+	--shadow-button-active: 0 3px 5px -2px hsl(var(--a) / 3%),
+		0 6px 15px -6px hsl(var(--a) / 6%), 0 1px hsl(var(--b3)),
+		0 0 0 6px hsl(var(--a) / 12%);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--brightness: 0.63;
+		--p: 0 0% 0%;
+		--pf: 252 33% 6%;
+		--pc: 30 30% 60%;
+		--s: 210 12.6% 50.2%;
+		/* slategray */
+		--sf: 210deg 13% 36%;
+		--sc: 210 14.3% 33%;
+		--a: 37 62% 50%;
+		--af: 37 66% 55%;
+		--ac: 39 51% 84%;
+		--n: 39 14% 30%;
+		--nf: 39 14% 36%;
+		--nc: 0 0% 0%;
+		--b: 28 100% 3%;
+		--b1: 0 0% 0%;
+		--b2: 0 0% 5%;
+		--b3: 0 2% 10%;
+		--bc: 35 28% 83%;
+		--in: 198 93% 60%;
+		--inc: 198 100% 12%;
+		--su: 158 64% 52%;
+		--suc: 158 100% 10%;
+		--wa: 43 96% 56%;
+		--wac: 43 100% 11%;
+		--er: 0 100% 60%;
+		--erc: 0 91% 71%;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--brightness: 1;
+		/* COLOR DECLARATIONS */
+		--p: 0 0% 100%;
+		--pf: 208 100% 97.1%;
+		--pc: 214 41% 10%;
+		--s: 210 13% 81%;
+		--sf: 210 13% 90%;
+		--sc: 210 12.6% 50.2%;
+		/* midnightblue */
+		--a: 222 72% 63%;
+		--af: 222 72% 69%;
+		--ac: 218 52% 16%;
+		--n: 150 9% 81%;
+		/* lightsteelblue ? */
+		--nf: 210 14% 53%;
+		--nc: 214 37% 12%;
+		--b: 208 100% 97%;
+		--b1: 0 0% 100%;
+		--b2: 0 0% 95%;
+		--b3: 180 2% 90%;
+		--bc: 215 28% 17%;
+		--in: 225 73% 57%;
+		/* royalblue or dodgerblue */
+		--inc: 240 64% 27%;
+		/* midnightblue */
+		--su: 80 61% 50%;
+		/* yellowgreen or aquamarine */
+		--suc: 80 63% 21%;
+		/* olibedrab */
+		--wa: 39 100% 50%;
+		/* orange */
+		--wac: 43 100% 11%;
+		--er: 9 100% 64%;
+		--erc: 0 100% 14%;
+	}
+}
+
+
+html {
+	box-sizing: border-box;
+	height: 100%;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	font-family: "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system;
+	background: var(--primary);
+	color: var(--primary-content);
+	/* height: 100%; */
+	min-height: 100%;
+}
+
+
+[hide] {
+	display: none;
+}
+
+/**
+* Style scrollbars (webkit)
+*/
+/* .scroller::scrollbar, */
+.scroller::-webkit-scrollbar {
+	width: 6px;
+	height: 9px;
+}
+
+/* .scroller::scrollbar-track, */
+.scroller::-webkit-scrollbar-track {
+	border-radius: var(--border-radius);
+	background: var(--primary);
+}
+
+/* .scroller::scrollbar-thumb, */
+.scroller::-webkit-scrollbar-thumb {
+	background-color: var(--secondary);
+	border-radius: var(--border-radius);
+}
+
+/**
+* RANGE SLIDER
+*/
+input[type=range] {
+	appearance: none;
+	margin: 10px 0;
+	width: 100%;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 1px;
+	cursor: pointer;
+	background: var(--primary-focus);
+}
+
+input[type=range]::-webkit-slider-thumb {
+	height: 18px;
+	width: 36px;
+	border-radius: var(--border-radius);
+	background: var(--accent);
+	cursor: pointer;
+	appearance: none;
+	margin-top: -9px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+	/* background: var(--primary-focus); */
+	/* background: red; */
+	background: var(--accent);
+}
+
+
+@media (min-width: 720px) {
+	h1 {
+		font-size: 2.4rem;
+	}
+}
