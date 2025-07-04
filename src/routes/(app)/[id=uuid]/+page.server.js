@@ -12,7 +12,7 @@ export async function load(event) {
         .eq('id', id)
         .single();
 
-    if (err) {
+    if (err || !property) {
         console.error(err);
         error(404, 'Property not found');
     }

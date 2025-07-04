@@ -1,9 +1,9 @@
 const propToClass = {
 	size: (pf, val) => `${pf}-${val}`,
 	type: (pf, val) => `${pf}-${val}`,
-	outline: () => `outline`,
-	right: () => `right`,
-	shadow: () => `shadow`,
+	outline: (_pf, _val) => `outline`,
+	right: (_pf, _val) => `right`,
+	shadow: (_pf, _val) => `shadow`,
 };
 
 function omit(obj, properties) {
@@ -15,8 +15,13 @@ function omit(obj, properties) {
 
 export function computeClasses(elPrefix, props) {
 	return Object.entries(props)
-		.filter(([_prop, val]) => val)
-		.map(([prop, val]) => propToClass[prop](elPrefix, val))
+		.map(([prop, val]) => {
+			if (propToClass[prop] && val) {
+				return propToClass[prop](elPrefix, val);
+			}
+			return '';
+		})
+		.filter(Boolean)
 		.join(' ');
 };
 

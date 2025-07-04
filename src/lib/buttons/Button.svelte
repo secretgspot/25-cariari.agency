@@ -19,32 +19,24 @@
 		...rest
 	} = $props();
 
-	let attr = $derived(
-		getDomAttributes({
-			props: rest,
-			classes,
-		}),
-	);
-
-	let classes = $state();
-	$effect(() => {
-		classes = `button ${rest.class ?? ''} ${computeClasses('btn', {
+	const classes = $derived(
+		`button ${rest.class ?? ''} ${computeClasses('btn', {
 			size,
 			shadow,
 			outline,
 			right,
-		})}`;
-	});
+		})}`,
+	);
 </script>
 
 {#if isLink || href}
 	<a
 		class:disabled={disabled || navigating.complete}
+		class={classes}
 		data-sveltekit-prefetch
 		role="button"
 		href={href ?? 'javascript:void(0);'}
 		target={external ? '_blank' : null}
-		{...attr}
 		{...rest}>
 		{#if size == 'icon'}
 			<div class="icon_wrap">
@@ -71,9 +63,9 @@
 	</a>
 {:else}
 	<button
-		{...attr}
 		{...rest}
 		class:disabled={disabled || navigating.complete}
+		class={classes}
 		disabled={disabled || navigating.complete}>
 		{#if size == 'icon'}
 			<div class="icon_wrap">
