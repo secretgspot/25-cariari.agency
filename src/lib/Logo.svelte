@@ -1,14 +1,6 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	/** @type {{type?: string, color?: string, size?: string, fixed?: string}} */
-	let {
-		type = "regular",
-		color = "gold",
-		size = "36",
-		fixed = ""
-	} = $props();
+	let { type = 'regular', color = 'gold', size = '36', fixed = '', ...rest } = $props();
 </script>
 
 <img
@@ -16,9 +8,7 @@
 	src="/logo/logo_{type}_{color}.svg"
 	width={size}
 	alt="CR logo"
-	onclick={bubble('click')}
-	onkeydown={bubble('keydown')}
-/>
+	{...rest} />
 
 <style lang="scss">
 	.logo {

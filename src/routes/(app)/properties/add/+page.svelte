@@ -1,7 +1,4 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	/** @type {import('./$types').PageData} */
 	import { supabase } from '$lib/db';
 	import { navigating, page } from '$app/state';
@@ -113,7 +110,7 @@
 </svelte:head>
 
 {#if !navigating.complete}
-	<Logo type="regular" color="bw" fixed="fixed" on:click={() => goto('/')} />
+	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
 	<Nav />
 {/if}
 
@@ -196,7 +193,7 @@
 						bind:value={$property.msl}
 						disabled={!isAdmin} />
 					<!-- {#if !property.msl}
-					<Button type="button" size="block" on:click={getMsl}>Set</Button>
+					<Button type="button" size="block" onclick={getMsl}>Set</Button>
 				{/if} -->
 				</fieldset>
 
@@ -246,7 +243,7 @@
 						type="text"
 						placeholder="ex: -84.163443"
 						bind:value={$property.location.lng} />
-					<Button type="button" size="block" on:click={getPosition}
+					<Button type="button" size="block" onclick={getPosition}
 						>Get current GPS</Button>
 
 					<MapPicker bind:updategps={gps} bind:position={$property.location} />
@@ -490,7 +487,6 @@
 								<svg
 									class="close"
 									onclick={() => removeFeature(i)}
-									onkeydown={bubble('keydown')}
 									width="18px"
 									height="18px"
 									stroke-width="1.5"
@@ -588,10 +584,10 @@
 		Are you sure you want to delete this listing? By doing this, all data will
 		be permenantly deleted.
 	</div>
-	<Button mode="clean" on:click={() => (showModal = false)}>Cancel</Button>
+	<Button mode="clean" onclick={() => (showModal = false)}>Cancel</Button>
 	<Button
 		mode="danger"
-		on:click={() => {
+		onclick={() => {
 			showModal = false;
 			remove();
 		}}>Confirm</Button

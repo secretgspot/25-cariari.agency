@@ -1,7 +1,4 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { formatter, ago } from '$lib/utils/helpers.js';
@@ -15,10 +12,7 @@
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
-	<figure
-		class="property-image"
-		onclick={() => goto(`/${property.id}`)}
-		onkeydown={bubble('keydown')}>
+	<figure class="property-image" onclick={() => goto(`/${property.id}`)}>
 		{#if property.photo}
 			<img
 				src={property.photo}
@@ -76,7 +70,7 @@
 		<div class="buttons">
 			{#if user_id === property.user_id || isAdmin}
 				<!-- <Button href="property/{property.id}">Edit</Button> -->
-				<Button size="block" on:click={() => goto(`/${property.id}/edit`)}>Edit</Button>
+				<Button size="block" onclick={() => goto(`/${property.id}/edit`)}>Edit</Button>
 			{/if}
 			<!-- <Button href="/{property.id}">View</Button> -->
 		</div>

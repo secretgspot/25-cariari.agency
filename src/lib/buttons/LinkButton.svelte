@@ -1,8 +1,5 @@
 <script>
-	import { createBubbler, preventDefault } from 'svelte/legacy';
-
-	const bubble = createBubbler();
-	import { computeClasses, getDomAttributes } from "./utils.js";
+	import { computeClasses, getDomAttributes } from './utils.js';
 	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
 	let {
 		disabled = false,
@@ -20,19 +17,13 @@
 		data-sveltekit-prefetch
 		{...rest}
 		role="button"
-		href={href ?? "javascript:void(0);"}
-		target={external ? "_blank" : null}
-		onclick={bubble('click')}
-		onmouseover={bubble('mouseover')}
-		onmouseenter={bubble('mouseenter')}
-		onmouseleave={bubble('mouseleave')}
-		onfocus={bubble('focus')}
-		onblur={bubble('blur')}
-	>
+		href={href ?? 'javascript:void(0);'}
+		target={external ? '_blank' : null}>
 		{@render children?.()}
 	</a>
 {:else}
-	<button onclick={preventDefault(bubble('click'))} {...rest} class:disabled {disabled}>
+	<!-- removed onclic={preventDefault()} -->
+	<button {...rest} class:disabled {disabled}>
 		{@render children?.()}
 	</button>
 {/if}

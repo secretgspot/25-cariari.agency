@@ -1,7 +1,4 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	/** @type {import('./$types').PageData} */
 	import { supabase } from '$lib/db';
 	import { navigating, page } from '$app/state';
@@ -130,7 +127,7 @@
 </svelte:head>
 
 {#if !navigating.complete}
-	<Logo type="regular" color="bw" fixed="fixed" on:click={() => goto('/')} />
+	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
 	<Nav />
 {/if}
 
@@ -207,7 +204,7 @@
 						bind:value={data.property.msl}
 						disabled />
 					{#if !data.property.msl}
-						<Button type="button" size="block" on:click={getMsl}>Set</Button>
+						<Button type="button" size="block" onclick={getMsl}>Set</Button>
 					{/if}
 				</fieldset>
 
@@ -257,7 +254,7 @@
 						type="text"
 						placeholder="ex: -84.163443"
 						bind:value={data.property.location.lng} />
-					<Button type="button" size="block" on:click={getPosition}
+					<Button type="button" size="block" onclick={getPosition}
 						>Get current GPS</Button>
 
 					<MapPicker bind:updategps={gps} bind:position={data.property.location} />
@@ -487,7 +484,6 @@
 								<svg
 									class="close"
 									onclick={() => removeFeature(i)}
-									onkeydown={bubble('keydown')}
 									width="18px"
 									height="18px"
 									stroke-width="1.5"
@@ -528,12 +524,12 @@
 							class="photo"
 							draggable={true}
 							id={i}
-							on:dragstart={(e) => startDrag(photo, i, e)}
-							on:dragend={(e) => finishDrag(photo, i, e)}
-							on:dragover={(e) => onDragOver(photo, i, e)}
+							ondragstart={(e) => startDrag(photo, i, e)}
+							ondragend={(e) => finishDrag(photo, i, e)}
+							ondragover={(e) => onDragOver(photo, i, e)}
 							style="background-image: url({photo.file_url})"
 						>
-							<i class="close" on:click={() => removePhoto(i)} on:keydown />
+							<i class="close" onclick={() => removePhoto(i)} />
 						</div>
 					{/each}
 				</div> -->
@@ -564,7 +560,7 @@
 			<Button
 				type="button"
 				disabled={loading}
-				on:click={() => {
+				onclick={() => {
 					goto(`/${data.property.id}/print`);
 				}}>
 				{#snippet icon()}
@@ -619,10 +615,10 @@
 		Are you sure you want to delete this listing? By doing this, all data will
 		be permenantly deleted.
 	</div>
-	<Button mode="clean" on:click={() => (showModal = false)}>Cancel</Button>
+	<Button mode="clean" onclick={() => (showModal = false)}>Cancel</Button>
 	<Button
 		mode="danger"
-		on:click={() => {
+		onclick={() => {
 			showModal = false;
 			remove();
 		}}>Confirm</Button

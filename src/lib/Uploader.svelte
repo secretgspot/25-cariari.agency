@@ -1,23 +1,21 @@
 <script>
-	import { preventDefault } from 'svelte/legacy';
-
-	import { page } from "$app/state";
-	import { Button } from "$lib/buttons";
-	import { slide } from "svelte/transition";
-	import { supabase } from "$lib/db";
-	import { addToast } from "$lib/toasts/store";
+	import { page } from '$app/state';
+	import { Button } from '$lib/buttons';
+	import { slide } from 'svelte/transition';
+	import { supabase } from '$lib/db';
+	import { addToast } from '$lib/toasts/store';
 	// import JSONDump from "$lib/JSONDump.svelte";
 
 	/** @type {{msl: any, attachments?: any}} */
 	let { msl, attachments = $bindable([]) } = $props();
 
-	let error = "",
-		message = "",
+	let error = '',
+		message = '',
 		loading = $state(false),
 		isDragOver = $state(false);
 
 	const cleaupString = (str) => {
-		return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+		return str.normalize('NFD').replace(/\p{Diacritic}/gu, '');
 	};
 
 	function handleDrop(event) {
@@ -47,13 +45,13 @@
 
 		// console.log("UPLOAD FILE: ", target);
 		const { data: uploadData, error: uploadError } = await supabase.storage
-			.from("photos")
+			.from('photos')
 			.upload(`/${msl}/${target.name}`, target.file);
 		if (uploadError) {
 			// console.log("upload err: ", uploadError);
 			addToast({
 				message: `Failed to upload ${uploadError.message}`,
-				type: "error",
+				type: 'error',
 				dismissible: false,
 				timeout: 3000,
 			});
@@ -63,7 +61,7 @@
 			await populatePhotosTable(target);
 			addToast({
 				message: `Photo ${uploadData.path} added!`,
-				type: "success",
+				type: 'success',
 				dismissible: false,
 				timeout: 1200,
 			});
@@ -77,13 +75,13 @@
 
 		// console.log("DELETE FILE: ", target);
 		const { data: deleteFile, error: errDelete } = await supabase.storage
-			.from("photos")
+			.from('photos')
 			.remove([`${msl}/${target}`]);
 		if (errDelete) {
 			// console.log(errDelete);
 			addToast({
 				message: `Failed to delete file ${errDelete.message}, try again in few seconds`,
-				type: "error",
+				type: 'error',
 				dismissible: false,
 				timeout: 3000,
 			});
@@ -94,7 +92,7 @@
 
 			addToast({
 				message: `Photo ${target} deleted!`,
-				type: "success",
+				type: 'success',
 				dismissible: false,
 				timeout: 1200,
 			});
@@ -106,27 +104,26 @@
 		loading = true;
 
 		const { data: publicUrlData } = await supabase.storage
-			.from("photos")
+			.from('photos')
 			.getPublicUrl(`${msl}/${target.name}`);
 
 		if (publicUrlData) {
 			// console.log("update", target);
-			const { data: updatePhotosTableData, error: updatePhotosTableErr } =
-				await supabase
-					.from("photos")
-					.update({
-						name: target.name,
-						extension: target.name.split(".").pop(),
-						msl,
-						file_url: publicUrlData.publicUrl,
-					})
-					.eq("file_path", `${msl}/${target.name}`)
-					.select("*")
-					.single();
+			const { data: updatePhotosTableData, error: updatePhotosTableErr } = await supabase
+				.from('photos')
+				.update({
+					name: target.name,
+					extension: target.name.split('.').pop(),
+					msl,
+					file_url: publicUrlData.publicUrl,
+				})
+				.eq('file_path', `${msl}/${target.name}`)
+				.select('*')
+				.single();
 			if (updatePhotosTableErr) {
 				addToast({
 					message: `Failed to attach photos to msl ${updatePhotosTableErr.message}`,
-					type: "error",
+					type: 'error',
 					dismissible: true,
 					timeout: 0,
 				});
@@ -148,14 +145,14 @@
 	};
 
 	const emptyBucket = async () => {
-		const { data, error } = await supabase.storage.emptyBucket("photos");
+		const { data, error } = await supabase.storage.emptyBucket('photos');
 		if (error) console.error(error);
 		if (data) console.log(data);
 	};
 </script>
 
 <!-- <JSONDump name="attachments" data={attachments} /> -->
-<!-- <button on:click|preventDefault={emptyBucket}>Clear Bucket</button> -->
+<!-- <button onclick|preventDefault={emptyBucket}>Clear Bucket</button> -->
 
 <div class="drop-container">
 	<div
@@ -163,8 +160,7 @@
 		class="dropzone"
 		ondragover={preventDefault(() => (isDragOver = true))}
 		ondragleave={preventDefault(() => (isDragOver = false))}
-		ondrop={preventDefault(handleDrop)}
-	>
+		ondrop={preventDefault(handleDrop)}>
 		<small>Drop photos here</small>
 
 		<input
@@ -173,8 +169,7 @@
 			type="file"
 			accept="image/*"
 			name="file"
-			onchange={(event) => addFiles(event.target.files)}
-		/>
+			onchange={(event) => addFiles(event.target.files)} />
 	</div>
 
 	<div class="file-list">
@@ -188,20 +183,17 @@
 							size="icon"
 							disabled={loading}
 							{loading}
-							on:click={deleteFile(file.name)}
-						>
+							onclick={deleteFile(file.name)}>
 							{#snippet icon()}
-														<svg
-										fill="currentColor"
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										width="18px"
-										height="18px"
-										><path
-											d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"
-										/></svg
-									>
-													{/snippet}
+								<svg
+									fill="currentColor"
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									width="18px"
+									height="18px"
+									><path
+										d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z" /></svg>
+							{/snippet}
 							Delete
 						</Button>
 					</div>
@@ -239,7 +231,7 @@
 		background: var(--primary-focus);
 	}
 
-	input[type="file"] {
+	input[type='file'] {
 		position: absolute;
 		top: 0;
 		left: 0;

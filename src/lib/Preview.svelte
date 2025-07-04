@@ -129,7 +129,7 @@
 	</div>
 
 	<footer>
-		<Button right shadow {loading} disabled={loading} on:click={() => goto(property.id)}>
+		<Button right shadow {loading} disabled={loading} onclick={() => goto(property.id)}>
 			{#snippet icon()}
 				👁‍🗨
 			{/snippet}

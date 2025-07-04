@@ -1,6 +1,6 @@
 <script>
-	import Toast from "./Toast.svelte";
-	import { dismissToast, toasts } from "./store.js";
+	import Toast from './Toast.svelte';
+	import { dismissToast, toasts } from './store.js';
 </script>
 
 {#if $toasts}
@@ -9,8 +9,7 @@
 			<Toast
 				type={toast.type}
 				dismissible={toast.dismissible}
-				on:dismiss={() => dismissToast(toast.id)}>{toast.message}</Toast
-			>
+				on:dismiss={() => dismissToast(toast.id)}>{toast.message}</Toast>
 		{/each}
 	</section>
 {/if}

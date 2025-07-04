@@ -1,36 +1,26 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	/** @type {{checked?: boolean, label?: string, name?: string, disabled?: boolean}} */
 	let {
 		checked = $bindable(false),
-		label = "",
-		name = "",
-		disabled = false
+		label = '',
+		name = '',
+		disabled = false,
+		...rest
 	} = $props();
 </script>
 
 <div class="checkbox-circle">
-	<input
-		type="checkbox"
-		bind:checked
-		id={name}
-		value={label}
-		{name}
-		onchange={bubble('change')}
-		{disabled}
-	/>
+	<input type="checkbox" bind:checked id={name} value={label} {name} {disabled} />
 	<label for={name}>{label}</label>
 </div>
 
 <style>
 	/* checkbox-circle */
-	.checkbox-circle input[type="checkbox"] {
+	.checkbox-circle input[type='checkbox'] {
 		display: none;
 	}
 
-	.checkbox-circle input[type="checkbox"] + label {
+	.checkbox-circle input[type='checkbox'] + label {
 		display: block;
 		position: relative;
 		padding-left: var(--padding-medium);
@@ -39,23 +29,23 @@
 		user-select: none;
 	}
 
-	.checkbox-circle input[type="checkbox"]:hover + label:hover {
+	.checkbox-circle input[type='checkbox']:hover + label:hover {
 		color: var(--secondary-content);
 	}
 
-	.checkbox-circle input[type="checkbox"]:hover + label:before {
+	.checkbox-circle input[type='checkbox']:hover + label:before {
 		border: var(--border);
 		width: 1.3em;
 		height: 1.3em;
 		border: 1px solid var(--accent);
 	}
 
-	.checkbox-circle input[type="checkbox"] + label:last-child {
+	.checkbox-circle input[type='checkbox'] + label:last-child {
 		margin-bottom: 0;
 	}
 
-	.checkbox-circle input[type="checkbox"] + label:before {
-		content: "";
+	.checkbox-circle input[type='checkbox'] + label:before {
+		content: '';
 		display: block;
 		width: 1.4em;
 		height: 1.4em;
@@ -68,7 +58,7 @@
 		transform: translateY(-50%);
 	}
 
-	.checkbox-circle input[type="checkbox"]:checked + label:before {
+	.checkbox-circle input[type='checkbox']:checked + label:before {
 		border-radius: 50%;
 		border: 1px solid var(--accent);
 		width: 1.3em;

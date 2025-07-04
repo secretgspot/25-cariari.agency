@@ -1,13 +1,11 @@
 <script>
-	import { createBubbler, handlers } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	/** @type {{checked?: boolean, label?: string, name?: string, disabled?: boolean}} */
 	let {
 		checked = $bindable(false),
-		label = "",
-		name = "",
-		disabled = false
+		label = '',
+		name = '',
+		disabled = false,
+		...rest
 	} = $props();
 </script>
 
@@ -15,20 +13,19 @@
 	<input
 		type="checkbox"
 		bind:checked
-		onchange={handlers(bubble('change'), bubble('change'))}
+		{...rest}
 		id={name}
 		value={label}
 		{name}
-		{disabled}
-	/>
+		{disabled} />
 	<label for={name}></label>
 </div>
 
 <style>
-	.toggle input[type="checkbox"] {
+	.toggle input[type='checkbox'] {
 		display: none;
 	}
-	.toggle input[type="checkbox"] + label {
+	.toggle input[type='checkbox'] + label {
 		display: block;
 		position: relative;
 		width: 3em;
@@ -38,8 +35,8 @@
 		cursor: pointer;
 		user-select: none;
 	}
-	.toggle input[type="checkbox"] + label:before {
-		content: "";
+	.toggle input[type='checkbox'] + label:before {
+		content: '';
 		display: block;
 		width: 1.2em;
 		height: 1.2em;
@@ -49,7 +46,7 @@
 		left: 0.2em;
 		top: 0.2em;
 	}
-	.toggle input[type="checkbox"]:checked + label:before {
+	.toggle input[type='checkbox']:checked + label:before {
 		background: var(--success);
 		left: 1.6em;
 	}

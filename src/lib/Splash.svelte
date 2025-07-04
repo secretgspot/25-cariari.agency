@@ -1,19 +1,9 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
-	import { createEventDispatcher } from "svelte";
-	import { fly, fade } from "svelte/transition";
-	import LogoSvg from "./LogoSvg.svelte";
-
-	const dispatch = createEventDispatcher();
-
-	function closeSplash() {
-		dispatch("splashed");
-	}
+	import { fly, fade } from 'svelte/transition';
+	import LogoSvg from './LogoSvg.svelte';
 </script>
 
-<div transition:fade|global class="splash" onclick={closeSplash} onkeydown={bubble('keydown')}>
+<div transition:fade|global class="splash">
 	<div class="backdrop"></div>
 
 	<div class="logo-group">
@@ -61,11 +51,11 @@
 		margin: 0 1rem;
 	}
 	.logo-group::before {
-		content: "Cariari";
+		content: 'Cariari';
 		right: 100%;
 	}
 	.logo-group::after {
-		content: "Realty";
+		content: 'Realty';
 		left: 100%;
 	}
 	@media screen and (orientation: portrait) {

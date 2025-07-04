@@ -1,7 +1,4 @@
 <script>
-	import { createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import { navigating } from '$app/state';
 	import { computeClasses, getDomAttributes } from './utils.js';
 	import { Spinner } from '$lib/loaders';
@@ -48,12 +45,7 @@
 		href={href ?? 'javascript:void(0);'}
 		target={external ? '_blank' : null}
 		{...attr}
-		onclick={bubble('click')}
-		onmouseover={bubble('mouseover')}
-		onmouseenter={bubble('mouseenter')}
-		onmouseleave={bubble('mouseleave')}
-		onfocus={bubble('focus')}
-		onblur={bubble('blur')}>
+		{...rest}>
 		{#if size == 'icon'}
 			<div class="icon_wrap">
 				{#if loading}<Spinner size="21" />{:else if icon}{@render icon()}{:else}🧵{/if}
@@ -80,14 +72,9 @@
 {:else}
 	<button
 		{...attr}
+		{...rest}
 		class:disabled={disabled || navigating.complete}
-		disabled={disabled || navigating.complete}
-		onclick={bubble('click')}
-		onmouseover={bubble('mouseover')}
-		onmouseenter={bubble('mouseenter')}
-		onmouseleave={bubble('mouseleave')}
-		onfocus={bubble('focus')}
-		onblur={bubble('blur')}>
+		disabled={disabled || navigating.complete}>
 		{#if size == 'icon'}
 			<div class="icon_wrap">
 				{#if loading}<Spinner size="21" />{:else if icon}{@render icon()}{:else}🧵{/if}

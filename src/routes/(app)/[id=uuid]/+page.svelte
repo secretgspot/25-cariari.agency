@@ -39,7 +39,7 @@
 		invert={true}
 		kind="gold"
 		fixed="fixed"
-		on:click={() => goto('/')} />
+		onclick={() => goto('/')} />
 {/if}
 
 <article>
@@ -94,7 +94,7 @@
 	<!-- SIDE PANE -->
 	<div class="side">
 		<div class="side-wrapper scroller">
-			<Button size="icon" class="close" on:click={() => goto(previousPage)}>
+			<Button size="icon" class="close" onclick={() => goto(previousPage)}>
 				{#snippet icon()}
 					<svg
 						width="24px"

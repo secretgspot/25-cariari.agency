@@ -1,25 +1,25 @@
 <script>
-	import { page } from "$app/state";
-	import { goto } from "$app/navigation";
-	import { supabase } from "$lib/db.js";
-	import Text from "$lib/Text.svelte";
-	import { Button } from "$lib/buttons";
-	import { isEmpty } from "$lib/utils/helpers.js";
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/db.js';
+	import Text from '$lib/Text.svelte';
+	import { Button } from '$lib/buttons';
+	import { isEmpty } from '$lib/utils/helpers.js';
 
-	let error = $state(""),
-		message = $state(""),
+	let error = $state(''),
+		message = $state(''),
 		loading = $state(false),
-		email = $state(""),
-		token = $state(""),
-		view = $state("magic");
+		email = $state(''),
+		token = $state(''),
+		view = $state('magic');
 
 	async function submit() {
-		error = "";
-		message = "";
+		error = '';
+		message = '';
 		loading = true;
 
 		if (isEmpty(email)) {
-			error = "Email must not be empty";
+			error = 'Email must not be empty';
 			loading = false;
 			return false;
 		}
@@ -32,8 +32,8 @@
 
 		if (err) error = err.message;
 		else {
-			view = "verify";
-			message = "Verification token sent!";
+			view = 'verify';
+			message = 'Verification token sent!';
 			// goto("/");
 		}
 
@@ -41,32 +41,30 @@
 	}
 
 	async function verify() {
-		error = "";
-		message = "";
+		error = '';
+		message = '';
 		loading = true;
 
-		const { data: verifyData, error: verifyError } =
-			await supabase.auth.verifyOtp({
-				email,
-				token,
-				type: "magiclink",
-			});
+		const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+			email,
+			token,
+			type: 'magiclink',
+		});
 
 		if (verifyError) {
-			view = "magic";
-			token = "";
+			view = 'magic';
+			token = '';
 			error = verifyError.message;
-		} else message = "Verified!";
+		} else message = 'Verified!';
 
 		loading = false;
 	}
 </script>
 
 <aside class="login">
-	{#if view == "magic"}
+	{#if view == 'magic'}
 		<p>
-			No password or personal identification is required to list your
-			properties.<br />
+			No password or personal identification is required to list your properties.<br />
 			Signing in with an email will allow you to edit properties you've listed.
 		</p>
 
@@ -75,25 +73,16 @@
 			name="email"
 			bind:value={email}
 			placeholder="Your email"
-			required
-		/>
-		<Button shadow size="block" {loading} disabled={loading} on:click={submit}
-			>Request a magic link</Button
-		>
+			required />
+		<Button shadow size="block" {loading} disabled={loading} onclick={submit}
+			>Request a magic link</Button>
 	{/if}
-	{#if view == "verify"}
+	{#if view == 'verify'}
 		<p>Please enter token you've received by email and press Verify</p>
 
-		<input
-			type="text"
-			name="token"
-			bind:value={token}
-			placeholder="ex:123456"
-			required
-		/>
-		<Button shadow size="block" {loading} disabled={loading} on:click={verify}
-			>Verify login token</Button
-		>
+		<input type="text" name="token" bind:value={token} placeholder="ex:123456" required />
+		<Button shadow size="block" {loading} disabled={loading} onclick={verify}
+			>Verify login token</Button>
 	{/if}
 
 	{#if message}
@@ -116,8 +105,8 @@
 		flex: 1;
 		padding: var(--padding-medium);
 	}
-	input[type="text"],
-	input[type="email"] {
+	input[type='text'],
+	input[type='email'] {
 		display: block;
 		padding: var(--padding-small);
 		color: var(--primary-content);

@@ -80,17 +80,17 @@
 
 	<!-- SIDE PANE -->
 	<div class="side scroller">
-		<Button size="icon" class="close" on:click={() => goto(previousPage)}>
+		<Button size="icon" class="close" onclick={() => goto(previousPage)}>
 			{#snippet icon()}
 				❌
 			{/snippet}
 		</Button>
 		<!-- {#if btn}
-		<Button type="button" mode="close needy" on:click="{() => dispatch('close')}">
+		<Button type="button" mode="close needy" onclick="{() => dispatch('close')}">
 			<Icon type="close" size="18" />
 		</Button>
 		{:else}
-		<Button type="button" mode="close needy" on:click="{() => goto('/properties')}">
+		<Button type="button" mode="close needy" onclick="{() => goto('/properties')}">
 			<Icon type="return" size="18" />
 		</Button>
 		{/if} -->
