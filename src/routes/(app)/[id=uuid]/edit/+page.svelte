@@ -18,7 +18,7 @@
 	import Login from '$lib/Login.svelte';
 
 	let { data } = $props();
-	console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
+	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
 	let form = $state(data.property || {});
 

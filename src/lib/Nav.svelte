@@ -19,7 +19,6 @@
 		} else {
 			console.log('User signed out successfully');
 		}
-		// invalidateAll();
 		goto('/');
 	}
 </script>

@@ -7,12 +7,14 @@ export async function load(event) {
 
 	if (!session) {
 		// throw redirect(303, '/login');
-		console.log('(app)/+layout.server juss 👓');
+		console.log('(app)/+layout.server 👓 no session');
 	}
 
 	/////// SANITY CHECK ////////
 	if (session) {
-		console.log('(app)/+layout.server 🎈');
+		console.log('(app)/+layout.server 🎈 session detected');
+		console.log('logged in:', session.is_logged_in);
+		console.log('isAdmin:', session.is_admin);
 	}
 
 	/////// EVERYTHING WENT WELL, USER GOT ALL DETAILS /////////////////////////////

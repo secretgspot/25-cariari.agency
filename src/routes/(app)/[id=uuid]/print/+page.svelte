@@ -9,7 +9,7 @@
 	import { Button, LinkButton } from '$lib/buttons';
 
 	let { data } = $props();
-	console.log('(app)/[id=uuid]/print/+page.svelte data:', data);
+	// console.log('(app)/[id=uuid]/print/+page.svelte data:', data);
 </script>
 
 <svelte:head>

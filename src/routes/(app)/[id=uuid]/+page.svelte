@@ -14,7 +14,7 @@
 
 	/** @type {{data: any}} */
 	let { data } = $props();
-	console.log('(app)/[id=uuid]/+page.svelte data:', data);
+	// console.log('(app)/[id=uuid]/+page.svelte data:', data);
 
 	let previousPage = $state(base);
 
