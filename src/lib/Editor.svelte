@@ -1,6 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData} */
-	import { supabase } from '$lib/db';
+	
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
 	import { Button } from '$lib/buttons';

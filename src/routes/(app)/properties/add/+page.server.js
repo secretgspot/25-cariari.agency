@@ -1,6 +1,5 @@
 /** @type {import('./$types').PageServerLoad} */
 import { AuthApiError } from '@supabase/supabase-js';
-import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { redirect, error, fail } from '@sveltejs/kit';
 import { isEmpty } from '$lib/utils/helpers.js';
 
@@ -10,7 +9,8 @@ export async function load(event) {
 	// const { something } = await parent();
 	const { params, route } = event;
 
-	const { session, supabaseClient } = await getSupabase(event);
+	const session = await event.locals.getSession();
+	const supabaseClient = event.locals.supabase;
 
 	// if (!session) {
 	// 	throw redirect(303, '/login');
@@ -32,8 +32,9 @@ export const actions = {
 	// ADD PROPERTY
 	add: async (event) => {
 
-		const { request, locals } = event;
-		// const { session, supabaseClient } = await getSupabase(event);
+		const { request } = event;
+		const session = await event.locals.getSession();
+		const supabaseClient = event.locals.supabase;
 
 		// if (!session) {
 		// 	// the user is not signed in
@@ -74,7 +75,7 @@ export const actions = {
 		// console.log('/properties/add/+page.server.js action -> add: ', property);
 
 		// push it to the server
-		const { data: resData, error: resErr } = await locals.sb.from('properties').insert(property).select().maybeSingle();
+		const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
 		if (resErr) {
 			if (resErr instanceof AuthApiError && resErr.status === 400) {
 				return fail(400, {

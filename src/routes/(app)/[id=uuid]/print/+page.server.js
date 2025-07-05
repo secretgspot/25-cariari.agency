@@ -1,9 +1,8 @@
 import { error } from '@sveltejs/kit';
-import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
-	const { supabaseClient } = await getSupabase(event);
+	const supabaseClient = event.locals.supabase;
 	const { id } = event.params;
 
 	const { data: property, error: err } = await supabaseClient

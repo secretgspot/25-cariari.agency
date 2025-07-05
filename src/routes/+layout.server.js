@@ -1,7 +1,5 @@
 /** @type {import('./$types').LayoutServerLoad} */
-import { getServerSession } from '@supabase/auth-helpers-sveltekit';
 // import { error } from '@sveltejs/kit';
-// import db, { supabase } from '$lib/db';
 
 export async function load(event) {
 	// console.log('/+layout.server.js event: ', event);
@@ -12,7 +10,7 @@ export async function load(event) {
 	// TODO: 🚩 WHAT CAN BE DONE HERE?
 
 	return {
-		session: await getServerSession(event),
+		session: await event.locals.getSession(),
 		// countries: getContries(),
 		// currentAdmin: event.locals.currentAdmin,
 	};

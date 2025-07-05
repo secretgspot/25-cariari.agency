@@ -1,7 +1,9 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import { supabase } from '$lib/db';
+	import { createClient } from '@supabase/supabase-js';
+	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+
 	import Badge from '$lib/Badge.svelte';
 	import { Button } from '$lib/buttons';
 	import Ad from '$lib/Ad.svelte';
@@ -16,16 +18,12 @@
 		message = '',
 		property = $state({});
 
+	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+
 	const loadDetails = async (e) => {
 		loading = true;
 		message = '';
 		error = '';
-		// console.log("loadPreview: ", data);
-		// const { data: propertyData, error: propertyErr } = await supabase
-		// 	.from("properties")
-		// 	.select("*,photos(file_url)")
-		// 	.eq("id", data)
-		// 	.single();
 		const { data: propertyData, error: propertyErr } = await supabase
 			.from('properties_preview')
 			.select('*')
@@ -36,9 +34,6 @@
 		loading = false;
 	};
 
-	// $: console.log("preview $id: ", id);
-	// $: console.log("preview data: ", data);
-	// $: console.log("preview property: ", property);
 	$effect(() => {
 		if (data) loadDetails();
 	});

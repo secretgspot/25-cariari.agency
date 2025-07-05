@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { supabase } from '$lib/db.js';
+	
 	import Text from '$lib/Text.svelte';
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/helpers.js';

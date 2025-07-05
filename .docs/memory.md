@@ -59,9 +59,10 @@ Properties are the core data entity. Main fields:
 
 ## Authentication & Authorization
 - Supabase Auth (email/password, magic link)
-- Session is available in all server actions via `getSupabase(event)`
+- Session is available in all server actions via `event.locals.getSession()`
 - Only authenticated users can add/edit/delete their own listings
 - Admins can edit/delete any listing
+- For detailed implementation, refer to: https://supabase.com/docs/guides/auth/server-side/sveltekit
 
 ## Main User Flows
 - **Browse Properties:** Map and list view, filter by type, price, beds, etc.

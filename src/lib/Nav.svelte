@@ -1,7 +1,7 @@
 <script>
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { supabase } from '$lib/db';
+	
 	import { LinkButton, Button } from '$lib/buttons';
 
 	/** @type {{sticky?: boolean, basic?: boolean}} */

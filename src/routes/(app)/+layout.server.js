@@ -1,10 +1,9 @@
 /** @type {import('./$types').LayoutServerLoad} */
-import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
 
 export async function load(event) {
-	const { session, supabaseClient } = await getSupabase(event);
+	const session = await event.locals.getSession();
 
 	if (!session) {
 		// throw redirect(303, '/login');

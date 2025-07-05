@@ -1,12 +1,12 @@
 /** @type {import('./$types').LayoutServerLoad} */
 import { redirect, error, fail } from '@sveltejs/kit';
 import { AuthApiError } from '@supabase/supabase-js';
-import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 
 
 export async function load(event) {
 
-	const { session, supabaseClient } = await getSupabase(event);
+	const session = await event.locals.getSession();
+	const supabaseClient = event.locals.supabase;
 
 	if (!session) {
 		console.log('(app)/+page.server 🥽');

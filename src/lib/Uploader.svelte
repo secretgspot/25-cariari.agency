@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/buttons';
 	import { slide } from 'svelte/transition';
-	import { supabase } from '$lib/db';
+	
 	import { addToast } from '$lib/toasts/store';
 	// import JSONDump from "$lib/JSONDump.svelte";
 

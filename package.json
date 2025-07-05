@@ -19,7 +19,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/auth-helpers-sveltekit": "^0.8.6",
+		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.2.0",
 		"qr.js": "^0.0.0"
 	}

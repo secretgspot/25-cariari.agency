@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { supabase } from '$lib/db';
+	
 	import LogoSvg from '$lib/LogoSvg.svelte';
 	import Splash from '$lib/Splash.svelte';
 	import Map from '$lib/map/Map.svelte';

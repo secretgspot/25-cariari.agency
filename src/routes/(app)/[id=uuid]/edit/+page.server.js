@@ -1,12 +1,12 @@
 /** @type {import('./$types').PageServerLoad} */
 import { AuthApiError } from '@supabase/supabase-js';
-import { getSupabase } from '@supabase/auth-helpers-sveltekit';
 import { redirect, error, fail } from '@sveltejs/kit';
 import { isEmpty } from '$lib/utils/helpers.js';
 
 export async function load(event) {
 	const { params, route } = event;
-	const { session, supabaseClient } = await getSupabase(event);
+	const session = await event.locals.getSession();
+	const supabaseClient = event.locals.supabase;
 
 	// if (!session) {
 	// 	throw redirect(303, '/login');
@@ -41,7 +41,8 @@ export const actions = {
 	edit: async (event) => {
 
 		const { request } = event;
-		const { session, supabaseClient } = await getSupabase(event);
+		const session = await event.locals.getSession();
+		const supabaseClient = event.locals.supabase;
 
 		if (!session) {
 			// the user is not signed in
@@ -109,7 +110,8 @@ export const actions = {
 	delete: async (event) => {
 
 		const { request } = event;
-		const { session, supabaseClient } = await getSupabase(event);
+		const session = await event.locals.getSession();
+		const supabaseClient = event.locals.supabase;
 
 		if (!session) {
 			// the user is not signed in
@@ -149,7 +151,8 @@ export const actions = {
 	remove: async (event) => {
 
 		const { request } = event;
-		const { session, supabaseClient } = await getSupabase(event);
+		const session = await event.locals.getSession();
+		const supabaseClient = event.locals.supabase;
 
 		if (!session) {
 			// the user is not signed in
