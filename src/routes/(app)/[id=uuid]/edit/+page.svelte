@@ -1,6 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData} */
-	
+
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
@@ -17,10 +17,10 @@
 	import JsonDump from '$lib/JSONDump.svelte';
 	import Login from '$lib/Login.svelte';
 
-	/** @type {{data: any, supabase: any}} */
-	let { data = $bindable(), supabase } = $props();
+	let { data } = $props();
+	console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
-	// export let form;
+	let form = $state(data.property || {});
 
 	let loading = $state(false),
 		error = $state(''),
@@ -29,7 +29,7 @@
 		gps = $state();
 
 	async function getMsl() {
-		const { data: mslData, error: mslErr } = await supabase
+		const { data: mslData, error: mslErr } = await data.supabase
 			.from('properties')
 			.select('msl')
 			.order('msl', { ascending: false })
@@ -484,7 +484,9 @@
 								<svg
 									class="close"
 									onclick={() => removeFeature(i)}
-									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') removeFeature(i); }}
+									onkeydown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
+									}}
 									role="button"
 									tabindex="0"
 									width="18px"

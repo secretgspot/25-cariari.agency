@@ -8,8 +8,8 @@
 	import QR from '$lib/QR.svelte';
 	import { Button, LinkButton } from '$lib/buttons';
 
-	/** @type {{data: any, supabase: any}} */
-	let { data, supabase } = $props();
+	let { data } = $props();
+	console.log('(app)/[id=uuid]/print/+page.svelte data:', data);
 </script>
 
 <svelte:head>

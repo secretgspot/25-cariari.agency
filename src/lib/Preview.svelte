@@ -10,8 +10,8 @@
 	/** @type {{data: any}} */
 	let { property_id, supabase } = $props();
 
-	console.log('Preview.svelte property_id:', property_id);
-	console.log('Preview.svelte supabase:', supabase);
+	// console.log('Preview.svelte property_id:', property_id);
+	// console.log('Preview.svelte supabase:', supabase);
 
 	let loading = $state(false),
 		error = '',

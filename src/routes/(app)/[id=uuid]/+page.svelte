@@ -12,8 +12,9 @@
 	import { formatter, ago } from '$lib/utils/helpers.js';
 	// import JsonDump from '$lib/JSONDump.svelte';
 
-	/** @type {{data: any, supabase: any}} */
-	let { data, supabase } = $props();
+	/** @type {{data: any}} */
+	let { data } = $props();
+	console.log('(app)/[id=uuid]/+page.svelte data:', data);
 
 	let previousPage = $state(base);
 
@@ -118,9 +119,96 @@
 		</ul>
 	</main>
 
-	<aside class="preview-wrapper">
-						<Preview data={data.property} supabase={data.supabase} />
-		</aside>
+	<aside>
+		<div class="features">
+			<Badge type="text" label="msl" value={data.property.msl} />
+
+			{#if data.property.land_use}
+				<Badge type="text" label="type" value={data.property.land_use} />
+			{/if}
+
+			{#if data.property.property_for}
+				<Badge type="text" label="for" loop={true} value={data.property.property_for} />
+			{/if}
+
+			{#if data.property.building_size > 0}
+				<Badge type="text" label="building" value="{data.property.building_size}㎡" />
+			{/if}
+			{#if data.property.lot_size > 0}
+				<Badge type="text" label="lot" value="{data.property.lot_size}㎡" />
+			{/if}
+
+			{#if data.property.year_built}
+				<Badge
+					type="text"
+					label="built"
+					value="{new Date(data.property.year_built).getFullYear()} &bull; {ago(
+						new Date(data.property.year_built),
+					)}" />
+			{/if}
+			{#if data.property.building_style}
+				<Badge type="text" label="style" value={data.property.building_style} />
+			{/if}
+
+			{#if data.property.price > 0}
+				<Badge type="text" label="price" value={formatter.format(data.property.price)} />
+			{/if}
+			{#if data.property.rent > 0}
+				<Badge type="text" label="rent" value={formatter.format(data.property.rent)} />
+			{/if}
+			{#if data.property.taxes > 0}
+				<Badge type="text" label="taxes" value={formatter.format(data.property.taxes)} />
+			{/if}
+			{#if data.property.fees > 0}
+				<Badge
+					type="text"
+					label="condo fees"
+					value={formatter.format(data.property.fees)} />
+			{/if}
+
+			{#if data.property.rooms > 0}
+				<Badge type="icon" label="rooms" value={data.property.rooms} />
+			{/if}
+			{#if data.property.beds > 0}
+				<Badge type="icon" label="beds" value={data.property.beds} />
+			{/if}
+			{#if data.property.baths > 0}
+				<Badge type="icon" label="baths" value={data.property.baths} />
+			{/if}
+			{#if data.property.half_baths > 0}
+				<Badge type="icon" label="half baths" value={data.property.half_baths} />
+			{/if}
+			{#if data.property.parking_spaces > 0}
+				<Badge type="icon" label="parkings" value={data.property.parking_spaces} />
+			{/if}
+		</div>
+
+		<div class="commercial-wrapper">
+			<Ad width="320" height="100">
+				<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
+					<img src="/ads/pintarcariari-300x100.jpg" alt="Cariari Pintor" />
+				</a>
+			</Ad>
+		</div>
+
+		<p class="description" class:nodescription={!data.property.description}>
+			{data.property.description || 'No description available.'}
+		</p>
+
+		{#if data.property.features}
+			<p class="amenities">
+				{#each data.property.features as feature}
+					<span class="amenity">{feature}</span>
+				{/each}
+			</p>
+		{/if}
+
+		{#if data.property.location && data.property.location.lat && data.property.location.lng}
+			<div class="location">
+				<MapStatic position={data.property.location} />
+			</div>
+		{/if}
+	</aside>
 
 	<footer>
 		{#if data.property.contact_realtor}

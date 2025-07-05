@@ -11,9 +11,9 @@
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any, supabase: any}} */
-	let { data, supabase } = $props();
-	console.log('(app)/+page.svelte data:', data);
-	console.log('(app)/+page.svelte supabase:', data.supabase);
+	let { data } = $props();
+	// console.log('(app)/+page.svelte data:', data);
+	// console.log('(app)/+page.svelte supabase:', data.supabase);
 
 	let loading = $state(data.loading ?? false),
 		error = '',
