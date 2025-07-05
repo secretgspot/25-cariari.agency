@@ -8,9 +8,8 @@ export async function load(event) {
 
 	const { data: property, error: err } = await supabaseClient
 		.from('properties')
-		.select(`*, photos(file_path, file_url)`)
+		.select(`*`)
 		.eq('id', id)
-		.order('created_at', { referencedTable: 'photos', ascending: true })
 		.single();
 
 	if (err) error(404, `Can't get property with id: ${id}, ${err.message}`);

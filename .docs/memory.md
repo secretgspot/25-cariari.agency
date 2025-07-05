@@ -94,6 +94,9 @@ Properties are the core data entity. Main fields:
 - Deployed to Vercel
 - Static assets in `/static/`
 
+## Issues Addressed
+- **`HierarchyRequestError` on Property Detail Page:** Fixed an issue where a `div`-based `Badge` component was incorrectly placed inside a `<p>` tag, which is invalid HTML. Corrected the parent element to a `div` and updated the corresponding CSS (`p.features` -> `.features`) in `src/routes/(app)/[id=uuid]/+page.svelte`. (2025-07-04)
+
 ## Notes for Rebuild
 - All property CRUD is via SvelteKit server actions using Supabase
 - Auth is required for all property modifications

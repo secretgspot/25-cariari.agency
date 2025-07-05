@@ -4,20 +4,16 @@ import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
 
 export async function load(event) {
-	// console.log('/+page.js data: ', data);
-	// const { parent } = event;
-	// const session = await parent();
-	// console.log('/+page.js parent: ', session.user.id);
 	const { session, supabaseClient } = await getSupabase(event);
 
 	if (!session) {
 		// throw redirect(303, '/login');
-		console.log('juss 👓');
+		console.log('(app)/+layout.server juss 👓');
 	}
 
 	/////// SANITY CHECK ////////
 	if (session) {
-		console.log('🎈');
+		console.log('(app)/+layout.server 🎈');
 	}
 
 	/////// EVERYTHING WENT WELL, USER GOT ALL DETAILS /////////////////////////////

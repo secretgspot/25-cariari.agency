@@ -9,7 +9,7 @@ export async function load(event) {
 	const { session, supabaseClient } = await getSupabase(event);
 
 	if (!session) {
-		console.log('🥽');
+		console.log('(app)/+page.server 🥽');
 	}
 
 	const getProperties = async () => {

@@ -10,10 +10,7 @@
 	import Ad from '$lib/Ad.svelte';
 	import MapStatic from '$lib/map/MapStatic.svelte';
 	import { formatter, ago } from '$lib/utils/helpers.js';
-	// import { Splide, SplideSlide } from "@splidejs/svelte-splide";
-	// import "@splidejs/svelte-splide/css";
-	// import JsonDump from "$lib/JSONDump.svelte";
-	// import { dragable } from "$lib/utils/dragable.js";
+	// import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any}} */
 	let { data } = $props();
@@ -43,182 +40,176 @@
 {/if}
 
 <article>
-	<!-- IMAGE PANE -->
-	<div class="photos scroller">
-		<!-- <Splide
-			options={{
-				type: "loop",
-				drag: "free",
-				snap: true,
-				rewind: true,
-				height: "100%",
-			}}
-			aria-label="{data.property.msl} photos"
-		> -->
-		<div class="wrap">
+	<Button size="icon" class="close" onclick={() => goto(previousPage)}>
+		{#snippet icon()}
+			<svg
+				width="24px"
+				height="24px"
+				stroke-width="1.5"
+				viewBox="0 0 24 24"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+				color="currentColor"
+				><path
+					d="M10.25 4.75l-3.5 3.5 3.5 3.5"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round" /><path
+					d="M6.75 8.25h6a4 4 0 014 4v7"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round" /></svg>
+		{/snippet}
+	</Button>
+
+	{#if !data.property.is_active}
+		<div class="delisted">NOT LISTED</div>
+	{/if}
+
+	<header>
+		<div>
+			<h1>{data.property.msl}</h1>
+			<p>
+				For {data.property.property_for}: {data.property
+					.land_use}{#if data.property.building_style}, {data.property
+						.building_style}{/if}{#if data.property.year_built}, built in {data.property
+						.year_built}{/if}{#if data.property.lot_size}, on a {data.property.lot_size}m²
+					lot{/if}{#if data.property.building_size}, with {data.property.building_size}m²
+					of living space{/if}.
+				{#if data.property.price}
+					Priced at ${data.property.price}.{/if}
+			</p>
+		</div>
+	</header>
+
+	<main>
+		<ul
+			id="cards"
+			style="--numcards:{data.property.photos ? data.property.photos.length : 1}">
 			{#if data.property.photos}
-				{#each data.property.photos as photo}
-					<!-- <SplideSlide> -->
-					<div class="slide" style="background-image: url({photo.file_url});"></div>
-					<!-- <img
-					class="slide-image"
-					src={photo.file_url}
-					alt="{data.property.msl} property photo"
-					loading="eager"
-					intrinsicsize="1920x1080"
-				/> -->
-					<!-- </SplideSlide> -->
+				{#each data.property.photos as photo, index}
+					<li class="card" id="card_{index + 1}" style="--index: {index + 1}">
+						<div class="card__content">
+							<figure>
+								<img
+									src={photo.file_url}
+									alt="{data.property.msl} property photo"
+									srcset={photo.file_url} />
+							</figure>
+						</div>
+					</li>
 				{/each}
 			{:else}
-				<!-- <SplideSlide> -->
-				<img
-					class="slide-image"
-					src="/placeholder/1080x810.png"
-					alt="property"
-					loading="eager" />
-				<!-- </SplideSlide> -->
+				<li class="card" id="card_1">
+					<div class="card__content">
+						<figure>
+							<img
+								class="slide-image"
+								src="/placeholder/1080x810.png"
+								srcset="/placeholder/1080x810.png"
+								alt="property"
+								loading="eager" />
+						</figure>
+					</div>
+				</li>
+			{/if}
+		</ul>
+	</main>
+
+	<aside>
+		<div class="features">
+			<Badge type="text" label="msl" value={data.property.msl} />
+
+			{#if data.property.land_use}
+				<Badge type="text" label="type" value={data.property.land_use} />
+			{/if}
+
+			{#if data.property.property_for}
+				<Badge type="text" label="for" loop={true} value={data.property.property_for} />
+			{/if}
+
+			{#if data.property.building_size > 0}
+				<Badge type="text" label="building" value="{data.property.building_size}㎡" />
+			{/if}
+			{#if data.property.lot_size > 0}
+				<Badge type="text" label="lot" value="{data.property.lot_size}㎡" />
+			{/if}
+
+			{#if data.property.year_built}
+				<Badge
+					type="text"
+					label="built"
+					value="{new Date(data.property.year_built).getFullYear()} &bull; {ago(
+						new Date(data.property.year_built),
+					)}" />
+			{/if}
+			{#if data.property.building_style}
+				<Badge type="text" label="style" value={data.property.building_style} />
+			{/if}
+
+			{#if data.property.price > 0}
+				<Badge type="text" label="price" value={formatter.format(data.property.price)} />
+			{/if}
+			{#if data.property.rent > 0}
+				<Badge type="text" label="rent" value={formatter.format(data.property.rent)} />
+			{/if}
+			{#if data.property.taxes > 0}
+				<Badge type="text" label="taxes" value={formatter.format(data.property.taxes)} />
+			{/if}
+			{#if data.property.fees > 0}
+				<Badge
+					type="text"
+					label="condo fees"
+					value={formatter.format(data.property.fees)} />
+			{/if}
+
+			{#if data.property.rooms > 0}
+				<Badge type="icon" label="rooms" value={data.property.rooms} />
+			{/if}
+			{#if data.property.beds > 0}
+				<Badge type="icon" label="beds" value={data.property.beds} />
+			{/if}
+			{#if data.property.baths > 0}
+				<Badge type="icon" label="baths" value={data.property.baths} />
+			{/if}
+			{#if data.property.half_baths > 0}
+				<Badge type="icon" label="half baths" value={data.property.half_baths} />
+			{/if}
+			{#if data.property.parking_spaces > 0}
+				<Badge type="icon" label="parkings" value={data.property.parking_spaces} />
 			{/if}
 		</div>
-		<!-- </Splide> -->
-		<!-- <Carousel>
-			{#if data.property.photos}
-				{#each data.property.photos as photo}
-				<img class="slide-content" src="{photo}" alt="property" loading="lazy" />
+
+		<div class="commercial-wrapper">
+			<Ad width="320" height="100">
+				<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
+					<img src="/ads/pintarcariari-300x100.jpg" alt="Cariari Pintor" />
+				</a>
+			</Ad>
+		</div>
+
+		<p class="description" class:nodescription={!data.property.description}>
+			{data.property.description || 'No description available.'}
+		</p>
+
+		{#if data.property.features}
+			<p class="amenities">
+				{#each data.property.features as feature}
+					<span class="amenity">{feature}</span>
 				{/each}
-			{:else}
-				<img class="slide-content" src="/images/placeholder/1080x810.png" alt="property" loading="eager" />
-			{/if}
-		</Carousel> -->
-	</div>
+			</p>
+		{/if}
 
-	<!-- SIDE PANE -->
-	<div class="side">
-		<div class="side-wrapper scroller">
-			<Button size="icon" class="close" onclick={() => goto(previousPage)}>
-				{#snippet icon()}
-					<svg
-						width="24px"
-						height="24px"
-						stroke-width="1.5"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-						color="currentColor"
-						><path
-							d="M10.25 4.75l-3.5 3.5 3.5 3.5"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round" /><path
-							d="M6.75 8.25h6a4 4 0 014 4v7"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round" /></svg>
-				{/snippet}
-			</Button>
-
-			{#if !data.property.is_active}
-				<div class="delisted">NOT LISTED</div>
-			{/if}
-
-			<div class="badge-group">
-				{#if data.property.year_built}
-					<Badge
-						type="text"
-						label="built"
-						value="{new Date(data.property.year_built).getFullYear()} &bull; {ago(
-							new Date(data.property.year_built),
-						)}" />
-				{/if}
-				{#if data.property.building_style}
-					<Badge type="text" label="style" value={data.property.building_style} />
-				{/if}
+		{#if data.property.location && data.property.location.lat && data.property.location.lng}
+			<div class="location">
+				<MapStatic position={data.property.location} />
 			</div>
+		{/if}
+	</aside>
 
-			<div class="price-group">
-				{#if data.property.price > 0}
-					<Badge
-						type="text"
-						label="price"
-						value={formatter.format(data.property.price)} />
-				{/if}
-				{#if data.property.rent > 0}
-					<Badge type="text" label="rent" value={formatter.format(data.property.rent)} />
-				{/if}
-				{#if data.property.taxes > 0}
-					<Badge
-						type="text"
-						label="taxes"
-						value={formatter.format(data.property.taxes)} />
-				{/if}
-				{#if data.property.fees > 0}
-					<Badge
-						type="text"
-						label="condo fees"
-						value={formatter.format(data.property.fees)} />
-				{/if}
-			</div>
-
-			{#if data.property.location && data.property.location.lat && data.property.location.lng}
-				<div class="map-group">
-					<MapStatic position={data.property.location} />
-				</div>
-			{/if}
-
-			<div class="badge-group">
-				{#if data.property.rooms > 0}
-					<Badge type="icon" label="rooms" value={data.property.rooms} />
-				{/if}
-				{#if data.property.beds > 0}
-					<Badge type="icon" label="beds" value={data.property.beds} />
-				{/if}
-				{#if data.property.baths > 0}
-					<Badge type="icon" label="baths" value={data.property.baths} />
-				{/if}
-				{#if data.property.half_baths > 0}
-					<Badge type="icon" label="half baths" value={data.property.half_baths} />
-				{/if}
-				{#if data.property.parking_spaces > 0}
-					<Badge type="icon" label="parkings" value={data.property.parking_spaces} />
-				{/if}
-			</div>
-
-			<div class="badge-group">
-				{#if data.property.building_size > 0}
-					<Badge type="text" label="building" value="{data.property.building_size}㎡" />
-				{/if}
-				{#if data.property.lot_size > 0}
-					<Badge type="text" label="lot" value="{data.property.lot_size}㎡" />
-				{/if}
-			</div>
-
-			<div class="commercial-wrapper">
-				<Ad width="320" height="100">
-					<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
-						<img src="/ads/pintarcariari-300x100.jpg" alt="Pintar Cariari" />
-					</a>
-				</Ad>
-			</div>
-
-			{#if data.property.description}
-				<div class="description scroller">
-					{data.property.description}
-				</div>
-			{/if}
-
-			{#if data.property.features}
-				<div class="features">
-					{#each data.property.features as feature}
-						<div class="feature">{feature}</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</div>
-
-	<!-- BASE PANE -->
-	<div class="base">
+	<footer>
 		{#if data.property.contact_realtor}
 			<div class="realtor-group">
 				<!-- {#if data.property.contact_email}
@@ -257,227 +248,208 @@
 						value={data.property.contact_phone} />{/if}
 			</div>
 		{/if}
-
-		<div class="badge-group">
-			{#if data.property.land_use}
-				<Badge type="text" label="type" value={data.property.land_use} />
-			{/if}
-			{#if data.property.property_for}
-				<Badge type="text" label="for" loop={true} value={data.property.property_for} />
-			{/if}
-
-			<Badge type="text" label="msl" value={data.property.msl} />
-		</div>
-	</div>
+	</footer>
 </article>
 
 <style>
-	article {
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: 300px 1fr 1fr;
-		grid-template-areas:
-			'main'
-			'aside'
-			'base';
-		width: 100vw;
-		height: 100vh;
-		background: var(--primary);
-		color: var(--primary-content);
-	}
-	article :global(.close) {
-		top: var(--padding-small);
-		right: var(--padding-small);
-		position: sticky;
-		align-self: flex-end;
+	:root {
+		/* --numcards: 9; */
+		--card-height: 45vw;
+		--card-margin: 1rem;
+		--card-top-offset: 1px;
 	}
 
 	.delisted {
 		background: var(--warning);
 		opacity: 0.6;
-		pointer-events: none;
-		width: 100%;
-		padding: var(--padding-small);
+		position: fixed;
+		left: var(--padding-small);
+		top: 100px;
+		width: 300px;
+		transform: rotate(325deg);
 		text-align: center;
-		position: sticky;
-		top: 50%;
+		padding: var(--padding-small);
+		pointer-events: none;
 		z-index: 3;
 	}
 
-	.photos {
-		grid-area: main;
-		display: grid;
-		grid-template-columns: inherit;
-		padding-block: var(--padding-extra-small);
-		overflow-x: scroll;
-		overscroll-behavior-x: contain;
-		scroll-snap-type: x proximity;
-		scrollbar-width: none;
-	}
-	/* .photos:before {
-		content: "Loading..";
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	} */
-	.photos .wrap {
-		grid-column: 1;
-		display: flex;
-		gap: var(--gap-extra-small);
-	}
-	.photos .wrap::after {
-		content: '';
-		padding-inline-end: calc(var(--gap-small) / 2);
-	}
-	.slide {
-		flex: 1 0 auto;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		scroll-snap-align: center;
-		inline-size: 100%;
-		/* aspect-ratio: 16 / 1; */
-		/* border-radius: var(--border-radius); */
-		background-size: cover;
-		background-position: center center;
+	h1 {
+		font-weight: 300;
+		font-size: 3.5em;
 	}
 
-	.slide-image {
-		flex: 1;
-		background-size: cover;
-		background-repeat: no-repeat;
-		background-position: center;
-		height: 100%;
-		width: 100%;
-		object-fit: scale-down;
+	p {
+		font-weight: 300;
+		line-height: 1.3;
 	}
 
-	.side {
-		grid-area: aside;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: space-evenly;
+	article {
+		background: var(--primary);
+		color: var(--primary-content);
+		font-size: calc(1em + 0.5vw);
 	}
-	.side .side-wrapper {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: var(--padding-small);
-	}
-	.side .map-group,
-	.side .badge-group,
-	.side .price-group {
-		display: flex;
-		justify-content: space-evenly;
-		flex-wrap: wrap;
-		margin: var(--padding-small) 0;
-		width: 100%;
+	article :global(.close) {
+		top: var(--padding-small);
+		right: var(--padding-small);
+		position: fixed;
+		top: var(--padding-small);
+		right: var(--padding-small);
 	}
 
-	.side .features {
-		padding: var(--padding-medium);
+	header,
+	main {
+		width: 80vw;
+		margin: 0 auto;
 		text-align: center;
-		width: 100%;
-	}
-	.side .feature {
-		border: 1px dashed var(--border);
-		padding: 0 0.2rem;
-		margin: 0.1rem;
-		border-radius: 6px;
-		display: inline-block;
-		color: var(--txt-secondary);
 	}
 
-	.side .description {
-		padding: 0 var(--padding-medium);
-		margin: var(--padding-medium) 0;
-		white-space: pre-wrap;
-		min-height: min-content;
-		text-align: justify;
-	}
-
-	.side .commercial-wrapper {
-		display: flex;
-		justify-content: center;
-		flex: 1;
-		align-items: center;
-		width: 100%;
-	}
-
-	.realtor-group {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		margin: var(--padding-small) 0;
-	}
-	.realtor-group div {
-		display: flex;
-		flex-direction: column;
-		margin: 1rem;
-		gap: var(--padding-extra-small);
-	}
-	.realtor-group h3 {
-		margin: 0;
-	}
-	.realtor-group a {
-		color: var(--accent);
-		text-decoration: none;
-		white-space: nowrap;
-		vertical-align: top;
-		margin-left: 0.3rem;
-	}
-	.realtor-group :global(svg) {
-		color: var(--secondary-content);
-	}
-
-	/* BASE SECTION */
-	.base {
-		grid-area: base;
+	header {
+		height: 90vh;
 		display: grid;
-		grid-template-columns: repeat(1, minmax(auto, 1fr));
-		grid-gap: 1rem;
-		align-items: center;
-		padding: 1rem;
+		place-items: center;
+
+		p {
+			max-width: 63ch;
+		}
 	}
 
-	.base .badge-group {
-		display: flex;
-		justify-content: space-evenly;
-		flex-wrap: wrap;
+	footer {
+		height: 30vh;
+		display: grid;
+		place-items: center;
+
+		.realtor-group {
+			div {
+				display: flex;
+				flex-direction: column;
+				/* align-items: center; */
+				gap: var(--padding-extra-small);
+			}
+
+			h3 {
+				margin: 0;
+			}
+			a {
+				color: var(--accent);
+				text-decoration: none;
+				white-space: nowrap;
+				vertical-align: top;
+				margin-left: 0.3rem;
+			}
+			:global(svg) {
+				color: var(--secondary-content);
+			}
+		}
 	}
 
-	@media (min-width: 1024px) {
-		article {
-			grid-template-columns: 60vw 40vw;
-			grid-template-rows: minmax(min-content, 60vh) minmax(min-content, auto);
-			/* grid-template-rows: minmax(min-content, 30vh) minmax(max-content, 70vh); */
-			grid-template-areas:
-				'main aside'
-				'base aside';
-		}
-		article :global(.close) {
-			top: var(--padding-small);
-			position: fixed;
-		}
-		.side {
-			max-height: 100vh;
-		}
-		.side-wrapper {
-			overflow-y: auto;
-		}
-		.base {
-			grid-template-columns: repeat(2, minmax(min-content, auto));
-			grid-gap: 3rem;
-			padding: 3rem;
+	#cards {
+		/* Make place at bottom, as items will slide to that position*/
+		/* padding-bottom: calc(var(--numcards) * var(--card-top-offset)); */
+		/* Don't include the --card-margin in padding, as that will affect the scroll-timeline*/
+		/* margin-bottom: var(--card-margin); */
+
+		list-style: none;
+
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: repeat(var(--numcards), var(--card-height));
+		gap: var(--card-margin);
+		margin: 0;
+		padding: 0;
+	}
+
+	.card {
+		position: sticky;
+		top: calc(var(--padding-large) * 2);
+		/* padding-top: calc(var(--index) * var(--card-top-offset)); */
+
+		.card__content {
+			box-shadow: var(--shadow-large);
+			border-radius: var(--border-radius);
+			overflow: hidden;
+			aspect-ratio: 2 / 1;
+
+			display: grid;
+			grid-template-areas: 'img';
+			grid-template-columns: 1fr;
+			grid-template-rows: auto;
+
+			align-items: stretch;
+
+			transform-origin: 50% 0%;
+			will-change: transform;
+
+			> figure {
+				grid-area: img;
+				overflow: hidden;
+				margin: 0;
+				padding: 0;
+
+				> img {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+				}
+			}
 		}
 	}
-	@media (prefers-color-scheme: dark) {
-		.photos {
-			filter: brightness(var(--brightness));
+
+	aside {
+		width: 60vw;
+		margin: 0 auto;
+		text-align: left;
+
+		p {
+			margin-bottom: 1em;
+		}
+
+		p.description {
+			text-align: justify;
+
+			&.nodescription {
+				text-align: center;
+			}
+		}
+
+		.features {
+			display: flex;
+			justify-content: space-evenly;
+			align-content: center;
+			flex-wrap: wrap;
+			gap: var(--gap-small);
+			margin-block: calc(var(--padding-large) * 2);
+		}
+
+		p.amenities {
+			display: flex;
+			justify-content: center;
+			align-content: center;
+			flex-wrap: wrap;
+			margin-block: var(--padding-large);
+
+			span:after {
+				content: '•';
+				margin-inline: 1rem;
+			}
+
+			span:last-child:after {
+				content: '';
+				margin: 0;
+			}
+		}
+
+		.commercial-wrapper {
+			margin: 0 0 var(--padding-medium) 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.location {
+			margin-block: var(--padding-large) 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 </style>
