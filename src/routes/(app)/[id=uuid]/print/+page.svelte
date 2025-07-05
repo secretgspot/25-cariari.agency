@@ -18,7 +18,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav supabase={data.supabase} url={page.url} />
+	<Nav />
 {/if}
 
 <article class="print-property">

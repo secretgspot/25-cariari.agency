@@ -39,7 +39,7 @@
 
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
-		<Nav supabase={data.supabase} is_logged_in={data.is_logged_in} url={page.url} />
+		<Nav />
 		<Map markers={data.properties} on:selected={(e) => (selectedProperty = e.detail)} />
 	</section>
 

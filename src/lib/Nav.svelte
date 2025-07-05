@@ -1,14 +1,15 @@
 <script>
+	import { page } from '$app/state';
 	import { LinkButton } from '$lib/buttons';
 
 	/** @type {{ is_logged_in: boolean; sticky?: boolean; basic?: boolean; url: any; }} */
-	let { is_logged_in, sticky = false, basic = false, url, ...rest } = $props();
-	console.log('Nav props', { is_logged_in, sticky, basic, url, ...rest });
+	let { sticky = false, basic = false, url, ...rest } = $props();
+	// console.log('Nav props', { page, sticky, basic, url, ...rest });
 
 	let open = $state(false);
 </script>
 
-{JSON.stringify(is_logged_in, null, 2)}
+<!-- {JSON.stringify(is_logged_in, null, 2)} -->
 
 <nav class:sticky class:basic class:open {...rest}>
 	<div class="icon">
@@ -22,19 +23,20 @@
 		</svg>
 	</div>
 	<div class="wrapper">
-		{#if url != '/'}
+		{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
+		{#if page.url.pathname != '/'}
 			<li><LinkButton href="/">Map</LinkButton></li>
 		{/if}
-		{#if url != '/properties'}
+		{#if page.url.pathname != '/properties'}
 			<li><LinkButton href="/properties">Properties</LinkButton></li>
 		{/if}
-		{#if url != '/properties/add'}
+		{#if page.url.pathname != '/properties/add'}
 			<li><LinkButton href="/properties/add">Add</LinkButton></li>
 		{/if}
-		{#if url != '/about'}
+		{#if page.url.pathname != '/about'}
 			<li><LinkButton href="/about">About</LinkButton></li>
 		{/if}
-		{#if is_logged_in}
+		{#if page.data.is_logged_in}
 			<li>
 				<form action="/logout" method="post">
 					<LinkButton>
@@ -67,7 +69,7 @@
 		right: var(--padding-small);
 		row-gap: var(--gap-extra-small);
 		user-select: none;
-		cursor: pointer;
+		/* cursor: pointer; */
 		z-index: 3;
 	}
 	.icon {

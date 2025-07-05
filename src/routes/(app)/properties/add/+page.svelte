@@ -1,6 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData} */
-	
+
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
@@ -111,7 +111,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav url={page.url} is_logged_in={page.data.is_logged_in} />
+	<Nav />
 {/if}
 
 {#if !page.data?.is_logged_in}
@@ -484,27 +484,29 @@
 					<div class="feature-list">
 						{#each $property.features || [] as feature, i}
 							<span class="feature">
-                                <svg
-                                    class="close"
-                                    onclick={() => removeFeature(i)}
-                                    onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') removeFeature(i); }}
+								<svg
+									class="close"
+									onclick={() => removeFeature(i)}
+									onkeydown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
+									}}
 									role="button"
-                                    tabindex="0"
-                                    width="18px"
-                                    height="18px"
-                                    stroke-width="1.5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    color="currentColor"
-                                    ><path
-                                        d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-                                        stroke="currentColor"
-                                        stroke-width="1.5"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round" /></svg>
-                                {feature}
-                            </span>
+									tabindex="0"
+									width="18px"
+									height="18px"
+									stroke-width="1.5"
+									viewBox="0 0 24 24"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									color="currentColor"
+									><path
+										d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round" /></svg>
+								{feature}
+							</span>
 						{/each}
 					</div>
 				</fieldset>
