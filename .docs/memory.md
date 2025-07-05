@@ -5,6 +5,8 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 ## Development Guidelines
 - **Frameworks**: Always use Svelte 5 and SvelteKit 2 for all new features and refactoring.
+  - Svelte 5 Docs: https://svelte.dev/docs/svelte/overview
+  - SvelteKit 2 Docs: https://svelte.dev/docs/kit/introduction
 
 ## Tech Stack
 - **Frontend:** SvelteKit 2 (Svelte 5), Vite
