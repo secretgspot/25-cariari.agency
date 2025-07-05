@@ -4,8 +4,8 @@
 	
 	import { LinkButton, Button } from '$lib/buttons';
 
-	/** @type {{sticky?: boolean, basic?: boolean}} */
-	let { sticky = false, basic = false, ...rest } = $props();
+	/** @type {{supabase: any, sticky?: boolean, basic?: boolean}} */
+	let { supabase, sticky = false, basic = false, ...rest } = $props();
 
 	let open = $state(false);
 

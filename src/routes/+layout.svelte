@@ -1,7 +1,7 @@
 <!-- @migration task: review uses of `navigating` -->
 <script>
 	import { navigating, page } from '$app/state';
-	
+
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { Toasts } from '$lib/toasts';
@@ -9,6 +9,8 @@
 	import Splash from '$lib/Splash.svelte';
 	/** @type {{children?: import('svelte').Snippet}} */
 	let { children, data } = $props();
+
+	console.log('Layout data:', data);
 
 	onMount(() => {
 		const {

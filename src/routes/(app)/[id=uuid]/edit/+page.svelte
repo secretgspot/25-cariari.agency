@@ -17,8 +17,8 @@
 	import JsonDump from '$lib/JSONDump.svelte';
 	import Login from '$lib/Login.svelte';
 
-	/** @type {{data: any}} */
-	let { data = $bindable() } = $props();
+	/** @type {{data: any, supabase: any}} */
+	let { data = $bindable(), supabase } = $props();
 
 	// export let form;
 
@@ -484,6 +484,9 @@
 								<svg
 									class="close"
 									onclick={() => removeFeature(i)}
+									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') removeFeature(i); }}
+									role="button"
+									tabindex="0"
 									width="18px"
 									height="18px"
 									stroke-width="1.5"

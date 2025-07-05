@@ -10,8 +10,8 @@
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
 
-	/** @type {{data: any}} */
-	let { data } = $props();
+	/** @type {{data: any, supabase: any}} */
+	let { data, supabase } = $props();
 
 	let filter = $derived((filter && filterArray(data.properties, filters)) || []);
 	let view_style = $state('grid');

@@ -4,10 +4,11 @@
 	import { slide } from 'svelte/transition';
 	
 	import { addToast } from '$lib/toasts/store';
+
 	// import JSONDump from "$lib/JSONDump.svelte";
 
 	/** @type {{msl: any, attachments?: any}} */
-	let { msl, attachments = $bindable([]) } = $props();
+	let { msl, attachments = $bindable([]), supabase } = $props();
 
 	let error = '',
 		message = '',
@@ -160,7 +161,8 @@
 		class="dropzone"
 		ondragover={preventDefault(() => (isDragOver = true))}
 		ondragleave={preventDefault(() => (isDragOver = false))}
-		ondrop={preventDefault(handleDrop)}>
+		ondrop={preventDefault(handleDrop)}
+		role="region">
 		<small>Drop photos here</small>
 
 		<input

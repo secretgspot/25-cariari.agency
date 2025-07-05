@@ -12,7 +12,7 @@
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
-	<figure class="property-image" onclick={() => goto(`/${property.id}`)}>
+	<LinkButton class="property-image" href={`/${property.id}`}>
 		{#if property.photo}
 			<img
 				src={property.photo}
@@ -26,7 +26,7 @@
 				loading="lazy"
 				intrinsicsize="281x222" />
 		{/if}
-	</figure>
+</LinkButton>
 
 	<div class="property-header">
 		<div class="land_use">

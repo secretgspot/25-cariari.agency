@@ -8,8 +8,8 @@
 	import QR from '$lib/QR.svelte';
 	import { Button, LinkButton } from '$lib/buttons';
 
-	/** @type {{data: any}} */
-	let { data } = $props();
+	/** @type {{data: any, supabase: any}} */
+	let { data, supabase } = $props();
 </script>
 
 <svelte:head>
@@ -18,7 +18,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav />
+	<Nav supabase={data.supabase} />
 {/if}
 
 <article class="print-property">

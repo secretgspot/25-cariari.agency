@@ -9,9 +9,10 @@
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import JsonDump from '$lib/JSONDump.svelte';
+	
 
 	/** @type {{data: any}} */
-	let { data = $bindable() } = $props();
+	let { data = $bindable(), supabase } = $props();
 
 	// export let form;
 

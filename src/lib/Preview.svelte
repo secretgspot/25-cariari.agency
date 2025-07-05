@@ -1,9 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import { createClient } from '@supabase/supabase-js';
-	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-
 	import Badge from '$lib/Badge.svelte';
 	import { Button } from '$lib/buttons';
 	import Ad from '$lib/Ad.svelte';
@@ -11,23 +8,25 @@
 	import { Spinner } from '$lib/loaders';
 
 	/** @type {{data: any}} */
-	let { data } = $props();
+	let { property_id, supabase } = $props();
+
+	console.log('Preview.svelte property_id:', property_id);
+	console.log('Preview.svelte supabase:', supabase);
 
 	let loading = $state(false),
 		error = '',
 		message = '',
 		property = $state({});
 
-	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-
 	const loadDetails = async (e) => {
 		loading = true;
 		message = '';
 		error = '';
+
 		const { data: propertyData, error: propertyErr } = await supabase
 			.from('properties_preview')
 			.select('*')
-			.eq('id', data)
+			.eq('id', property_id)
 			.single();
 		if (propertyErr) error = propertyErr.message;
 		property = propertyData;
@@ -35,7 +34,7 @@
 	};
 
 	$effect(() => {
-		if (data) loadDetails();
+		if (supabase) loadDetails();
 	});
 </script>
 

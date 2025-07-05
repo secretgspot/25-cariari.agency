@@ -5,6 +5,9 @@
 	import Text from '$lib/Text.svelte';
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/helpers.js';
+	
+
+	let { supabase } = $props();
 
 	let error = $state(''),
 		message = $state(''),

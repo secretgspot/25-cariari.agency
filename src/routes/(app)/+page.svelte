@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	
+
 	import LogoSvg from '$lib/LogoSvg.svelte';
 	import Splash from '$lib/Splash.svelte';
 	import Map from '$lib/map/Map.svelte';
@@ -10,8 +10,10 @@
 	import Nav from '$lib/Nav.svelte';
 	import JsonDump from '$lib/JSONDump.svelte';
 
-	/** @type {{data: any}} */
-	let { data } = $props();
+	/** @type {{data: any, supabase: any}} */
+	let { data, supabase } = $props();
+	console.log('(app)/+page.svelte data:', data);
+	console.log('(app)/+page.svelte supabase:', data.supabase);
 
 	let loading = $state(data.loading ?? false),
 		error = '',
@@ -48,7 +50,7 @@
 
 	{#if selectedProperty}
 		<aside class="preview-wrapper">
-			<Preview data={selectedProperty} />
+			<Preview property_id={selectedProperty} supabase={data.supabase} />
 		</aside>
 	{/if}
 </main>
