@@ -146,7 +146,7 @@
 	};
 
 	const emptyBucket = async () => {
-		const { data, error } = await supabase.storage.emptyBucket('photos');
+		const { data, error } = await data.supabase.storage.emptyBucket('photos');
 		if (error) console.error(error);
 		if (data) console.log(data);
 	};

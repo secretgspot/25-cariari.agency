@@ -1,17 +1,13 @@
 /** @type {import('./$types').LayoutServerLoad} */
 // import { error } from '@sveltejs/kit';
 
-export async function load(event) {
-	// console.log('/+layout.server.js event: ', event);
-	// const { locals } = event;
-
-	// console.log('/+layout.server.js locals', locals)
-
-	// TODO: 🚩 WHAT CAN BE DONE HERE?
+export async function load({ locals: { getSession, supabase } }) {
+	const { session, user, is_logged_in, is_admin } = await getSession();
 
 	return {
-		session: await event.locals.getSession(),
-		// countries: getContries(),
-		// currentAdmin: event.locals.currentAdmin,
+		session,
+		user,
+		is_logged_in,
+		is_admin,
 	};
 }

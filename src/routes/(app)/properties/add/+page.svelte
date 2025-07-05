@@ -21,7 +21,7 @@
 	import Notify from '$lib/Notify.svelte';
 
 	/** @type {{data: any, supabase: any}} */
-	let { data, supabase } = $props();
+	let { data } = $props();
 
 	// export let form;
 
@@ -43,7 +43,7 @@
 	});
 
 	async function getMsl() {
-		const { data: mslData, error: mslErr } = await supabase
+		const { data: mslData, error: mslErr } = await data.supabase
 			.from('properties')
 			.select('msl')
 			.order('msl', { ascending: false })
@@ -111,11 +111,11 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav url={page.url} />
+	<Nav url={page.url} is_logged_in={page.data.is_logged_in} />
 {/if}
 
-{#if !page.data?.logged_in}
-	<Login />
+{#if !page.data?.is_logged_in}
+	<Login supabase={page.data.supabase} />
 {:else}
 	<form
 		class="add-property"

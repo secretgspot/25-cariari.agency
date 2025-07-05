@@ -1,21 +1,32 @@
-<!-- @migration task: review uses of `navigating` -->
 <script>
 	import { navigating, page } from '$app/state';
-
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { Toasts } from '$lib/toasts';
-	// import { FixedLine } from "$lib/loaders";
 	import Splash from '$lib/Splash.svelte';
-	/** @type {{children?: import('svelte').Snippet}} */
+
 	let { children, data } = $props();
 
-	// console.log('routes/+layout.svelte data:', data);
+	let { session, is_logged_in, is_admin, supabase } = $state(data);
+	let loading = $state(true); // Add a local loading state
+
+	$effect(() => {
+		console.log('is_logged_in:', is_logged_in ? '👍' : '👎');
+		console.log('is_admin:', is_admin);
+	});
 
 	onMount(() => {
+		// Set loading to false once the component mounts and session data is available
+		if (session) {
+			loading = false;
+		}
 		const {
 			data: { subscription },
-		} = data.supabase.auth.onAuthStateChange(() => {
+		} = data.supabase.auth.onAuthStateChange((event, _session) => {
+			session = _session;
+			is_logged_in = !!_session;
+			is_admin = _session?.user?.app_metadata?.claims_admin || false;
+			loading = false; // Set loading to false after auth state changes
 			invalidate('supabase:auth');
 		});
 
@@ -27,9 +38,8 @@
 
 <Toasts />
 
-{#if navigating.complete}
+{#if navigating.complete || loading}
 	<Splash />
-	<!-- <FixedLine /> -->
+{:else}
+	{@render children?.()}
 {/if}
-
-{@render children?.()}

@@ -1,13 +1,11 @@
 <script>
-	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+			import { page } from '$app/state';
+	import { goto, invalidateAll } from '$app/navigation';
 	
 	import Text from '$lib/Text.svelte';
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	
-
-	let { supabase } = $props();
 
 	let error = $state(''),
 		message = $state(''),
@@ -27,7 +25,7 @@
 			return false;
 		}
 
-		const { error: err } = await supabase.auth.signInWithOtp({
+		const { error: err } = await page.data.supabase.auth.signInWithOtp({
 			email,
 			sendOtp: true,
 		});
@@ -48,7 +46,7 @@
 		message = '';
 		loading = true;
 
-		const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+		const { data: verifyData, error: verifyError } = await page.data.supabase.auth.verifyOtp({
 			email,
 			token,
 			type: 'magiclink',
@@ -58,7 +56,11 @@
 			view = 'magic';
 			token = '';
 			error = verifyError.message;
-		} else message = 'Verified!';
+		} else {
+			message = 'Verified!';
+			view = 'verified'; // Hide the login form
+			invalidateAll(); // Invalidate all data to force full re-render
+		}
 
 		loading = false;
 	}

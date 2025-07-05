@@ -23,7 +23,7 @@
 		won = $state(false);
 
 	async function getMsl() {
-		const { data: mslData, error: mslErr } = await supabase
+		const { data: mslData, error: mslErr } = await data.supabase
 			.from('properties')
 			.select('msl')
 			.order('msl', { ascending: false })

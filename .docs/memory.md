@@ -1,20 +1,24 @@
 # Cariari.Agency Project Memory
 
 ## Overview
-Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit, Supabase, and Vercel. It allows users to browse, add, edit, and print property listings. The project is structured as a modern SvelteKit app with a focus on property data management, user authentication, and map-based property browsing.
+
+Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit and Supabase, and is hosted on Vercel. It allows users to browse, add, edit, and print property listings. The project is structured as a modern SvelteKit app with a focus on property data management, user authentication, and map-based property browsing.
 
 ## Development Guidelines
+
 - **Frameworks**: Always use Svelte 5 and SvelteKit 2 for all new features and refactoring.
-  - Svelte 5 Docs: https://svelte.dev/docs/svelte/overview
-  - SvelteKit 2 Docs: https://svelte.dev/docs/kit/introduction
+  - Svelte 5 Docs: <https://svelte.dev/docs/svelte/overview>
+  - SvelteKit 2 Docs: <https://svelte.dev/docs/kit/introduction>
 
 ## Tech Stack
+
 - **Frontend:** SvelteKit 2 (Svelte 5), Vite
 - **Backend/DB:** Supabase (PostgreSQL, Auth)
 - **Hosting:** Vercel
 - **Other:** Leaflet (maps), QR.js (QR codes), @neoconfetti/svelte (confetti), Splide (carousel)
 
 ## Main Features
+
 - Property listing, filtering, and detail views
 - Add/Edit/Delete/Delist property (CRUD)
 - Print-friendly property pages with QR codes
@@ -24,7 +28,9 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 - Responsive, modern UI with reusable Svelte components
 
 ## Data Model: Property
+
 Properties are the core data entity. Main fields:
+
 - id (uuid)
 - user_id
 - msl (listing number)
@@ -49,6 +55,7 @@ Properties are the core data entity. Main fields:
 - created_at, updated_at (timestamps)
 
 ## API Endpoints (via SvelteKit server actions)
+
 - **GET /properties**: List all properties (uses `properties_preview` view for public, `properties` for admin)
 - **POST /properties/add**: Add new property (requires user session)
 - **POST /properties/[id]/edit**: Edit property (requires user session, admin can edit any)
@@ -58,13 +65,14 @@ Properties are the core data entity. Main fields:
 - **GET /properties/[id]/print**: Print-friendly property page with QR code
 
 ## Authentication & Authorization
-- Supabase Auth (email/password, magic link)
-- Session is available in all server actions via `event.locals.getSession()`
+
+- Supabase Auth (magic link/OTP)
 - Only authenticated users can add/edit/delete their own listings
 - Admins can edit/delete any listing
-- For detailed implementation, refer to: https://supabase.com/docs/guides/auth/server-side/sveltekit
+- For detailed implementation, refer to: <https://supabase.com/docs/guides/auth/server-side/sveltekit>
 
 ## Main User Flows
+
 - **Browse Properties:** Map and list view, filter by type, price, beds, etc.
 - **View Property:** Detail page with all property info, features, photos, contact info
 - **Add Property:** Form with all property fields, photo upload, map picker
@@ -72,35 +80,39 @@ Properties are the core data entity. Main fields:
 - **Print Property:** Print-optimized page with QR code for sharing
 
 ## Svelte Components
+
 - `/src/lib/` contains reusable UI: Badge, Button, Checkbox, Editor, Map, Nav, Notify, Preview, QR, Splash, Uploader, etc.
 - `/src/routes/(app)/` contains main app pages: map, property detail, add/edit/print, about
 - `/src/routes/(app)/properties/` contains property list, add, filter logic
 
 ## Utilities
+
 - `/src/lib/utils/` contains helpers for formatting, validation, local storage, time, etc.
 - `/src/lib/db.js` sets up Supabase client and user store
 
 ## Data Usage
+
 - All property data is stored in Supabase tables: `properties`, `properties_preview`, `photos`
 - Filtering and sorting is done client-side and server-side
 - Photos are stored as URLs (potentially in a separate `photos` table)
 
 ## External Services
+
 - Supabase (DB, Auth)
 - Google Analytics (gtag.js)
 
 ## Configuration
+
 - Environment variables for Supabase URL and anon key
 - SvelteKit config for Vite, adapters, etc.
 
 ## Deployment
+
 - Deployed to Vercel
 - Static assets in `/static/`
 
-## Issues Addressed
-- **`HierarchyRequestError` on Property Detail Page:** Fixed an issue where a `div`-based `Badge` component was incorrectly placed inside a `<p>` tag, which is invalid HTML. Corrected the parent element to a `div` and updated the corresponding CSS (`p.features` -> `.features`) in `src/routes/(app)/[id=uuid]/+page.svelte`. (2025-07-04)
-
 ## Notes for Rebuild
+
 - All property CRUD is via SvelteKit server actions using Supabase
 - Auth is required for all property modifications
 - Map and photo features are important for UX

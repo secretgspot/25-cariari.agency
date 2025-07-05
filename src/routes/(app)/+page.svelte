@@ -33,18 +33,13 @@
 </svelte:head>
 
 <!-- <JsonDump name="data" {data} /> -->
-
-{#if loading}
-	<Splash />
-{/if}
-<!-- {:else} -->
 {#if !navigating.complete && !loading}
 	<LogoSvg animate={true} kind="gold" fixed="fixed" />
 {/if}
 
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
-		<Nav supabase={data.supabase} session={data.session.session} url={page.url} />
+		<Nav supabase={data.supabase} is_logged_in={data.is_logged_in} url={page.url} />
 		<Map markers={data.properties} on:selected={(e) => (selectedProperty = e.detail)} />
 	</section>
 

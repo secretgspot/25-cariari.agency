@@ -128,10 +128,10 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav url={page.url} />
+	<Nav url={page.url} is_logged_in={data.is_logged_in} />
 {/if}
 
-{#if !data.logged_in}
+{#if !data.is_logged_in}
 	<Login supabase={data.supabase} />
 {:else}
 	{isEmpty(data.property.property_for)}
