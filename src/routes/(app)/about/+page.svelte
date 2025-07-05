@@ -1,5 +1,5 @@
 <script>
-	import { navigating } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
@@ -12,7 +12,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav />
+	<Nav url={page.url} />
 {/if}
 
 <article>

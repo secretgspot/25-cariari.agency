@@ -5,13 +5,13 @@ import { redirect, error, fail } from '@sveltejs/kit';
 export async function load(event) {
 	const session = await event.locals.getSession();
 
-	if (!session) {
+	if (!session.session) {
 		// throw redirect(303, '/login');
 		console.log('(app)/+layout.server 👓 no session');
 	}
 
 	/////// SANITY CHECK ////////
-	if (session) {
+	if (session.session) {
 		console.log('(app)/+layout.server 🎈 session detected');
 		console.log('logged in:', session.is_logged_in);
 		console.log('isAdmin:', session.is_admin);

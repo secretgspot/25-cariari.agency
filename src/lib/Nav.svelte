@@ -1,38 +1,26 @@
 <script>
-	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/state';
+	import { LinkButton } from '$lib/buttons';
 
-	import { LinkButton, Button } from '$lib/buttons';
-
-	/** @type {{supabase: any, sticky?: boolean, basic?: boolean}} */
-	let { session, supabase, sticky = false, basic = false, ...rest } = $props();
+	/** @type {{ session: any; sticky?: boolean; basic?: boolean; url: any; }} */
+	let { session, sticky = false, basic = false, url, ...rest } = $props();
 
 	let open = $state(false);
-
-	let url = $derived(page.url.pathname);
-
-	async function handleSignOut() {
-		localStorage.clear();
-		const { error } = await supabase.auth.signOut();
-		if (error) {
-			console.error('Error signing out:', error.message);
-		} else {
-			console.log('User signed out successfully');
-		}
-		goto('/');
-	}
 </script>
 
 <!-- {JSON.stringify(session, null, 2)} -->
 
 <nav class:sticky class:basic class:open {...rest}>
 	<div class="icon">
-		<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 485 485"
-			><path
+		<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 485 485">
+			<path
 				fill="currentColor"
-				d="M352.5 207.5a35 35 0 1 0 0 70 35 35 0 0 0 0-70zm-220 0a35 35 0 1 0 0 70 35 35 0 0 0 0-70zm110 0a35 35 0 1 0 0 70 35 35 0 0 0 0-70z" /><path
+				d="M352.5 207.5a35 35 0 1 0 0 70 35 35 0 0 0 0-70zm-220 0a35 35 0 1 0 0 70 35 35 0 0 0 0-70zm110 0a35 35 0 1 0 0 70 35 35 0 0 0 0-70z"
+			/>
+			<path
 				fill="currentColor"
-				d="M414 71C368.2 25.2 307.3 0 242.5 0S116.8 25.2 71 71 0 177.7 0 242.5 25.2 368.2 71 414s106.7 71 171.5 71 125.7-25.2 171.5-71 71-106.7 71-171.5S459.8 116.8 414 71zM242.5 455C125.3 455 30 359.7 30 242.5S125.3 30 242.5 30 455 125.3 455 242.5 359.7 455 242.5 455z" /></svg>
+				d="M414 71C368.2 25.2 307.3 0 242.5 0S116.8 25.2 71 71 0 177.7 0 242.5 25.2 368.2 71 414s106.7 71 171.5 71 125.7-25.2 171.5-71 71-106.7 71-171.5S459.8 116.8 414 71zM242.5 455C125.3 455 30 359.7 30 242.5S125.3 30 242.5 30 455 125.3 455 242.5 359.7 455 242.5 455z"
+			/>
+		</svg>
 	</div>
 	<div class="wrapper">
 		{#if url != '/'}
@@ -49,19 +37,24 @@
 		{/if}
 		{#if session}
 			<li>
-				<LinkButton onclick={handleSignOut}
-					><svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 512 512"
-						style="height: 17px;"
-						><path
-							fill="none"
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="32"
-							d="M304 336v40a40 40 0 0 1-40 40H104a40 40 0 0 1-40-40V136a40 40 0 0 1 40-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256" /></svg
-					></LinkButton>
+				<form action="/logout" method="post">
+					<LinkButton>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 512 512"
+							style="height: 17px;"
+						>
+							<path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="32"
+								d="M304 336v40a40 40 0 0 1-40 40H104a40 40 0 0 1-40-40V136a40 40 0 0 1 40-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256"
+							/>
+						</svg>
+					</LinkButton>
+				</form>
 			</li>
 		{/if}
 	</div>

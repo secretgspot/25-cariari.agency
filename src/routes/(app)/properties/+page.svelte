@@ -90,7 +90,7 @@
 				<!-- {#if isAdmin}
 				<Button href="/property">Add new</Button>
 				{/if} -->
-				<Nav basic />
+				<Nav basic url={page.url} />
 			</div>
 
 			<Filter bind:filter />

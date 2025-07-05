@@ -111,7 +111,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav />
+	<Nav url={page.url} />
 {/if}
 
 {#if !page.data?.logged_in}
