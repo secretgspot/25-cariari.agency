@@ -10,7 +10,7 @@
 	/** @type {{children?: import('svelte').Snippet}} */
 	let { children, data } = $props();
 
-	console.log('Layout data:', data);
+	console.log('routes+layout.svelte data:', data);
 
 	onMount(() => {
 		const {

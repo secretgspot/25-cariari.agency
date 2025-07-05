@@ -1,11 +1,11 @@
 <script>
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	
+
 	import { LinkButton, Button } from '$lib/buttons';
 
 	/** @type {{supabase: any, sticky?: boolean, basic?: boolean}} */
-	let { supabase, sticky = false, basic = false, ...rest } = $props();
+	let { session, supabase, sticky = false, basic = false, ...rest } = $props();
 
 	let open = $state(false);
 
@@ -18,6 +18,8 @@
 		goto('/');
 	}
 </script>
+
+<!-- {JSON.stringify(session, null, 2)} -->
 
 <nav class:sticky class:basic class:open {...rest}>
 	<div class="icon">
@@ -41,7 +43,7 @@
 		{#if url != '/about'}
 			<li><LinkButton href="/about">About</LinkButton></li>
 		{/if}
-		{#if page.data.session}
+		{#if session}
 			<li>
 				<LinkButton onclick={handleSignOut}
 					><svg

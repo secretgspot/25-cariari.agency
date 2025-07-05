@@ -44,7 +44,7 @@
 
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
-		<Nav />
+		<Nav supabase={data.supabase} session={data.session.session} />
 		<Map markers={data.properties} on:selected={(e) => (selectedProperty = e.detail)} />
 	</section>
 
