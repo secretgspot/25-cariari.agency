@@ -42,7 +42,12 @@ export async function handle({ event, resolve }) {
 			// JWT validation has failed
 			return { session: null, user: null }
 		}
-		return { session, user }
+		return {
+			session,
+			user,
+			is_admin: user?.app_metadata?.claims_admin || false,
+			is_logged_in: !!session,
+		}
 	}
 
 	return resolve(event, {

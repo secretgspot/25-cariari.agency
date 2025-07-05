@@ -132,7 +132,7 @@
 {/if}
 
 {#if !data.logged_in}
-	<Login />
+	<Login supabase={data.supabase} />
 {:else}
 	{isEmpty(data.property.property_for)}
 	<form
@@ -521,7 +521,7 @@
 				<fieldset class="photos">
 					<legend>Photos</legend>
 
-					<Uploader bind:attachments={data.property.photos} msl={data.property.msl} />
+					<!-- <Uploader bind:attachments={data.property.photos} msl={data.property.msl} /> -->
 
 					<!-- <div class="photo-list">
 					{#each data.property.photos || [] as photo, i}

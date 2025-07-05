@@ -12,6 +12,8 @@ export async function load(event) {
 	// 	throw redirect(303, '/login');
 	// }
 
+	console.log('(app)/[id=uuid]/edit/+page.server.js load -> session:', session);
+
 	if (session?.user.app_metadata.claims_admin) {
 		console.log('edit 🌟');
 	}
@@ -30,7 +32,7 @@ export async function load(event) {
 
 	return {
 		property,
-		logged_in: session,
+		logged_in: session.session,
 	};
 }
 
