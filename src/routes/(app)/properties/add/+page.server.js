@@ -25,10 +25,10 @@ export async function load(event) {
 			.single();
 		if (err) error(400, `💩 ${err.message}`);
 		if (data) {
-			console.log('🐍 LAST MSL DIGIT', data.msl);
+			// console.log('🐍 LAST MSL DIGIT', data.msl);
 			return `CR-${pad(Number(data.msl.substring(3)) + 1, 3)}`;
 		} else {
-			console.log('🐍 LAST MSL DIGIT NOT FOUND');
+			// console.log('🐍 LAST MSL DIGIT NOT FOUND');
 			return 'CR-001';
 		}
 	}
@@ -84,30 +84,30 @@ export const actions = {
 			contact_realtor: formData.get('contact_realtor'),
 		}
 
-		// console.log('/properties/add/+page.server.js action -> add: ', property);
+		console.log('/properties/add/+page.server.js action -> add: ', property);
 
 		// push it to the server
-		const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
-		if (resErr) {
-			if (resErr instanceof AuthApiError && resErr.status === 400) {
-				return fail(400, {
-					error: true,
-					message: `Unable to add property, ${resErr.message}`,
-					property,
-				});
-			}
-			return fail(500, {
-				error: true,
-				message: `Unable to add property, ${resErr.message}`,
-				property,
-			});
-		}
+		// const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
+		// if (resErr) {
+		// 	if (resErr instanceof AuthApiError && resErr.status === 400) {
+		// 		return fail(400, {
+		// 			error: true,
+		// 			message: `Unable to add property, ${resErr.message}`,
+		// 			property,
+		// 		});
+		// 	}
+		// 	return fail(500, {
+		// 		error: true,
+		// 		message: `Unable to add property, ${resErr.message}`,
+		// 		property,
+		// 	});
+		// }
 
-		return {
-			success: true,
-			property_id: resData.id,
-			message: `Property ${resData.msl} added successfully!`
-		}
+		// return {
+		// 	success: true,
+		// 	property_id: resData.id,
+		// 	message: `Property ${resData.msl} added successfully!`
+		// }
 
 	},
 }

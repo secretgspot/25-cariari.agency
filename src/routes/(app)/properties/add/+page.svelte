@@ -90,6 +90,7 @@
 		class="add-property"
 		method="POST"
 		action="?/add"
+		enctype="multipart/form-data"
 		use:enhance={({ form, data, action, cancel }) => {
 			// 'form' is the '<form>' element
 			// 'data' is it's 'FormData' object
@@ -104,7 +105,8 @@
 
 			if (isEmpty(property.property_for)) {
 				cancel();
-				error = 'Must select at least one for PROPERTY FOR in Property Type section';
+				error =
+					'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
 				loading = false;
 			}
 
@@ -381,25 +383,29 @@
 			</div>
 
 			<div class="inputs">
-				<fieldset>
-					<legend>Price $</legend>
-					<input
-						type="number"
-						name="price"
-						placeholder="ex: 630000"
-						min="0"
-						bind:value={property.price} />
-				</fieldset>
+				{#if property.property_for.includes('Sale')}
+					<fieldset>
+						<legend>Price $</legend>
+						<input
+							type="number"
+							name="price"
+							placeholder="ex: 630000"
+							min="0"
+							bind:value={property.price} />
+					</fieldset>
+				{/if}
 
-				<fieldset>
-					<legend>Rent ($/month)</legend>
-					<input
-						type="number"
-						name="rent"
-						placeholder="ex: 1800"
-						min="0"
-						bind:value={property.rent} />
-				</fieldset>
+				{#if property.property_for.includes('Rent')}
+					<fieldset>
+						<legend>Rent ($/month)</legend>
+						<input
+							type="number"
+							name="rent"
+							placeholder="ex: 1800"
+							min="0"
+							bind:value={property.rent} />
+					</fieldset>
+				{/if}
 
 				<fieldset>
 					<legend>Taxes ($/year)</legend>
