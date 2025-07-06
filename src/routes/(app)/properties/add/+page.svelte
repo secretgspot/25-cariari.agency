@@ -110,12 +110,12 @@
 </svelte:head>
 
 {#if !navigating.complete}
-	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
+	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
 	<Nav />
 {/if}
 
 {#if !page.data?.is_logged_in}
-	<Login supabase={page.data.supabase} />
+	<Login />
 {:else}
 	<form
 		class="add-property"

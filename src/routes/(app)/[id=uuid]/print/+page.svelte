@@ -17,8 +17,8 @@
 </svelte:head>
 
 {#if !navigating.complete}
-	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
-	<Nav />
+	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
+	<Nav fixed />
 {/if}
 
 <article class="print-property">

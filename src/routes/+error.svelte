@@ -1,8 +1,8 @@
 <script>
-	import { page } from "$app/state";
-	import Notify from "$lib/Notify.svelte";
-	import ErrorImage from "$lib/ErrorImage.svelte";
-	import { Button } from "$lib/buttons";
+	import { page } from '$app/state';
+	import Notify from '$lib/Notify.svelte';
+	import ErrorImage from '$lib/ErrorImage.svelte';
+	import { Button } from '$lib/buttons';
 </script>
 
 <main>
@@ -11,13 +11,13 @@
 	{#if page.status == 401 || page.status == 404 || page.status == 500}
 		<Button shadow right href="/" alt="Home">
 			{#snippet icon()}
-						🎈
-					{/snippet}
+				🎈
+			{/snippet}
 			Return to homepage
 		</Button>
 	{/if}
 </main>
-<ErrorImage type={page.status || "empty"} />
+<ErrorImage type={page.status || 'empty'} />
 
 <style>
 	main {

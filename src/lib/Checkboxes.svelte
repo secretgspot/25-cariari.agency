@@ -1,7 +1,10 @@
 <script>
-
 	/** @type {{selected?: any, disabled?: boolean, options?: any}} */
-	let { selected = $bindable([]), disabled = false, options = ["Sale", "Rent", "Investment"] } = $props();
+	let {
+		selected = $bindable([]),
+		disabled = false,
+		options = ['Sale', 'Rent'],
+	} = $props();
 </script>
 
 {#each options as option, indx}
@@ -12,8 +15,7 @@
 			name={option}
 			value={option}
 			bind:group={selected}
-			{disabled}
-		/>
+			{disabled} />
 		<label for={option}>{option}</label>
 	</div>
 {:else}
@@ -22,11 +24,11 @@
 
 <style>
 	/* checkbox-circle */
-	.checkbox-circle input[type="checkbox"] {
+	.checkbox-circle input[type='checkbox'] {
 		display: none;
 	}
 
-	.checkbox-circle input[type="checkbox"] + label {
+	.checkbox-circle input[type='checkbox'] + label {
 		display: block;
 		position: relative;
 		padding-left: var(--padding-medium);
@@ -35,23 +37,23 @@
 		user-select: none;
 	}
 
-	.checkbox-circle input[type="checkbox"]:hover + label:hover {
+	.checkbox-circle input[type='checkbox']:hover + label:hover {
 		color: var(--secondary-content);
 	}
 
-	.checkbox-circle input[type="checkbox"]:hover + label:before {
+	.checkbox-circle input[type='checkbox']:hover + label:before {
 		border: var(--border);
 		width: 1.3em;
 		height: 1.3em;
 		border: 1px solid var(--accent);
 	}
 
-	.checkbox-circle input[type="checkbox"] + label:last-child {
+	.checkbox-circle input[type='checkbox'] + label:last-child {
 		margin-bottom: 0;
 	}
 
-	.checkbox-circle input[type="checkbox"] + label:before {
-		content: "";
+	.checkbox-circle input[type='checkbox'] + label:before {
+		content: '';
 		display: block;
 		width: 1.4em;
 		height: 1.4em;
@@ -64,7 +66,7 @@
 		transform: translateY(-50%);
 	}
 
-	.checkbox-circle input[type="checkbox"]:checked + label:before {
+	.checkbox-circle input[type='checkbox']:checked + label:before {
 		border-radius: 50%;
 		border: 1px solid var(--accent);
 		width: 1.3em;

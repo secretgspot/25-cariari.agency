@@ -1,10 +1,11 @@
 <script>
-	/** @type {{type?: string, color?: string, size?: string, fixed?: string}} */
-	let { type = 'regular', color = 'gold', size = '36', fixed = '', ...rest } = $props();
+	/** @type {{type?: string, color?: string, size?: number, fixed?: boolean}} */
+	let { type = 'regular', color = 'gold', size = 36, fixed = false, ...rest } = $props();
 </script>
 
 <img
-	class="logo {fixed} {color}"
+	class:fixed
+	class="logo {color}"
 	src="/logo/logo_{type}_{color}.svg"
 	width={size}
 	alt="CR logo"

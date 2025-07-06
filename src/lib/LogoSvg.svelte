@@ -1,11 +1,11 @@
 <script>
-	/** @type {{animate?: boolean, ring?: boolean, kind?: string, size?: string, fixed?: string, time?: number, invert?: boolean}} */
+	/** @type {{animate?: boolean, ring?: boolean, kind?: string, size?: number, fixed?: boolean, time?: number, invert?: boolean}} */
 	let {
 		animate = false,
 		ring = true,
 		kind = 'gold',
-		size = '36',
-		fixed = '',
+		size = 36,
+		fixed = false,
 		time = 9,
 		invert = false,
 		...rest
@@ -13,7 +13,8 @@
 </script>
 
 <svg
-	class="logo {fixed}"
+	class="logo"
+	class:fixed
 	class:invert
 	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"

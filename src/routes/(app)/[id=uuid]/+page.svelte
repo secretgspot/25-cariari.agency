@@ -1,29 +1,19 @@
 <script>
 	/** @type {import('./$types').PageData} */
 	import { navigating, page } from '$app/state';
-	import { base } from '$app/paths';
 	import { goto, afterNavigate } from '$app/navigation';
 	import LogoSvg from '$lib/LogoSvg.svelte';
-	import { Button } from '$lib/buttons';
 	import Badge from '$lib/Badge.svelte';
 	import Icon from '$lib/Icon.svelte';
 	import Ad from '$lib/Ad.svelte';
 	import MapStatic from '$lib/map/MapStatic.svelte';
 	import { formatter, ago } from '$lib/utils/helpers.js';
+	import Nav from '$lib/Nav.svelte';
 	// import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any}} */
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/+page.svelte data:', data);
-
-	let previousPage = $state(base);
-
-	afterNavigate(({ from }) => {
-		previousPage = from?.url.pathname == undefined ? '/' : from?.url.pathname;
-		// console.log("pathname page: ", from?.url.pathname);
-	});
-
-	// $: console.log("previous page: ", previousPage);
 </script>
 
 <svelte:head>
@@ -32,39 +22,11 @@
 
 <!-- <JsonDump name="data" {data} /> -->
 {#if !navigating.complete}
-	<LogoSvg
-		animate={true}
-		invert={true}
-		kind="gold"
-		fixed="fixed"
-		onclick={() => goto('/')} />
+	<LogoSvg animate={true} invert={true} kind="gold" fixed onclick={() => goto('/')} />
+	<Nav fixed />
 {/if}
 
 <article>
-	<Button size="icon" class="close" onclick={() => goto(previousPage)}>
-		{#snippet icon()}
-			<svg
-				width="24px"
-				height="24px"
-				stroke-width="1.5"
-				viewBox="0 0 24 24"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				color="currentColor"
-				><path
-					d="M10.25 4.75l-3.5 3.5 3.5 3.5"
-					stroke="currentColor"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round" /><path
-					d="M6.75 8.25h6a4 4 0 014 4v7"
-					stroke="currentColor"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round" /></svg>
-		{/snippet}
-	</Button>
-
 	{#if !data.property.is_active}
 		<div class="delisted">NOT LISTED</div>
 	{/if}

@@ -44,19 +44,49 @@
 
 	async function getPosition() {
 		if (navigator.geolocation) {
+			const optionsHighAccuracy = {
+				enableHighAccuracy: true,
+				timeout: 5000,
+				maximumAge: 0,
+			};
+			const optionsLowAccuracy = {
+				enableHighAccuracy: false,
+				timeout: 5000,
+				maximumAge: 0,
+			};
+
+			// Try with high accuracy first
 			navigator.geolocation.getCurrentPosition(
 				(pos) => {
-					// console.log("📍", pos);
+					console.log('📍 High Accuracy:', pos);
 					data.property.location.lat = pos.coords.latitude;
 					data.property.location.lng = pos.coords.longitude;
-					gps(pos.coords); // update position inside MapPicker
+					gps(pos.coords);
 				},
-				(err) => console.warn('💩', err),
-				{ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 },
+				(err) => {
+					console.warn('💩 High Accuracy Error:', err);
+					if (err.code === err.POSITION_UNAVAILABLE || err.code === err.TIMEOUT) {
+						console.log('Retrying with low accuracy...');
+						// If high accuracy fails, try with low accuracy
+						navigator.geolocation.getCurrentPosition(
+							(pos) => {
+								console.log('📍 Low Accuracy:', pos);
+								data.property.location.lat = pos.coords.latitude;
+								data.property.location.lng = pos.coords.longitude;
+								gps(pos.coords);
+							},
+							(errLow) => console.warn('💩 Low Accuracy Error:', errLow),
+							optionsLowAccuracy,
+						);
+					} else {
+						// Handle other errors like PERMISSION_DENIED
+						console.log('Geolocation Error:', err.message);
+					}
+				},
+				optionsHighAccuracy,
 			);
 		} else {
-			// Browser doesn't support Geolocation
-			console.log('YOUR BROWSER DOESN"T SUPPORT NAVIGATION');
+			console.log('YOUR BROWSER DOESN"T SUPPORT GEOLOCATION'); // Corrected typo
 		}
 	}
 
@@ -127,14 +157,13 @@
 </svelte:head>
 
 {#if !navigating.complete}
-	<Logo type="regular" color="bw" fixed="fixed" onclick={() => goto('/')} />
+	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
 	<Nav />
 {/if}
 
 {#if !data.is_logged_in}
-	<Login supabase={data.supabase} />
+	<Login />
 {:else}
-	{isEmpty(data.property.property_for)}
 	<form
 		class="edit-property"
 		method="POST"

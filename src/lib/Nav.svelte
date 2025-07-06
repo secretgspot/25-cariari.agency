@@ -2,16 +2,16 @@
 	import { page } from '$app/state';
 	import { LinkButton } from '$lib/buttons';
 
-	/** @type {{ is_logged_in: boolean; sticky?: boolean; basic?: boolean; url: any; }} */
-	let { sticky = false, basic = false, url, ...rest } = $props();
-	// console.log('Nav props', { page, sticky, basic, url, ...rest });
+	/** @type {{ is_logged_in: boolean; fixed?: boolean; basic?: boolean; url: any; }} */
+	let { fixed = false, basic = false, url, ...rest } = $props();
+	// console.log('Nav props', { page, fixed, basic, url, ...rest });
 
 	let open = $state(false);
 </script>
 
 <!-- {JSON.stringify(is_logged_in, null, 2)} -->
 
-<nav class:sticky class:basic class:open {...rest}>
+<nav class:fixed class:basic class:open {...rest}>
 	<div class="icon">
 		<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 485 485">
 			<path
@@ -90,9 +90,8 @@
 		padding: var(--padding-extra-small);
 		border-radius: var(--border-radius);
 	}
-	.sticky {
-		position: sticky;
-		top: 0;
+	.fixed {
+		position: fixed;
 	}
 	.basic {
 		position: static;

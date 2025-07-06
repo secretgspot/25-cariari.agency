@@ -10,10 +10,10 @@
 	let { session, is_logged_in, is_admin, supabase } = $state(data);
 	let loading = $state(true); // Add a local loading state
 
-	$effect(() => {
-		console.log('is_logged_in:', is_logged_in ? '👍' : '👎');
-		console.log('is_admin:', is_admin);
-	});
+	// $effect(() => {
+	// 	console.log('🛑 is_logged_in:', is_logged_in ? '👍' : '👎');
+	// 	console.log('🛑 is_admin:', is_admin ? '👍' : '👎');
+	// });
 
 	onMount(() => {
 		// Set loading to false once the component mounts and session data is available

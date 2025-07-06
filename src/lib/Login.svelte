@@ -1,11 +1,9 @@
 <script>
-			import { page } from '$app/state';
+	import { page } from '$app/state';
 	import { goto, invalidateAll } from '$app/navigation';
-	
 	import Text from '$lib/Text.svelte';
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/helpers.js';
-	
 
 	let error = $state(''),
 		message = $state(''),
@@ -46,11 +44,12 @@
 		message = '';
 		loading = true;
 
-		const { data: verifyData, error: verifyError } = await page.data.supabase.auth.verifyOtp({
-			email,
-			token,
-			type: 'magiclink',
-		});
+		const { data: verifyData, error: verifyError } =
+			await page.data.supabase.auth.verifyOtp({
+				email,
+				token,
+				type: 'magiclink',
+			});
 
 		if (verifyError) {
 			view = 'magic';
