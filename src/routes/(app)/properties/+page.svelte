@@ -1,6 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Cannot bind to derived state -->
 <script>
-	/** @type {import('./$types').PageData} */
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import JsonDump from '$lib/JSONDump.svelte';
@@ -9,38 +7,35 @@
 	import Filter from './Filter.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
+	import { filterStore } from './filter-store.js';
 
-	/** @type {{data: any, supabase: any}} */
+	/** @type {import('./$types').PageData} */
 	let { data } = $props();
 
-	let filter = $derived((filter && filterArray(data.properties, filters)) || []);
 	let view_style = $state('grid');
 
-	const filters = {
-		is_active: (is_active) => is_active == filter.active,
-		land_use: (land_use) => land_use == filter.filter_type,
+	const filterFunctions = {
+		is_active: (is_active) => is_active == $filterStore.active,
+		land_use: (land_use) => land_use == $filterStore.filter_type,
 		property_for: (property_for) =>
-			property_for.find((x) => filter.filter_for.includes(x)),
-		rent: (rent) => rent <= filter.rent,
-		price: (price) => price <= filter.price,
-		beds: (beds) => beds <= filter.beds,
-		baths: (baths) => baths <= filter.baths,
-		rooms: (rooms) => rooms <= filter.rooms,
-		msl: (msl) => msl.includes(filter.msl),
+			property_for.find((x) => $filterStore.filter_for.includes(x)),
+		rent: (rent) => rent <= $filterStore.rent,
+		price: (price) => price <= $filterStore.price,
+		beds: (beds) => beds <= $filterStore.beds,
+		baths: (baths) => baths <= $filterStore.baths,
+		rooms: (rooms) => rooms <= $filterStore.rooms,
+		msl: (msl) => msl.includes($filterStore.msl),
 	};
 
-	function filterArray(array, filters) {
-		const filterKeys = Object.keys(filters);
-		return array.filter((item) => {
-			// validates all filter criteria
-			return filterKeys.every((key) => {
-				if (typeof filters[key] !== 'function') return true; // ignores non-function predicates
-				if (!filters[key].length) return true; // passing an empty filter means that filter is ignored.
-				// console.log("🎈", filters[key](item[key]));
-				return filters[key](item[key]);
+	let filtered = $derived(
+		data.properties.filter((item) => {
+			return Object.keys(filterFunctions).every((key) => {
+				const filter = filterFunctions[key];
+				if (typeof filter !== 'function') return true;
+				return filter(item[key]);
 			});
-		});
-	}
+		}),
+	);
 </script>
 
 <svelte:head>
@@ -93,7 +88,7 @@
 				<Nav basic />
 			</div>
 
-			<Filter bind:filter />
+			<Filter />
 		</div>
 	</aside>
 </main>
@@ -105,15 +100,8 @@
 		grid-template-areas:
 			'properties-filter'
 			'properties-list';
-	}
 
-	@media (min-width: 768px) {
-		/* .filter-wrapper {
-			height: 100vh;
-			display: grid;
-			position: relative;
-		} */
-		main {
+		@media (min-width: 768px) {
 			grid-template-areas:
 				'properties-list'
 				'properties-filter';
@@ -192,49 +180,51 @@
 		justify-items: center;
 		/* margin: 0 var(--padding-small); */
 		padding: var(--padding-small);
-	}
-	@media (min-width: 720px) {
-		.filters-menu {
+
+		@media (min-width: 720px) {
 			grid-template-columns: repeat(3, 1fr);
 		}
-	}
-	.filters-menu h3 {
-		white-space: nowrap;
-		margin: 0;
-		justify-self: end;
-	}
-	.view_type {
-		display: none;
-	}
-	@media (min-width: 720px) {
-		.filters-menu h3 {
-			justify-self: auto;
+
+		h3 {
+			white-space: nowrap;
+			margin: 0;
+			justify-self: end;
+
+			@media (min-width: 720px) {
+				justify-self: auto;
+			}
 		}
-		.view_type {
-			display: flex;
-		}
-	}
-	.view_type label {
-		border: var(--border);
-		padding: var(--padding-extra-small);
-		border-radius: var(--border-radius);
-		box-shadow: var(--shadow);
-		cursor: pointer;
 	}
 
-	.view_type label:not(:first-of-type) {
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-	}
-	.view_type label:not(:last-of-type) {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-	}
-	.view_type input[type='radio'] {
+	.view_type {
 		display: none;
-	}
-	.view_type label:has(input[type='radio']:checked) {
-		border: 1px solid var(--accent);
-		box-shadow: inset 0px 0px 0 3px var(--success);
+		@media (min-width: 720px) {
+			display: flex;
+		}
+
+		label {
+			border: var(--border);
+			padding: var(--padding-extra-small);
+			border-radius: var(--border-radius);
+			box-shadow: var(--shadow);
+			cursor: pointer;
+
+			&:not(:first-of-type) {
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+			&:not(:last-of-type) {
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+			}
+			&:has(input[type='radio']:checked) {
+				border: 1px solid var(--accent);
+				box-shadow: inset 0px 0px 0 3px var(--success);
+			}
+		}
+
+		input[type='radio'] {
+			display: none;
+		}
 	}
 </style>

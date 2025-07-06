@@ -1,7 +1,6 @@
-/** @type {import('./$types').LayoutServerLoad} */
+
 import { redirect, error, fail } from '@sveltejs/kit';
 import { AuthApiError } from '@supabase/supabase-js';
-
 
 export async function load(event) {
 
@@ -21,6 +20,6 @@ export async function load(event) {
 	}
 
 	return {
-		properties: getProperties(),
+		properties: await getProperties(),
 	};
 };

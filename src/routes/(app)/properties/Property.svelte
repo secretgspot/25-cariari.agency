@@ -26,7 +26,7 @@
 				loading="lazy"
 				intrinsicsize="281x222" />
 		{/if}
-</LinkButton>
+	</LinkButton>
 
 	<div class="property-header">
 		<div class="land_use">
@@ -148,7 +148,7 @@
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> IMAGE */
-	.property-image {
+	:global(.property-image) {
 		grid-area: property-image;
 		display: flex;
 		flex-direction: column;
@@ -159,7 +159,7 @@
 		filter: brightness(var(--brightness));
 		cursor: pointer;
 	}
-	.property-image img {
+	:global(.property-image) img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
