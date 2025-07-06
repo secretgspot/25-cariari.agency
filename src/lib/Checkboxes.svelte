@@ -1,7 +1,7 @@
 <script>
 	/** @type {{selected?: any, disabled?: boolean, options?: any, kind?: string}} */
 	let {
-		selected = $bindable(['Sale']),
+		selected = $bindable(),
 		disabled = false,
 		options = ['Sale', 'Rent'],
 		kind = 'square',

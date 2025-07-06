@@ -11,6 +11,7 @@
 	import MapPicker from '$lib/map/MapPicker.svelte';
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
+	import Select from '$lib/Select.svelte';
 	import { confetti } from '@neoconfetti/svelte';
 	// import { storable } from '$lib/utils/storable.js';
 	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
@@ -164,11 +165,7 @@
 
 				<fieldset>
 					<legend>Land Use</legend>
-					<select name="land_use" bind:value={property.land_use}>
-						<option>Residential</option>
-						<option>Commercial</option>
-						<option>Industrial</option>
-					</select>
+					<Select name="land_use" bind:selected={property.land_use} />
 				</fieldset>
 
 				<fieldset class="flow">
@@ -579,7 +576,7 @@
 	fieldset input[type='email'],
 	fieldset input[type='number'],
 	fieldset input[type='tel'],
-	fieldset select,
+	fieldset :global(select),
 	fieldset textarea {
 		display: block;
 		padding: var(--padding-small);
@@ -588,35 +585,6 @@
 		border-radius: var(--border-radius);
 		width: 100%;
 		background: transparent;
-	}
-	fieldset select,
-	::picker(select) {
-		appearance: base-select;
-	}
-
-	fieldset select {
-		&:open::picker-icon {
-			rotate: 180deg;
-		}
-		option {
-			display: flex;
-			justify-content: flex-start;
-			gap: 20px;
-
-			background: var(--primary);
-			padding: var(--padding-small);
-			color: var(--primary-content);
-
-			&:hover,
-			&:focus {
-				background: var(--primary-focus);
-			}
-			&::checkmark {
-				order: 1;
-				margin-left: auto;
-				content: '✔';
-			}
-		}
 	}
 
 	/* fieldset :global(button) {

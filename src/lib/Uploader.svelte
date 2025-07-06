@@ -180,7 +180,7 @@
 		{#each attachments || [] as file (file)}
 			<div class="card" transition:slide={{ duration: 93 }}>
 				<img src={file.file_url} alt={file.name} />
-				{#if page.data.session.user.id == file.user_id}
+				{#if page.data.session.user.id == file.user_id || page.data.is_admin}
 					<div class="file-action">
 						<Button
 							type="button"

@@ -11,6 +11,7 @@
 	import MapPicker from '$lib/map/MapPicker.svelte';
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
+	import Select from '$lib/Select.svelte';
 	import Notify from '$lib/Notify.svelte';
 	// import { confetti } from "@neoconfetti/svelte";
 	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
@@ -20,12 +21,13 @@
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
-	let form = $state(data.property || {});
+	let form = $state(data.property);
+	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', form);
 
 	let loading = $state(false),
 		error = $state(''),
 		message = $state(''),
-		isAdmin = true,
+		isAdmin = data.is_admin || false,
 		gps = $state();
 
 	async function getMsl() {
@@ -37,7 +39,7 @@
 			.single();
 		if (mslErr) error = mslErr.message;
 		if (mslData) {
-			data.property.msl = `CR-${pad(Number(mslData.msl.substring(3)) + 1, 3)}`;
+			form.msl = `CR-${pad(Number(mslData.msl.substring(3)) + 1, 3)}`;
 			console.log('LAST MSL DIGIT', mslData.msl);
 		}
 	}
@@ -79,33 +81,27 @@
 
 	function addFeature(input) {
 		if (input.value == '') return;
-		data.property.features = [...(data.property?.features ?? []), input.value];
+		form.features = [...(form?.features ?? []), input.value];
 		input.value = '';
 	}
 	function removeFeature(index) {
-		data.property.features = [
-			...data.property.features.slice(0, index),
-			...data.property.features.slice(index + 1),
-		];
+		form.features = [...form.features.slice(0, index), ...form.features.slice(index + 1)];
 	}
 
 	function addPhoto(input) {
 		// let valInput = /(https?:\/\/.*\.(?:png|jpg|gif))/i;
 		// if (!valInput.test(input.value)) return;
 		if (input.value == '') return;
-		data.property.photos = [...data.property.photos, input.value];
+		form.photos = [...form.photos, input.value];
 		input.value = '';
 	}
 	function removePhoto(index) {
-		data.property.photos = [
-			...data.property.photos.slice(0, index),
-			...data.property.photos.slice(index + 1),
-		];
+		form.photos = [...form.photos.slice(0, index), ...form.photos.slice(index + 1)];
 	}
 </script>
 
 <svelte:head>
-	<title>Editing {data.property.msl} - Cariari Agency</title>
+	<title>Editing {form.msl} - Cariari Agency</title>
 </svelte:head>
 
 {#if !navigating.complete}
@@ -130,7 +126,7 @@
 			message = '';
 			error = '';
 
-			if (isEmpty(page.data.property.property_for)) {
+			if (isEmpty(form.property_for)) {
 				cancel();
 				error = 'Must select at least one for PROPERTY FOR in Property Type section';
 				loading = false;
@@ -172,35 +168,27 @@
 						<legend>Status</legend>
 						<Toggle
 							name="is_active"
-							bind:checked={data.property.is_active}
-							label={data.property.is_active ? 'Listed' : 'Delisted'} />
+							bind:checked={form.is_active}
+							label={form.is_active ? 'Listed' : 'Delisted'} />
 					</fieldset>
 				{/if}
 
-				<fieldset class={data.property.is_active ? 'active' : 'removed'}>
+				<fieldset class={form.is_active ? 'active' : 'removed'}>
 					<legend>MSL</legend>
-					<input
-						type="text"
-						placeholder="ex: CR-001"
-						bind:value={data.property.msl}
-						disabled />
-					{#if !data.property.msl}
+					<input type="text" placeholder="ex: CR-001" bind:value={form.msl} disabled />
+					{#if !form.msl}
 						<Button type="button" size="block" onclick={getMsl}>Set</Button>
 					{/if}
 				</fieldset>
 
 				<fieldset>
 					<legend>Land Use</legend>
-					<select name="land_use" bind:value={data.property.land_use}>
-						<option>Residential</option>
-						<option>Commercial</option>
-						<option>Industrial</option>
-					</select>
+					<Select name="land_use" bind:selected={form.land_use} />
 				</fieldset>
 
 				<fieldset class="flow">
 					<legend>Property For</legend>
-					<Checkboxes bind:selected={data.property.property_for} kind="square" />
+					<Checkboxes bind:selected={form.property_for} kind="square" />
 				</fieldset>
 			</div>
 		</section>
@@ -222,23 +210,20 @@
 						type="text"
 						name="address"
 						placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
-						bind:value={data.property.address} />
+						bind:value={form.address} />
 				</fieldset>
 
 				<fieldset class="location">
 					<legend>Location (lat, lng)</legend>
-					<input
-						type="text"
-						placeholder="ex: 9.97542"
-						bind:value={data.property.location.lat} />
+					<input type="text" placeholder="ex: 9.97542" bind:value={form.location.lat} />
 					<input
 						type="text"
 						placeholder="ex: -84.163443"
-						bind:value={data.property.location.lng} />
+						bind:value={form.location.lng} />
 					<Button type="button" size="block" onclick={getPosition}
 						>Get current GPS</Button>
 
-					<MapPicker bind:updategps={gps} bind:position={data.property.location} />
+					<MapPicker bind:updategps={gps} bind:position={form.location} />
 				</fieldset>
 			</div>
 		</section>
@@ -249,7 +234,7 @@
 				<h3>Contacts</h3>
 				<p>
 					Email and Phone number of a realtor or person selling the property, usually
-					found on a placard in front of the data.property.
+					found on a placard in front of the property.
 				</p>
 			</div>
 
@@ -260,7 +245,7 @@
 						type="tel"
 						name="contact_phone"
 						placeholder="ex: 1234-5678"
-						bind:value={data.property.contact_phone} />
+						bind:value={form.contact_phone} />
 				</fieldset>
 
 				<fieldset>
@@ -269,7 +254,7 @@
 						type="email"
 						name="contact_email"
 						placeholder="ex: this@that.there"
-						bind:value={data.property.contact_email} />
+						bind:value={form.contact_email} />
 				</fieldset>
 
 				<fieldset>
@@ -278,7 +263,7 @@
 						type="text"
 						name="contact_realtor"
 						placeholder="ex: Re/Max or Jane Doe"
-						bind:value={data.property.contact_realtor} />
+						bind:value={form.contact_realtor} />
 				</fieldset>
 			</div>
 		</section>
@@ -300,7 +285,7 @@
 						type="number"
 						name="year_built"
 						placeholder="ex: 2019"
-						bind:value={data.property.year_built} />
+						bind:value={form.year_built} />
 				</fieldset>
 
 				<fieldset>
@@ -309,7 +294,7 @@
 						type="text"
 						name="building_style"
 						placeholder="ex: 2 Story"
-						bind:value={data.property.building_style} />
+						bind:value={form.building_style} />
 				</fieldset>
 
 				<fieldset>
@@ -318,7 +303,7 @@
 						type="number"
 						name="lot_size"
 						placeholder="ex: 900"
-						bind:value={data.property.lot_size} />
+						bind:value={form.lot_size} />
 				</fieldset>
 
 				<fieldset>
@@ -327,7 +312,7 @@
 						type="number"
 						name="building_size"
 						placeholder="ex: 810"
-						bind:value={data.property.building_size} />
+						bind:value={form.building_size} />
 				</fieldset>
 			</div>
 		</section>
@@ -345,20 +330,12 @@
 			<div class="inputs">
 				<fieldset>
 					<legend>Bedrooms</legend>
-					<input
-						type="number"
-						name="beds"
-						placeholder="ex: 3"
-						bind:value={data.property.beds} />
+					<input type="number" name="beds" placeholder="ex: 3" bind:value={form.beds} />
 				</fieldset>
 
 				<fieldset>
 					<legend>Bathrooms</legend>
-					<input
-						type="number"
-						name="baths"
-						placeholder="ex: 3"
-						bind:value={data.property.baths} />
+					<input type="number" name="baths" placeholder="ex: 3" bind:value={form.baths} />
 				</fieldset>
 
 				<fieldset>
@@ -367,16 +344,12 @@
 						type="number"
 						name="half_baths"
 						placeholder="ex: 2"
-						bind:value={data.property.half_baths} />
+						bind:value={form.half_baths} />
 				</fieldset>
 
 				<fieldset>
 					<legend>Rooms</legend>
-					<input
-						type="number"
-						name="rooms"
-						placeholder="ex: 6"
-						bind:value={data.property.rooms} />
+					<input type="number" name="rooms" placeholder="ex: 6" bind:value={form.rooms} />
 				</fieldset>
 
 				<fieldset>
@@ -385,7 +358,7 @@
 						type="number"
 						name="parking_spaces"
 						placeholder="ex: 9"
-						bind:value={data.property.parking_spaces} />
+						bind:value={form.parking_spaces} />
 				</fieldset>
 			</div>
 		</section>
@@ -407,7 +380,7 @@
 						type="number"
 						name="price"
 						placeholder="ex: 630000"
-						bind:value={data.property.price} />
+						bind:value={form.price} />
 				</fieldset>
 
 				<fieldset>
@@ -416,7 +389,7 @@
 						type="number"
 						name="rent"
 						placeholder="ex: 1800"
-						bind:value={data.property.rent} />
+						bind:value={form.rent} />
 				</fieldset>
 
 				<fieldset>
@@ -425,16 +398,12 @@
 						type="number"
 						name="taxes"
 						placeholder="ex: 1500"
-						bind:value={data.property.taxes} />
+						bind:value={form.taxes} />
 				</fieldset>
 
 				<fieldset>
 					<legend>Fees (condo, asssociation) ($/month)</legend>
-					<input
-						type="number"
-						name="fees"
-						placeholder="ex: 120"
-						bind:value={data.property.fees} />
+					<input type="number" name="fees" placeholder="ex: 120" bind:value={form.fees} />
 				</fieldset>
 			</div>
 		</section>
@@ -460,7 +429,7 @@
 						}}
 						use:enter={addFeature} />
 					<div class="feature-list">
-						{#each data.property.features || [] as feature, i}
+						{#each form.features || [] as feature, i}
 							<span class="feature">
 								<svg
 									class="close"
@@ -496,19 +465,19 @@
 						class="scroller"
 						rows="6"
 						placeholder="Description (max 9 sentences)"
-						bind:value={data.property.description}></textarea>
+						bind:value={form.description}></textarea>
 				</fieldset>
 
 				<fieldset class="photos">
 					<legend>Photos</legend>
-					<Uploader bind:attachments={data.property.photos} msl={data.property.msl} />
+					<Uploader bind:attachments={form.photos} msl={form.msl} />
 				</fieldset>
 			</div>
 		</section>
 
 		<!-- BUTTONS -->
 		<footer class="buttons-group">
-			{#if data.property.is_active && !isAdmin}
+			{#if form.is_active && !isAdmin}
 				<Button formaction="?/remove" color="danger" {loading} disabled={loading}>
 					{#snippet icon()}
 						❌
@@ -530,7 +499,7 @@
 				type="button"
 				disabled={loading}
 				onclick={() => {
-					goto(`/${data.property.id}/print`);
+					goto(`/${form.id}/print`);
 				}}>
 				{#snippet icon()}
 					👁‍🗨
@@ -539,23 +508,15 @@
 			</Button>
 			<!-- {/if} -->
 
-			<input type="hidden" hidden name="id" value={data.property.id} />
-			<input type="hidden" hidden name="msl" value={data.property.msl} />
-			<input
-				type="hidden"
-				hidden
-				name="location"
-				value={JSON.stringify(data.property.location)} />
+			<input type="hidden" hidden name="id" value={form.id} />
+			<input type="hidden" hidden name="msl" value={form.msl} />
+			<input type="hidden" hidden name="location" value={JSON.stringify(form.location)} />
 			<input
 				type="hidden"
 				hidden
 				name="property_for"
-				value={JSON.stringify(data.property.property_for)} />
-			<input
-				type="hidden"
-				hidden
-				name="features"
-				value={JSON.stringify(data.property.features)} />
+				value={JSON.stringify(form.property_for)} />
+			<input type="hidden" hidden name="features" value={JSON.stringify(form.features)} />
 			<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
@@ -609,7 +570,7 @@
 	fieldset input[type='email'],
 	fieldset input[type='number'],
 	fieldset input[type='tel'],
-	fieldset select,
+	fieldset :global(select),
 	fieldset textarea {
 		display: block;
 		padding: var(--padding-small);
