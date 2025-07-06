@@ -169,10 +169,10 @@
 					</select>
 				</fieldset>
 
-				<!-- <fieldset class="flow">
+				<fieldset class="flow">
 					<legend>Property For</legend>
-					<Checkboxes bind:selected={property.property_for} />
-				</fieldset> -->
+					<Checkboxes bind:selected={property.property_for} kind="square" />
+				</fieldset>
 			</div>
 		</section>
 

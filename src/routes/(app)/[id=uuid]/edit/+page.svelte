@@ -200,7 +200,7 @@
 
 				<fieldset class="flow">
 					<legend>Property For</legend>
-					<Checkboxes bind:selected={data.property.property_for} />
+					<Checkboxes bind:selected={data.property.property_for} kind="square" />
 				</fieldset>
 			</div>
 		</section>
