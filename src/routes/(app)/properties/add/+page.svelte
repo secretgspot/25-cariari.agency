@@ -12,8 +12,8 @@
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import { confetti } from '@neoconfetti/svelte';
-	import { storable } from '$lib/utils/storable.js';
-	import { pad, isEmpty } from '$lib/utils/helpers.js';
+	// import { storable } from '$lib/utils/storable.js';
+	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
 	import { onMount } from 'svelte';
 	import { addToast } from '$lib/toasts/store';
@@ -23,40 +23,25 @@
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
 
-	console.log('🐍 ADD PROPERTY PAGE DATA:', data);
-
 	// export let form;
 
 	let loading = $state(false),
 		error = $state(''),
 		message = $state(''),
-		isAdmin = true,
+		isAdmin = data.is_admin,
 		won = $state(false),
 		gps = $state();
 
-	const property = storable({
+	const property = $state({
 		is_active: true,
+		msl: data.msl,
 		location: {},
 		features: [],
 	});
 
-	async function getPosition() {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				(pos) => {
-					// console.log("📍", pos);
-					$property.location.lat = pos.coords.latitude;
-					$property.location.lng = pos.coords.longitude;
-					gps(pos.coords); // update position inside MapPicker
-				},
-				(err) => console.warn('💩', err),
-				{ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 },
-			);
-		} else {
-			// Browser doesn't support Geolocation
-			console.log('YOUR BROWSER DOESN"T SUPPORT NAVIGATION');
-		}
-	}
+	$effect(() => {
+		$inspect('🐍 ADD PROPERTY temp data:', property);
+	});
 
 	// Helper function to allow on Enter events for AddFeature
 	function enter(node, callback) {
@@ -73,13 +58,13 @@
 
 	function addFeature(input) {
 		if (input.value == '') return;
-		$property.features = [...($property?.features ?? []), input.value];
+		property.features = [...(property?.features ?? []), input.value];
 		input.value = '';
 	}
 	function removeFeature(index) {
-		$property.features = [
-			...$property.features.slice(0, index),
-			...$property.features.slice(index + 1),
+		property.features = [
+			...property.features.slice(0, index),
+			...property.features.slice(index + 1),
 		];
 	}
 
@@ -114,7 +99,7 @@
 			message = '';
 			error = '';
 
-			if (isEmpty($property.property_for)) {
+			if (isEmpty(property.property_for)) {
 				cancel();
 				error = 'Must select at least one for PROPERTY FOR in Property Type section';
 				loading = false;
@@ -161,36 +146,33 @@
 						<legend>Status</legend>
 						<Toggle
 							name="is_active"
-							bind:checked={$property.is_active}
-							label={$property.is_active ? 'Listed' : 'Delisted'} />
+							bind:checked={property.is_active}
+							label={property.is_active ? 'Listed' : 'Delisted'} />
 					</fieldset>
 				{/if}
 
-				<fieldset class={$property.is_active ? 'active' : 'removed'}>
+				<fieldset class={property.is_active ? 'active' : 'removed'}>
 					<legend>MSL</legend>
 					<input
 						type="text"
 						placeholder="ex: CR-001"
-						bind:value={$property.msl}
+						bind:value={property.msl}
 						disabled={!isAdmin} />
-					<!-- {#if !property.msl}
-					<Button type="button" size="block" onclick={getMsl}>Set</Button>
-				{/if} -->
 				</fieldset>
 
 				<fieldset>
 					<legend>Land Use</legend>
-					<select name="land_use" bind:value={$property.land_use}>
+					<select name="land_use" bind:value={property.land_use}>
 						<option>Residential</option>
 						<option>Commercial</option>
 						<option>Industrial</option>
 					</select>
 				</fieldset>
 
-				<fieldset class="flow">
+				<!-- <fieldset class="flow">
 					<legend>Property For</legend>
-					<Checkboxes bind:selected={$property.property_for} />
-				</fieldset>
+					<Checkboxes bind:selected={property.property_for} />
+				</fieldset> -->
 			</div>
 		</section>
 
@@ -211,7 +193,7 @@
 						type="text"
 						name="address"
 						placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
-						bind:value={$property.address} />
+						bind:value={property.address} />
 				</fieldset>
 
 				<fieldset class="location">
@@ -219,15 +201,15 @@
 					<input
 						type="text"
 						placeholder="ex: 9.97542"
-						bind:value={$property.location.lat} />
+						bind:value={property.location.lat} />
 					<input
 						type="text"
 						placeholder="ex: -84.163443"
-						bind:value={$property.location.lng} />
+						bind:value={property.location.lng} />
 					<Button type="button" size="block" onclick={getPosition}
 						>Get current GPS</Button>
 
-					<MapPicker bind:updategps={gps} bind:position={$property.location} />
+					<MapPicker bind:updategps={gps} bind:position={property.location} />
 				</fieldset>
 			</div>
 		</section>
@@ -249,7 +231,7 @@
 						type="tel"
 						name="contact_phone"
 						placeholder="ex: 1234-5678"
-						bind:value={$property.contact_phone} />
+						bind:value={property.contact_phone} />
 				</fieldset>
 
 				<fieldset>
@@ -258,7 +240,7 @@
 						type="email"
 						name="contact_email"
 						placeholder="ex: this@that.there"
-						bind:value={$property.contact_email} />
+						bind:value={property.contact_email} />
 				</fieldset>
 
 				<fieldset>
@@ -267,7 +249,7 @@
 						type="text"
 						name="contact_realtor"
 						placeholder="ex: Re/Max or Jane Doe"
-						bind:value={$property.contact_realtor} />
+						bind:value={property.contact_realtor} />
 				</fieldset>
 			</div>
 		</section>
@@ -292,7 +274,7 @@
 						min="1900"
 						max="2099"
 						step="1"
-						bind:value={$property.year_built} />
+						bind:value={property.year_built} />
 				</fieldset>
 
 				<fieldset>
@@ -300,8 +282,8 @@
 					<input
 						type="text"
 						name="building_style"
-						placeholder="ex: 2 Storey"
-						bind:value={$property.building_style} />
+						placeholder="ex: 2 Story"
+						bind:value={property.building_style} />
 				</fieldset>
 
 				<fieldset>
@@ -311,7 +293,7 @@
 						name="lot_size"
 						placeholder="ex: 900"
 						min="0"
-						bind:value={$property.lot_size} />
+						bind:value={property.lot_size} />
 				</fieldset>
 
 				<fieldset>
@@ -321,7 +303,7 @@
 						name="building_size"
 						placeholder="ex: 810"
 						min="0"
-						bind:value={$property.building_size} />
+						bind:value={property.building_size} />
 				</fieldset>
 			</div>
 		</section>
@@ -344,7 +326,7 @@
 						name="beds"
 						placeholder="ex: 3"
 						min="0"
-						bind:value={$property.beds} />
+						bind:value={property.beds} />
 				</fieldset>
 
 				<fieldset>
@@ -354,7 +336,7 @@
 						name="baths"
 						placeholder="ex: 3"
 						min="0"
-						bind:value={$property.baths} />
+						bind:value={property.baths} />
 				</fieldset>
 
 				<fieldset>
@@ -364,7 +346,7 @@
 						name="half_baths"
 						placeholder="ex: 2"
 						min="0"
-						bind:value={$property.half_baths} />
+						bind:value={property.half_baths} />
 				</fieldset>
 
 				<fieldset>
@@ -374,7 +356,7 @@
 						name="rooms"
 						placeholder="ex: 6"
 						min="0"
-						bind:value={$property.rooms} />
+						bind:value={property.rooms} />
 				</fieldset>
 
 				<fieldset>
@@ -384,7 +366,7 @@
 						name="parking_spaces"
 						placeholder="ex: 9"
 						min="0"
-						bind:value={$property.parking_spaces} />
+						bind:value={property.parking_spaces} />
 				</fieldset>
 			</div>
 		</section>
@@ -407,7 +389,7 @@
 						name="price"
 						placeholder="ex: 630000"
 						min="0"
-						bind:value={$property.price} />
+						bind:value={property.price} />
 				</fieldset>
 
 				<fieldset>
@@ -417,7 +399,7 @@
 						name="rent"
 						placeholder="ex: 1800"
 						min="0"
-						bind:value={$property.rent} />
+						bind:value={property.rent} />
 				</fieldset>
 
 				<fieldset>
@@ -427,7 +409,7 @@
 						name="taxes"
 						placeholder="ex: 1500"
 						min="0"
-						bind:value={$property.taxes} />
+						bind:value={property.taxes} />
 				</fieldset>
 
 				<fieldset>
@@ -437,7 +419,7 @@
 						name="fees"
 						placeholder="ex: 120"
 						min="0"
-						bind:value={$property.fees} />
+						bind:value={property.fees} />
 				</fieldset>
 			</div>
 		</section>
@@ -463,7 +445,7 @@
 						}}
 						use:enter={addFeature} />
 					<div class="feature-list">
-						{#each $property.features || [] as feature, i}
+						{#each property.features || [] as feature, i}
 							<span class="feature">
 								<svg
 									class="close"
@@ -499,36 +481,36 @@
 						class="scroller"
 						rows="6"
 						placeholder="Description (max 9 sentences)"
-						bind:value={$property.description}></textarea>
+						bind:value={property.description}></textarea>
 				</fieldset>
 
-				<fieldset class="photos">
+				<!-- <fieldset class="photos">
 					<legend>Photos</legend>
 
-					<Uploader bind:attachments={$property.photos} msl={$property.msl} />
-				</fieldset>
+					<Uploader bind:attachments={property.photos} msl={property.msl} />
+				</fieldset> -->
 			</div>
 		</section>
 
 		<!-- BUTTONS -->
 		<footer class="buttons-group">
 			<input type="hidden" hidden name="user_id" value={page.data?.session?.user.id} />
-			<input type="hidden" hidden name="msl" value={$property.msl} />
+			<input type="hidden" hidden name="msl" value={property.msl} />
 			<input
 				type="hidden"
 				hidden
 				name="location"
-				value={JSON.stringify($property.location)} />
+				value={JSON.stringify(property.location)} />
 			<input
 				type="hidden"
 				hidden
 				name="property_for"
-				value={JSON.stringify($property.property_for)} />
+				value={JSON.stringify(property.property_for)} />
 			<input
 				type="hidden"
 				hidden
 				name="features"
-				value={JSON.stringify($property.features)} />
+				value={JSON.stringify(property.features)} />
 			<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
@@ -605,6 +587,36 @@
 		width: 100%;
 		background: transparent;
 	}
+	fieldset select,
+	::picker(select) {
+		appearance: base-select;
+	}
+
+	fieldset select {
+		&:open::picker-icon {
+			rotate: 180deg;
+		}
+		option {
+			display: flex;
+			justify-content: flex-start;
+			gap: 20px;
+
+			background: var(--primary);
+			padding: var(--padding-small);
+			color: var(--primary-content);
+
+			&:hover,
+			&:focus {
+				background: var(--primary-focus);
+			}
+			&::checkmark {
+				order: 1;
+				margin-left: auto;
+				content: '✔';
+			}
+		}
+	}
+
 	/* fieldset :global(button) {
 		height: auto;
 		width: 100%;
@@ -617,39 +629,39 @@
 		gap: var(--gap-medium);
 		padding: var(--padding-medium);
 		box-shadow: var(--shadow-small);
-	}
-	.section .header p {
-		color: var(--secondary-content);
-	}
-	.section .inputs {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap-small);
-	}
-	.section fieldset {
-		/* border: var(--border); */
-		border-radius: var(--border-radius);
-		border: none;
-		display: grid;
-		gap: var(--gap-small);
-	}
-	.section fieldset.flow {
-		grid-auto-flow: column;
-	}
-	.section legend {
-		text-transform: uppercase;
-		font-size: 0.81rem;
-		color: var(--secondary-content);
-	}
 
-	@media (min-width: 768px) {
-		.section {
+		@media (min-width: 768px) {
 			grid-template-columns: minmax(auto, 270px) minmax(auto, 540px);
 			grid-template-rows: 1fr;
 		}
-		/* .section fieldset {
-			margin: 0 0 2rem;
-		} */
+
+		.header p {
+			color: var(--secondary-content);
+		}
+
+		.inputs {
+			display: flex;
+			flex-direction: column;
+			gap: var(--gap-small);
+		}
+
+		fieldset {
+			/* border: var(--border); */
+			border-radius: var(--border-radius);
+			border: none;
+			display: grid;
+			gap: var(--gap-small);
+
+			&.flow {
+				grid-auto-flow: column;
+			}
+
+			legend {
+				text-transform: uppercase;
+				font-size: 0.81rem;
+				color: var(--secondary-content);
+			}
+		}
 	}
 
 	.section_property_type .active {
@@ -710,15 +722,10 @@
 		justify-items: center;
 		gap: var(--gap-small);
 		padding: var(--padding-small);
-	}
-	@media (min-width: 768px) {
-		footer.buttons-group {
+
+		@media (min-width: 768px) {
 			justify-content: flex-end;
 			grid-template-columns: repeat(3, 1fr);
 		}
-		/* footer.buttons-group :global(button) {
-			flex: 0 1 auto;
-			width: 333px;
-		} */
 	}
 </style>

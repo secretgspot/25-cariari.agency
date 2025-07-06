@@ -13,7 +13,7 @@
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Notify from '$lib/Notify.svelte';
 	// import { confetti } from "@neoconfetti/svelte";
-	import { pad, isEmpty } from '$lib/utils/helpers.js';
+	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
 	import Login from '$lib/Login.svelte';
 
@@ -39,54 +39,6 @@
 		if (mslData) {
 			data.property.msl = `CR-${pad(Number(mslData.msl.substring(3)) + 1, 3)}`;
 			console.log('LAST MSL DIGIT', mslData.msl);
-		}
-	}
-
-	async function getPosition() {
-		if (navigator.geolocation) {
-			const optionsHighAccuracy = {
-				enableHighAccuracy: true,
-				timeout: 5000,
-				maximumAge: 0,
-			};
-			const optionsLowAccuracy = {
-				enableHighAccuracy: false,
-				timeout: 5000,
-				maximumAge: 0,
-			};
-
-			// Try with high accuracy first
-			navigator.geolocation.getCurrentPosition(
-				(pos) => {
-					console.log('📍 High Accuracy:', pos);
-					data.property.location.lat = pos.coords.latitude;
-					data.property.location.lng = pos.coords.longitude;
-					gps(pos.coords);
-				},
-				(err) => {
-					console.warn('💩 High Accuracy Error:', err);
-					if (err.code === err.POSITION_UNAVAILABLE || err.code === err.TIMEOUT) {
-						console.log('Retrying with low accuracy...');
-						// If high accuracy fails, try with low accuracy
-						navigator.geolocation.getCurrentPosition(
-							(pos) => {
-								console.log('📍 Low Accuracy:', pos);
-								data.property.location.lat = pos.coords.latitude;
-								data.property.location.lng = pos.coords.longitude;
-								gps(pos.coords);
-							},
-							(errLow) => console.warn('💩 Low Accuracy Error:', errLow),
-							optionsLowAccuracy,
-						);
-					} else {
-						// Handle other errors like PERMISSION_DENIED
-						console.log('Geolocation Error:', err.message);
-					}
-				},
-				optionsHighAccuracy,
-			);
-		} else {
-			console.log('YOUR BROWSER DOESN"T SUPPORT GEOLOCATION'); // Corrected typo
 		}
 	}
 
@@ -356,7 +308,7 @@
 					<input
 						type="text"
 						name="building_style"
-						placeholder="ex: 2 Storey"
+						placeholder="ex: 2 Story"
 						bind:value={data.property.building_style} />
 				</fieldset>
 
