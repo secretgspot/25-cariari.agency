@@ -35,8 +35,10 @@
 	const property = $state({
 		is_active: true,
 		msl: data.msl,
+		property_for: [],
 		location: {},
 		features: [],
+		photos: [],
 	});
 
 	$effect(() => {
@@ -484,11 +486,11 @@
 						bind:value={property.description}></textarea>
 				</fieldset>
 
-				<!-- <fieldset class="photos">
+				<fieldset class="photos">
 					<legend>Photos</legend>
 
 					<Uploader bind:attachments={property.photos} msl={property.msl} />
-				</fieldset> -->
+				</fieldset>
 			</div>
 		</section>
 

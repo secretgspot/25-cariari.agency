@@ -501,24 +501,7 @@
 
 				<fieldset class="photos">
 					<legend>Photos</legend>
-
-					<!-- <Uploader bind:attachments={data.property.photos} msl={data.property.msl} /> -->
-
-					<!-- <div class="photo-list">
-					{#each data.property.photos || [] as photo, i}
-						<div
-							class="photo"
-							draggable={true}
-							id={i}
-							ondragstart={(e) => startDrag(photo, i, e)}
-							ondragend={(e) => finishDrag(photo, i, e)}
-							ondragover={(e) => onDragOver(photo, i, e)}
-							style="background-image: url({photo.file_url})"
-						>
-							<i class="close" onclick={() => removePhoto(i)} />
-						</div>
-					{/each}
-				</div> -->
+					<Uploader bind:attachments={data.property.photos} msl={data.property.msl} />
 				</fieldset>
 			</div>
 		</section>

@@ -2,13 +2,14 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/buttons';
 	import { slide } from 'svelte/transition';
-	
+
 	import { addToast } from '$lib/toasts/store';
 
-	// import JSONDump from "$lib/JSONDump.svelte";
+	// import JSONDump from '$lib/JSONDump.svelte';
+	// console.log('Uploader page', page);
 
 	/** @type {{msl: any, attachments?: any}} */
-	let { msl, attachments = $bindable([]), supabase } = $props();
+	let { msl, attachments = $bindable([]) } = $props();
 
 	let error = '',
 		message = '',
@@ -45,7 +46,7 @@
 		loading = true;
 
 		// console.log("UPLOAD FILE: ", target);
-		const { data: uploadData, error: uploadError } = await supabase.storage
+		const { data: uploadData, error: uploadError } = await page.data.supabase.storage
 			.from('photos')
 			.upload(`/${msl}/${target.name}`, target.file);
 		if (uploadError) {
@@ -75,7 +76,7 @@
 		loading = true;
 
 		// console.log("DELETE FILE: ", target);
-		const { data: deleteFile, error: errDelete } = await supabase.storage
+		const { data: deleteFile, error: errDelete } = await page.data.supabase.storage
 			.from('photos')
 			.remove([`${msl}/${target}`]);
 		if (errDelete) {
@@ -104,23 +105,24 @@
 	const populatePhotosTable = async (target) => {
 		loading = true;
 
-		const { data: publicUrlData } = await supabase.storage
+		const { data: publicUrlData } = await page.data.supabase.storage
 			.from('photos')
 			.getPublicUrl(`${msl}/${target.name}`);
 
 		if (publicUrlData) {
 			// console.log("update", target);
-			const { data: updatePhotosTableData, error: updatePhotosTableErr } = await supabase
-				.from('photos')
-				.update({
-					name: target.name,
-					extension: target.name.split('.').pop(),
-					msl,
-					file_url: publicUrlData.publicUrl,
-				})
-				.eq('file_path', `${msl}/${target.name}`)
-				.select('*')
-				.single();
+			const { data: updatePhotosTableData, error: updatePhotosTableErr } =
+				await page.data.supabase
+					.from('photos')
+					.update({
+						name: target.name,
+						extension: target.name.split('.').pop(),
+						msl,
+						file_url: publicUrlData.publicUrl,
+					})
+					.eq('file_path', `${msl}/${target.name}`)
+					.select('*')
+					.single();
 			if (updatePhotosTableErr) {
 				addToast({
 					message: `Failed to attach photos to msl ${updatePhotosTableErr.message}`,
@@ -146,7 +148,7 @@
 	};
 
 	const emptyBucket = async () => {
-		const { data, error } = await data.supabase.storage.emptyBucket('photos');
+		const { data, error } = await page.data.supabase.storage.emptyBucket('photos');
 		if (error) console.error(error);
 		if (data) console.log(data);
 	};
