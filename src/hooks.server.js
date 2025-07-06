@@ -41,12 +41,15 @@ export async function handle({ event, resolve }) {
 		if (error) {
 			// JWT validation has failed
 			return { session: null, user: null, is_logged_in: false, is_admin: false }
+		} else {
+			// JWT validation has succeeded
+			console.log('hooks.server.js: user details fetched successfully 👍');
 		}
 		const is_logged_in = !!session;
 		const is_admin = user?.app_metadata?.claims_admin || false;
 
-		console.log('User is_logged_in:', is_logged_in ? '👍' : '👎');
-		console.log('User is_admin:', is_admin);
+		// console.log('User is_logged_in:', is_logged_in ? '👍' : '👎');
+		// console.log('User is_admin:', is_admin);
 
 		return {
 			session,
@@ -58,9 +61,9 @@ export async function handle({ event, resolve }) {
 
 	event.locals.supabase.auth.onAuthStateChange((event, session) => {
 		if (event === 'SIGNED_IN') {
-			console.log('User has logged in 🔥');
+			console.log('hooks.server.js: User has signed in 🔥');
 		} else if (event === 'SIGNED_OUT') {
-			console.log('User has signed out 💥');
+			console.log('hooks.server.js: User has signed out 💥');
 		}
 	});
 

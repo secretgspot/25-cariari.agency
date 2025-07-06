@@ -267,7 +267,7 @@
 	}
 
 	header {
-		height: 90vh;
+		height: 80vh;
 		display: grid;
 		place-items: center;
 

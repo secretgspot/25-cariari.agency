@@ -7,28 +7,15 @@ export async function load(event) {
 
 	if (!session.session) {
 		// throw redirect(303, '/login');
-		console.log('(app)/+layout.server 👓 no session');
+		console.log('(app)/+layout.server:  session detected 👎');
 	}
 
 	/////// SANITY CHECK ////////
+	// session contains user and session data plus flags for is_logged_in and is_admin
 	if (session.session) {
-		console.log('(app)/+layout.server 🎈 session detected');
-		console.log('logged in:', session.is_logged_in);
-		console.log('isAdmin:', session.is_admin);
+		console.log('(app)/+layout.server: session detected 👍');
+		console.log(`${session.is_admin ? '🌟' : '👻'}👤: ${session.user.id} 🌐${event.url.pathname}`);
 	}
 
-	/////// EVERYTHING WENT WELL, USER GOT ALL DETAILS /////////////////////////////
-	// const user = await session.user;
-
-	return {
-		// loading: false,
-		// user_data: {
-		// 	user_id: user?.id,
-		// 	admin: Boolean(user?.app_metadata.claims_admin),
-		// 	active: Boolean(user?.user_metadata.active),
-		// 	name: user?.user_metadata.name,
-		// 	email: user?.email,
-		// 	phone: user?.user_metadata.phone,
-		// }
-	};
+	return {};
 }
