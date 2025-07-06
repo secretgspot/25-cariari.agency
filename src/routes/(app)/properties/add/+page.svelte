@@ -23,6 +23,8 @@
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
 
+	console.log('🐍 ADD PROPERTY PAGE DATA:', data);
+
 	// export let form;
 
 	let loading = $state(false),
@@ -37,27 +39,6 @@
 		location: {},
 		features: [],
 	});
-
-	onMount(async () => {
-		await getMsl();
-	});
-
-	async function getMsl() {
-		const { data: mslData, error: mslErr } = await data.supabase
-			.from('properties')
-			.select('msl')
-			.order('msl', { ascending: false })
-			.limit(1)
-			.single();
-		if (mslErr) error = mslErr.message;
-		if (mslData) {
-			$property.msl = `CR-${pad(Number(mslData.msl.substring(3)) + 1, 3)}`;
-			console.log('LAST MSL DIGIT', mslData.msl);
-		} else {
-			console.log('LAST MSL DIGIT NOT FOUND');
-			$property.msl = 'CR-001';
-		}
-	}
 
 	async function getPosition() {
 		if (navigator.geolocation) {

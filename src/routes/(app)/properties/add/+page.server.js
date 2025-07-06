@@ -1,7 +1,7 @@
 /** @type {import('./$types').PageServerLoad} */
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
-import { isEmpty } from '$lib/utils/helpers.js';
+import { isEmpty, pad } from '$lib/utils/helpers.js';
 
 export async function load(event) {
 	// console.log('/formulario/edit/[msl]+page.server.js event: ', event);
@@ -16,14 +16,26 @@ export async function load(event) {
 	// 	throw redirect(303, '/login');
 	// }
 
-
-	// if (session?.user.app_metadata.claims_admin) {
-	// 	console.log('🌟');
-	// }
+	const getMsl = async () => {
+		const { data, error: err } = await supabaseClient
+			.from('properties')
+			.select('msl')
+			.order('msl', { ascending: false })
+			.limit(1)
+			.single();
+		if (err) error(400, `💩 ${err.message}`);
+		if (data) {
+			console.log('🐍 LAST MSL DIGIT', data.msl);
+			return `CR-${pad(Number(data.msl.substring(3)) + 1, 3)}`;
+		} else {
+			console.log('🐍 LAST MSL DIGIT NOT FOUND');
+			return 'CR-001';
+		}
+	}
 
 
 	return {
-		logged_in: session ? true : false,
+		msl: await getMsl()
 	};
 };
 
