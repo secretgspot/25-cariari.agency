@@ -36,8 +36,8 @@
 				zoomControl: false,
 				center: new L_instance.LatLng(9.970881419133026, -84.16046619415285),
 				maxBounds: L_instance.latLngBounds([
-					[9.99443, -84.199448],
-					[9.943958, -84.128766],
+					[9.98943, -84.199448],
+					[9.938958, -84.128766],
 				]),
 				zoom: 16,
 				attributionControl: false,
@@ -64,6 +64,17 @@
 		map.setView(e.target.getLatLng(), 17);
 	};
 
+		// Function to convert property_for to a valid icon name
+	const getPropertyIconName = (propertyFor) => {
+		if (Array.isArray(propertyFor)) {
+			return propertyFor.join('_');
+		} else if (typeof propertyFor === 'string') {
+			return propertyFor.replace(',', '_');
+		} else {
+			return 'null'; // Default or error case
+		}
+	};
+
 	// Function to update markers, depends on L_instance, map, markersLayer
 	const updateMarkers = (currentMarkers) => {
 		if (!L_instance || !map || !markersLayer) return; // Ensure dependencies are ready
@@ -78,11 +89,12 @@
 			let lon = item.location.lng;
 
 			if (!isEmpty(lan) && !isEmpty(lon) && item.is_active) {
+				const iconName = getPropertyIconName(property_for);
 				marker = L_instance.marker(new L_instance.LatLng(+lan, +lon), {
 					property_id,
 					property_for,
 					icon: L_instance.icon({
-						iconUrl: `/map/${property_for}.svg`,
+						iconUrl: `/map/${iconName}.svg`,
 						iconSize: [21, 21],
 						iconAnchor: [9, 9],
 						opacity: 0.5,
