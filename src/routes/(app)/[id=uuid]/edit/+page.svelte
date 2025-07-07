@@ -16,7 +16,6 @@
 	// import { confetti } from "@neoconfetti/svelte";
 	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
-	import Login from '$lib/Login.svelte';
 
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);

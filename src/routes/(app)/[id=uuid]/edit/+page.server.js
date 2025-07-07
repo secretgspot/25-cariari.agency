@@ -4,12 +4,13 @@ import { redirect, error, fail } from '@sveltejs/kit';
 import { isEmpty } from '$lib/utils/helpers.js';
 
 export async function load(event) {
-	const { params, route } = event;
+	const { params, route, url } = event;
 	const session = await event.locals.getSession();
 	const supabaseClient = event.locals.supabase;
 
 	if (!session.session) {
-		throw redirect(303, '/login');
+		const currentPath = url.pathname;
+		throw redirect(307, `/login?redirectTo=${encodeURIComponent(currentPath)}`);
 	}
 
 	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> session:', session);

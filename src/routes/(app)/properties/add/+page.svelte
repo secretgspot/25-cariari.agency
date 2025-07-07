@@ -18,7 +18,6 @@
 	import JsonDump from '$lib/JSONDump.svelte';
 	import { onMount } from 'svelte';
 	import { addToast } from '$lib/toasts/store';
-	import Login from '$lib/Login.svelte';
 	import Notify from '$lib/Notify.svelte';
 
 	/** @type {{data: any, supabase: any}} */

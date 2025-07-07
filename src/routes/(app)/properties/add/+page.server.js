@@ -13,7 +13,7 @@ export async function load(event) {
 	const supabaseClient = event.locals.supabase;
 
 	if (!session.session) {
-		throw redirect(303, '/login');
+		throw redirect(307, '/login?redirectTo=/properties/add');
 	}
 
 	const getMsl = async () => {
