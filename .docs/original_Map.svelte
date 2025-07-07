@@ -1,14 +1,10 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-
 	import { onMount, onDestroy } from 'svelte';
-
 	import { isEmpty } from '$lib/utils/helpers.js';
 
 	/** @type {{markers: any[]}} */
-
 	let { markers = [] } = $props();
-
 	let map, baseLayer, mclusters;
 
 	const dispatch = createEventDispatcher();
