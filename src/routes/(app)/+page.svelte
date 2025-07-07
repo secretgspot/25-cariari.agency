@@ -40,7 +40,11 @@
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
 		<Nav />
-		<Map markers={data.properties} on:selected={(e) => (selectedProperty = e.detail)} />
+		<Map
+			markers={data.properties}
+			onSelected={(id) => {
+				selectedProperty = id;
+			}} />
 	</section>
 
 	{#if selectedProperty}
