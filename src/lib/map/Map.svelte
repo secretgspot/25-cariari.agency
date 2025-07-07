@@ -1,41 +1,76 @@
 <script>
-	import { createEventDispatcher } from "svelte";
-	import { onMount, onDestroy } from "svelte";
-	import { isEmpty } from "$lib/utils/helpers.js";
+	import { onMount, onDestroy } from 'svelte';
+	import { isEmpty } from '$lib/utils/helpers.js';
+	import { browser } from '$app/environment';
 
-	/** @type {{markers: any[]}} */
-	let { markers = [] } = $props();
+	/** @type {{markers: any[], onLoaded: (value: boolean) => void, onSelected: (id: string) => void}} */
+	let { markers = [], onLoaded, onSelected } = $props();
 
-	let map, baseLayer, mclusters;
-
-	const dispatch = createEventDispatcher();
+	let map = $state(null);
+	let baseLayer = $state(null);
+	let mclusters = $state(null);
+	let L_instance = $state(null); // Use a distinct name for the Leaflet instance
+	let mapReady = $state(false); // New state variable to track map readiness
 
 	onMount(async () => {
-		const leafletModule = await import("leaflet");
-		L = leafletModule.default;
-
-		await import("./cluster.js");
-
-		// NICE CLEAR ONE!
-		// http://maps.stamen.com/
-		// //stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}
-		// //stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}
-		// //stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.{ext}
-		// //stamen-tiles-{s}.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.{ext}
-		// //stamen-tiles-{s}.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}.{ext}
-		baseLayer = L.tileLayer(
-			"//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}",
-			{
-				subdomains: "abcd",
-				minZoom: 15,
-				maxZoom: 18,
-				ext: "jpg",
+		if (browser) {
+			const leaflet = await import('leaflet');
+			L_instance = leaflet; // Assign to the state variable
+			if (typeof window !== 'undefined') {
+				window.L = L_instance; // Make it globally available for plugins
 			}
-		);
+			const markercluster = await import('leaflet.markercluster');
 
-		mclusters = L.markerClusterGroup({ disableClusteringAtZoom: 16 });
+			baseLayer = L_instance.tileLayer(
+				'//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
+				{
+					subdomains: 'abcd',
+					minZoom: 15,
+					maxZoom: 18,
+					ext: 'jpg',
+				},
+			);
 
-		markers.forEach((item) => {
+			mclusters = L_instance.markerClusterGroup({ disableClusteringAtZoom: 16 });
+
+			map = L_instance.map('map-canvas', {
+				zoomControl: false,
+				center: new L_instance.LatLng(9.970881419133026, -84.16046619415285),
+				maxBounds: L_instance.latLngBounds([
+					[9.99443, -84.199448],
+					[9.943958, -84.128766],
+				]),
+				zoom: 16,
+				attributionControl: false,
+				scrollWheelZoom: true,
+				layers: [baseLayer, mclusters],
+			}).invalidateSize();
+
+			L_instance.control.zoom({ position: 'bottomleft' }).addTo(map);
+			L_instance.control.scale({ position: 'bottomright' }).addTo(map);
+
+			map.on('resize', () => console.log('resized map'));
+			baseLayer.on('load', () => {
+				console.log(`🗺 loaded`);
+				if (onLoaded) onLoaded(true);
+			});
+
+			mapReady = true; // Set mapReady to true once the map is initialized
+		}
+	});
+
+	// Define onMarkerClick outside, so it's accessible by updateMarkers
+	const onMarkerClick = (e) => {
+		if (onSelected) onSelected(e.sourceTarget.options.property_id);
+		map.setView(e.target.getLatLng(), 17);
+	};
+
+	// Function to update markers, depends on L_instance, map, mclusters
+	const updateMarkers = (currentMarkers) => {
+		if (!L_instance || !map || !mclusters) return; // Ensure dependencies are ready
+
+		mclusters.clearLayers();
+		currentMarkers.forEach((item) => {
 			let marker;
 			let property_id = item.id;
 			let msl = item.msl;
@@ -44,91 +79,46 @@
 			let lon = item.location.lng;
 
 			if (!isEmpty(lan) && !isEmpty(lon) && item.is_active) {
-				marker = L.marker(new L.LatLng(+lan, +lon), {
+				marker = L_instance.marker(new L_instance.LatLng(+lan, +lon), {
 					property_id,
-					// title: `${msl} ${property_for}`, // not needed because of line 61
 					property_for,
-					// icon: L.divIcon({
-					// 	className: `icon-${createClass(property_for)}`,
-					// }),
-					icon: L.icon({
+					icon: L_instance.icon({
 						iconUrl: `/map/${property_for}.svg`,
 						iconSize: [21, 21],
 						iconAnchor: [9, 9],
 						opacity: 0.5,
 					}),
 				});
-				// if (!isEmpty(msl)) marker.bindPopup(msl);
-				// if (!isEmpty(msl)) {
 				marker.bindTooltip(`${msl} - ${property_for}`).openTooltip();
-				marker.on("click", onMarkerClick);
-				// }
+				marker.on('click', onMarkerClick);
 				mclusters.addLayer(marker);
 			}
 		});
+	};
 
-		map = L.map("map-canvas", {
-			zoomControl: false, // Add zoom control separately below
-			center: new L.LatLng(9.970881419133026, -84.16046619415285), // Initial map center
-			maxBounds: L.latLngBounds([
-				[9.99443, -84.199448],
-				[9.943958, -84.128766],
-			]),
-			zoom: 16, // Initial zoom level
-			attributionControl: false, // Instead of default attribution, we add custom at the bottom of script
-			scrollWheelZoom: true,
-			layers: [baseLayer, mclusters],
-		}).invalidateSize();
-
-		// map.on("load", console.log("map loaded")); // 🚩 why doesn't work?
-		L.control.zoom({ position: "bottomleft" }).addTo(map);
-		L.control.scale({ position: "bottomright" }).addTo(map);
-
-		map.on("resize", () => console.log("resized map"));
-		baseLayer.on("load", () => {
-			console.log(`🗺 loaded`);
-			dispatch("loaded", true);
-		});
-
-		// map.invalidateSize();
-	});
-
-	onDestroy(async () => {
-		if (map) {
-			// console.log("Unloading 🗺");
-			map.remove();
+	// Use $effect to react to changes in markers and mapReady
+	$effect(() => {
+		if (mapReady) {
+			// Only run this effect when the map is ready
+			updateMarkers(markers);
 		}
 	});
 
-	function onMarkerClick(e) {
-		map.setView(e.target.getLatLng(), 17);
-		// console.log("🗺", e.sourceTarget.options.property_id);
-		dispatch("selected", e.sourceTarget.options.property_id);
-	}
-
-	// function createClass(property) {
-	// 	console.log("🧨", property);
-	// 	const propClasses = {
-	// 		"000": "dead", // none
-	// 		"001": "investment", // investment (magenta)
-	// 		"010": "rent", // rent (orange)
-	// 		"100": "sale", // sale (cyan)
-	// 		"011": "rent-investment", // investment + rent (burdengy)
-	// 		"101": "sale-investment", // investment + sale (purple)
-	// 		"110": "rent-sale", // rent + sale (green)
-	// 		"111": "rent-sale-investment", // investment + rent + sale (white)
-	// 	};
-	// 	return propClasses[
-	// 		`${Number(property.rent)}${Number(property.sale)}${Number(
-	// 			property.investment
-	// 		)}`
-	// 	];
-	// }
+	onDestroy(() => {
+		if (map) {
+			map.remove();
+		}
+	});
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href="/css/leaflet.css" />
-	<link rel="stylesheet" href="/css/MarkerCluster.css" />
+	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
+	<link
+		rel="stylesheet"
+		href="/node_modules/leaflet.markercluster/dist/MarkerCluster.css" />
+	<link
+		rel="stylesheet"
+		href="/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </svelte:head>
 
 <div id="map-canvas" class="map"></div>

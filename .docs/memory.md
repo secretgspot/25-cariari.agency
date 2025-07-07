@@ -119,5 +119,7 @@ Properties are the core data entity. Main fields:
 - Print view is a separate route with QR code
 - Admin/regular user logic is handled in server actions and UI
 
+- The user will be making all of the commits.
+
 ---
 *Generated July 2, 2025. This file is intended as a memory/context file for rebuilding Cariari.Agency with a new tech stack. It summarizes all key features, data, and flows.*
