@@ -1,87 +1,44 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import L from 'leaflet';
 
-	let L = $state(null); // Declare L as a state variable
+	export let position;
 
-	/** @type {{position?: any}} */
-	let { position = null } = $props();
+	let map;
+	let mapContainer;
 
-	let map = $state(null),
-		baseLayer = $state(null),
-		marker = $state(null),
-		positionData;
+	// Define maxBounds as LatLngBounds
+	const maxBounds = [
+		[9.962086432098069, -84.17891979217531], // Southwest (min lat, min lng)
+		[9.980261288306549, -84.14235591888429], // Northeast (max lat, max lng)
+	];
 
-	onMount(async () => {
-		if (browser) {
-			const leafletModule = await import('leaflet');
-			L = leafletModule.default;
+	onMount(() => {
+		if (!position) return;
 
-			baseLayer = L.tileLayer('//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}', {
-				subdomains: 'abcd',
-				minZoom: 15,
-				maxZoom: 15,
-				ext: 'jpg',
-			});
+		map = L.map(mapContainer, {
+			zoomControl: false,
+			maxBounds: maxBounds,
+			maxBoundsViscosity: 0.8, // Optional: makes panning near edges "sticky"
+		}).setView([parseFloat(position.lat), parseFloat(position.lng)], 17);
 
-			map = L.map('map-canvas', {
-				zoomControl: false,
-				doubleClickZoom: false,
-				closePopupOnClick: false,
-				boxZoom: false,
-				dragging: false,
-				zoomSnap: false,
-				zoomDelta: false,
-				trackResize: false,
-				touchZoom: false,
-				scrollWheelZoom: false,
-				attributionControl: false,
-				center: [9.933576017916193, -84.0551265784177],
-				zoom: 15,
-				layers: [baseLayer],
-			});
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}', {
+			subdomains: 'abcd',
+			minZoom: 15,
+			maxZoom: 18,
+			ext: 'jpg',
+			errorTileUrl:
+				'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+		}).addTo(map);
 
-			let pickerIcon = L.icon({
-				iconUrl: '/logo/icon.png',
-				iconSize: [30, 30],
-				iconAnchor: [15, 15],
-			});
-
-			marker = L.marker(positionData, {
-				icon: pickerIcon,
-			});
-
-			if (position) {
-				positionData = [+position.lat, +position.lng];
-				marker.setLatLng(positionData).addTo(map);
-				map.setView(positionData, 15);
-			}
-		}
+		L.marker([parseFloat(position.lat), parseFloat(position.lng)]).addTo(map);
 	});
 
 	onDestroy(() => {
 		if (map) {
-			map.remove();
+			map.remove(); // crucial to avoid conflicts
 		}
 	});
 </script>
 
-<svelte:head>
-	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
-</svelte:head>
-
-<div id="map-canvas" class="map"></div>
-
-<style>
-	.map {
-		height: 222px;
-		width: 333px;
-		z-index: 1;
-		border-radius: var(--border-radius);
-	}
-	@media (prefers-color-scheme: dark) {
-		.map {
-			filter: invert(1) brightness(var(--brightness));
-		}
-	}
-</style>
+<div bind:this={mapContainer} style="height: 400px; width: 100%;"></div>

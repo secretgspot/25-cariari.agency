@@ -2,6 +2,7 @@
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
+	import 'leaflet/dist/leaflet.css';
 
 	/** @type {{position?: any}} */
 	let { position = $bindable({}) } = $props();
@@ -238,7 +239,7 @@
 				'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
 				{
 					subdomains: 'abcd',
-					minZoom: 10,
+					minZoom: 15,
 					maxZoom: 18,
 					ext: 'jpg',
 					errorTileUrl:
@@ -257,6 +258,7 @@
 				zoomControl: false,
 				center: [initialPosition.lat, initialPosition.lng],
 				maxBounds: maxBounds,
+				maxBoundsViscosity: 0.8,
 				zoom: 15,
 				attributionControl: false,
 				scrollWheelZoom: true,
@@ -356,10 +358,6 @@
 		}
 	});
 </script>
-
-<svelte:head>
-	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
-</svelte:head>
 
 <div id="map-canvas" class="map" bind:this={mapElement}></div>
 

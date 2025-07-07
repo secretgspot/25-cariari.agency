@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
+	import 'leaflet/dist/leaflet.css';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
@@ -235,6 +236,7 @@
 					zoomControl: false,
 					center: initialCenter,
 					maxBounds: maxBounds,
+					maxBoundsViscosity: 0.8,
 					zoom: 16,
 					attributionControl: false,
 					scrollWheelZoom: true,
@@ -327,10 +329,6 @@
 		}
 	});
 </script>
-
-<svelte:head>
-	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
-</svelte:head>
 
 <div id="map-canvas" class="map" bind:this={mapElement}></div>
 
