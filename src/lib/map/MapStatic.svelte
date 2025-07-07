@@ -1,25 +1,36 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import L from 'leaflet';
 
-	export let position;
+	let { position } = $props();
 
 	let map;
 	let mapContainer;
 
-	// Define maxBounds as LatLngBounds
+	// Define maxBounds as LatLngBounds (southWest, northEast)
 	const maxBounds = [
-		[9.962086432098069, -84.17891979217531], // Southwest (min lat, min lng)
-		[9.980261288306549, -84.14235591888429], // Northeast (max lat, max lng)
+		[9.962086432098069, -84.17891979217531], // Southwest corner
+		[9.980261288306549, -84.14235591888429], // Northeast corner
 	];
 
-	onMount(() => {
+	onMount(async () => {
 		if (!position) return;
+
+		// Dynamically import Leaflet and CSS only on client
+		const leafletModule = await import('leaflet');
+		const L = leafletModule.default;
+		// await import('leaflet/dist/leaflet.css');
+
+		// Remove existing map if any (defensive)
+		if (mapContainer._leaflet_id) {
+			const existingMap = L.Map.get(mapContainer._leaflet_id);
+			if (existingMap) existingMap.remove();
+		}
 
 		map = L.map(mapContainer, {
 			zoomControl: false,
 			maxBounds: maxBounds,
-			maxBoundsViscosity: 0.8, // Optional: makes panning near edges "sticky"
+			maxBoundsViscosity: 0.8,
+			attributionControl: false,
 		}).setView([parseFloat(position.lat), parseFloat(position.lng)], 17);
 
 		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}', {
@@ -31,14 +42,83 @@
 				'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
 		}).addTo(map);
 
-		L.marker([parseFloat(position.lat), parseFloat(position.lng)]).addTo(map);
+		// Create a custom icon using your SVG file in the public directory
+		const customIcon = L.icon({
+			iconUrl: '/map/marker-icon.svg', // Path relative to the public folder
+			iconSize: [32, 32], // Adjust size as needed
+			iconAnchor: [16, 32], // Point of the icon which corresponds to marker's location (bottom center)
+			popupAnchor: [0, -32], // Where popups open relative to iconAnchor
+			// shadowUrl: '/map/marker-shadow.png', // Optional shadow image
+			// shadowSize: [32, 32],
+			// shadowAnchor: [16, 32],
+		});
+
+		// Add marker with custom icon
+		L.marker([parseFloat(position.lat), parseFloat(position.lng)], {
+			icon: customIcon,
+		}).addTo(map);
 	});
 
 	onDestroy(() => {
 		if (map) {
-			map.remove(); // crucial to avoid conflicts
+			map.remove();
 		}
 	});
 </script>
 
-<div bind:this={mapContainer} style="height: 400px; width: 100%;"></div>
+<div
+	id="map-canvas"
+	class="map"
+	bind:this={mapContainer}
+	style="height: 400px; width: 100%;">
+</div>
+
+<style>
+	.map {
+		height: 222px;
+		width: 100%;
+		z-index: 1;
+		/* Ensure minimum dimensions */
+		min-height: 200px;
+		min-width: 200px;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.map {
+			filter: invert(1) brightness(0.8) hue-rotate(180deg);
+		}
+	}
+
+	/* Ensure Leaflet controls are visible */
+	:global(.leaflet-control-zoom) {
+		background: rgba(255, 255, 255, 0.9) !important;
+		border-radius: 4px !important;
+		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2) !important;
+	}
+
+	:global(.leaflet-control-zoom a) {
+		color: #333 !important;
+		text-decoration: none !important;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(.leaflet-control-zoom) {
+			background: rgba(0, 0, 0, 0.9) !important;
+		}
+
+		:global(.leaflet-control-zoom a) {
+			color: white !important;
+		}
+	}
+
+	/* Improve marker visibility */
+	:global(.leaflet-marker-icon) {
+		transition: transform 0.2s ease;
+	}
+
+	:global(.leaflet-marker-icon:hover) {
+		transform: scale(1.1);
+	}
+</style>

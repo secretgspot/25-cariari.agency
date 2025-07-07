@@ -2,7 +2,6 @@
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
-	import 'leaflet/dist/leaflet.css';
 
 	/** @type {{position?: any}} */
 	let { position = $bindable({}) } = $props();
@@ -205,6 +204,7 @@
 		try {
 			// Dynamically import Leaflet
 			const leaflet = await import('leaflet');
+			// await import('leaflet/dist/leaflet.css');
 			leafletInstance = leaflet;
 
 			// Wait for DOM to be ready

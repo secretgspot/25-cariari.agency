@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { Toasts } from '$lib/toasts';
 	import Splash from '$lib/Splash.svelte';
+	import 'leaflet/dist/leaflet.css';
 
 	let { children, data } = $props();
 

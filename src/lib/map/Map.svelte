@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
-	import 'leaflet/dist/leaflet.css';
+	// import 'leaflet/dist/leaflet.css';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
@@ -188,6 +188,7 @@
 		try {
 			// Dynamically import Leaflet to ensure it only runs in the browser
 			const leaflet = await import('leaflet');
+			// await import('leaflet/dist/leaflet.css');
 			leafletInstance = leaflet;
 
 			// Wait for DOM to be ready
