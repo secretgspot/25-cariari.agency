@@ -1,10 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
-	import { goto } from '$app/navigation';
-
 	import LogoSvg from '$lib/LogoSvg.svelte';
-	import Splash from '$lib/Splash.svelte';
 	import Map from '$lib/map/Map.svelte';
 	import Preview from '$lib/Preview.svelte';
 	import Nav from '$lib/Nav.svelte';
@@ -12,8 +9,6 @@
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
-	// console.log('(app)/+page.svelte data:', data);
-	// console.log('(app)/+page.svelte supabase:', data.supabase);
 
 	let loading = $state(data.loading ?? false),
 		error = '',
@@ -21,7 +16,23 @@
 		showPreview = false,
 		selectedProperty = $state();
 
-	// $: console.log("selected property: ", selectedProperty);
+	let saleFilter = $state(true);
+	let rentFilter = $state(true);
+
+	const filteredProperties = $derived(() => {
+		if (!data || !Array.isArray(data.properties)) {
+			return [];
+		}
+		return data.properties.filter((property) => {
+			const propertyFor = Array.isArray(property.property_for)
+				? property.property_for
+				: property.property_for.split(',').map((s) => s.trim());
+
+			if (saleFilter && propertyFor.includes('Sale')) return true;
+			if (rentFilter && propertyFor.includes('Rent')) return true;
+			return false;
+		});
+	});
 
 	onMount(async () => {
 		loading = false;
@@ -40,12 +51,23 @@
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
 		<Nav />
+		<div class="filter-controls">
+			<label>
+				<input type="checkbox" bind:checked={saleFilter} /> Sale
+			</label>
+
+			<label>
+				<input type="checkbox" bind:checked={rentFilter} /> Rent
+			</label>
+		</div>
 		<Map
-			markers={data.properties}
+			markers={filteredProperties()}
 			onSelected={(id) => {
 				selectedProperty = id;
 			}} />
 	</section>
+
+	<!-- <JsonDump name="filteredProperties" {filteredProperties} /> -->
 
 	{#if selectedProperty}
 		<aside class="preview-wrapper">
@@ -80,5 +102,27 @@
 		/* main :global(.map) {
 			width: 70vw;
 		} */
+	}
+
+	.filter-controls {
+		display: flex;
+		gap: var(--gap-extra-small);
+		margin-block: var(--padding-extra-small);
+		border-bottom: 1px solid var(--color-border);
+		position: absolute;
+		top: calc(var(--padding-small) * 3);
+		right: var(--padding-small);
+		row-gap: var(--gap-extra-small);
+		user-select: none;
+		z-index: 3;
+		background: var(--primary);
+		padding: var(--padding-extra-small);
+		border-radius: var(--border-radius);
+	}
+
+	.filter-controls label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>
