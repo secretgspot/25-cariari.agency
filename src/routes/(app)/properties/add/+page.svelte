@@ -42,9 +42,9 @@
 		photos: [],
 	});
 
-	$effect(() => {
-		$inspect('🐍 ADD PROPERTY temp data:', property);
-	});
+	// $effect(() => {
+	// 	$inspect('🐍 ADD PROPERTY temp data:', property);
+	// });
 
 	// Helper function to allow on Enter events for AddFeature
 	function enter(node, callback) {
@@ -112,10 +112,10 @@
 
 			// prevent default callback from resetting the form
 			return async ({ result, update }) => {
-				if (result.type === 'success') {
+				console.log('/add/+page.svelte result: ', result);
+				if (result.status === 200 && result.data.success) {
 					// reset form
 					clearStorage();
-					form.reset();
 					won = true;
 					// console.log("RESULT:", result.data);
 					addToast({
@@ -124,7 +124,16 @@
 						dismissible: true,
 						timeout: 1200,
 					});
+					update({ reset: true });
 					goto(`/${result.data.property_id}/print`);
+				} else {
+					console.log('TRIGGED DUE TO: ', result.status);
+					addToast({
+						message: `Something went wrong, server returned status: ${result.status}`,
+						type: 'error',
+						dismissible: true,
+						timeout: 0,
+					});
 				}
 
 				if (result.type === 'invalid') {
@@ -132,7 +141,6 @@
 					await applyAction(result);
 				}
 				loading = false;
-				// update({ reset: false });
 			};
 		}}>
 		<!-- PROPERTY TYPE -->

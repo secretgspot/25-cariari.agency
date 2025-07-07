@@ -153,7 +153,7 @@
 	<p>
 		This is a free service application for general Cariari area of La Assunction, Heredia. <br />If
 		you would like to add your property on here, add it thru <LinkButton
-			href="/add"
+			href="/properties/add"
 			title="Add you property">Add</LinkButton> or the link with same name at the top on the
 		main page. With your confirmed email you'll be able to modify it at any time or delist
 		from the app.
