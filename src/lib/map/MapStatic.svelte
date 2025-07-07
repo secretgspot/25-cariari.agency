@@ -7,7 +7,10 @@
 	/** @type {{position?: any}} */
 	let { position = null } = $props();
 
-	let map = $state(null), baseLayer = $state(null), marker = $state(null), positionData;
+	let map = $state(null),
+		baseLayer = $state(null),
+		marker = $state(null),
+		positionData;
 
 	onMount(async () => {
 		if (browser) {
@@ -61,6 +64,7 @@
 			map.remove();
 		}
 	});
+</script>
 
 <svelte:head>
 	<link rel="stylesheet" href="/css/leaflet.css" />
