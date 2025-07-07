@@ -9,7 +9,7 @@
 	// console.log('Uploader page', page);
 
 	/** @type {{msl: any, attachments?: any}} */
-	let { msl, attachments = $bindable([]) } = $props();
+	let { msl, attachments } = $props();
 
 	let error = '',
 		message = '',
@@ -81,12 +81,12 @@
 			.remove([`${msl}/${target}`]);
 		if (errDelete) {
 			// console.log(errDelete);
-			addToast({
-				message: `Failed to delete file ${errDelete.message}, try again in few seconds`,
-				type: 'error',
-				dismissible: false,
-				timeout: 3000,
-			});
+			// addToast({
+			// 	message: `Failed to delete file ${errDelete.message}, try again in few seconds`,
+			// 	type: 'error',
+			// 	dismissible: false,
+			// 	timeout: 3000,
+			// });
 		}
 		if (deleteFile) {
 			// console.log("deleteFile + index: ", deleteFile);
@@ -187,7 +187,7 @@
 							size="icon"
 							disabled={loading}
 							{loading}
-							onclick={deleteFile(file.name)}>
+							onclick={() => deleteFile(file.name)}>
 							{#snippet icon()}
 								<svg
 									fill="currentColor"

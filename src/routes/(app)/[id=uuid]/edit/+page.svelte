@@ -109,434 +109,422 @@
 	<Nav />
 {/if}
 
-{#if !data.is_logged_in}
-	<Login />
-{:else}
-	<form
-		class="edit-property"
-		method="POST"
-		use:enhance={({ form, data, action, cancel }) => {
-			// 'form' is the '<form>' element
-			// 'data' is it's 'FormData' object
-			// 'action' is the URL to which the form is posted
-			// 'cancel()' will prevent the submission
+<form
+	class="edit-property"
+	method="POST"
+	use:enhance={({ form, data, action, cancel }) => {
+		// 'form' is the '<form>' element
+		// 'data' is it's 'FormData' object
+		// 'action' is the URL to which the form is posted
+		// 'cancel()' will prevent the submission
 
-			// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
-			loading = true;
-			message = '';
-			error = '';
+		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
+		loading = true;
+		message = '';
+		error = '';
 
-			if (isEmpty(form.property_for)) {
-				cancel();
-				error = 'Must select at least one for PROPERTY FOR in Property Type section';
-				loading = false;
+		if (isEmpty(form.property_for)) {
+			cancel();
+			error = 'Must select at least one for PROPERTY FOR in Property Type section';
+			loading = false;
+		}
+
+		// prevent default callback from resetting the form
+		return async ({ result, update }) => {
+			console.log('RESULT TYPE:', result.type);
+			if (result.type === 'success') {
+				// reset form
+				// clearStorage();
+				// form.reset();
+				message = result.data.message;
+				await applyAction(result);
 			}
 
-			// prevent default callback from resetting the form
-			return async ({ result, update }) => {
-				console.log('RESULT TYPE:', result.type);
-				if (result.type === 'success') {
-					// reset form
-					// clearStorage();
-					// form.reset();
-					message = result.data.message;
-					await applyAction(result);
-				}
+			if (result.type === 'invalid') {
+				error = result.data.message;
+				await applyAction(result);
+			}
+			loading = false;
+			update({ reset: false });
+			// update();
+		};
+	}}>
+	<!-- PROPERTY TYPE -->
+	<section class="section section_property_type">
+		<div class="header">
+			<h3>Property type</h3>
+			<p>
+				Categories listing in appropriate section and coloring on the map. Is part of
+				filtering.
+			</p>
+		</div>
 
-				if (result.type === 'invalid') {
-					error = result.data.message;
-					await applyAction(result);
-				}
-				loading = false;
-				update({ reset: false });
-				// update();
-			};
-		}}>
-		<!-- PROPERTY TYPE -->
-		<section class="section section_property_type">
-			<div class="header">
-				<h3>Property type</h3>
-				<p>
-					Categories listing in appropriate section and coloring on the map. Is part of
-					filtering.
-				</p>
-			</div>
-
-			<div class="inputs">
-				{#if isAdmin}
-					<fieldset>
-						<legend>Status</legend>
-						<Toggle
-							name="is_active"
-							bind:checked={form.is_active}
-							label={form.is_active ? 'Listed' : 'Delisted'} />
-					</fieldset>
-				{/if}
-
-				<fieldset class={form.is_active ? 'active' : 'removed'}>
-					<legend>MSL</legend>
-					<input type="text" placeholder="ex: CR-001" bind:value={form.msl} disabled />
-					{#if !form.msl}
-						<Button type="button" size="block" onclick={getMsl}>Set</Button>
-					{/if}
-				</fieldset>
-
-				<fieldset>
-					<legend>Land Use</legend>
-					<Select name="land_use" bind:selected={form.land_use} />
-				</fieldset>
-
-				<fieldset class="flow">
-					<legend>Property For</legend>
-					<Checkboxes bind:selected={form.property_for} kind="square" />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY LOCATION -->
-		<section class="section section_location">
-			<div class="header">
-				<h3>Location</h3>
-				<p>
-					GPS coordinates and physical address. Location displayed on map via GPS,
-					accuracy is important.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Address</legend>
-					<input
-						type="text"
-						name="address"
-						placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
-						bind:value={form.address} />
-				</fieldset>
-
-				<fieldset class="location">
-					<legend>Location (lat, lng)</legend>
-					<input type="text" placeholder="ex: 9.97542" bind:value={form.location.lat} />
-					<input
-						type="text"
-						placeholder="ex: -84.163443"
-						bind:value={form.location.lng} />
-					<Button type="button" size="block" onclick={getPosition}
-						>Get current GPS</Button>
-
-					<MapPicker bind:updategps={gps} bind:position={form.location} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY CONTACTS -->
-		<section class="section section_contacts">
-			<div class="header">
-				<h3>Contacts</h3>
-				<p>
-					Email and Phone number of a realtor or person selling the property, usually
-					found on a placard in front of the property.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Phone</legend>
-					<input
-						type="tel"
-						name="contact_phone"
-						placeholder="ex: 1234-5678"
-						bind:value={form.contact_phone} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Email</legend>
-					<input
-						type="email"
-						name="contact_email"
-						placeholder="ex: this@that.there"
-						bind:value={form.contact_email} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Realtor</legend>
-					<input
-						type="text"
-						name="contact_realtor"
-						placeholder="ex: Re/Max or Jane Doe"
-						bind:value={form.contact_realtor} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY BASICS -->
-		<section class="section section_basics">
-			<div class="header">
-				<h3>Basics</h3>
-				<p>
-					These are initial values and usually first thing user looks for when narrowing
-					down their options.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Year built</legend>
-					<input
-						type="number"
-						name="year_built"
-						placeholder="ex: 2019"
-						bind:value={form.year_built} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Building Style</legend>
-					<input
-						type="text"
-						name="building_style"
-						placeholder="ex: 2 Story"
-						bind:value={form.building_style} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Lot Size ㎡</legend>
-					<input
-						type="number"
-						name="lot_size"
-						placeholder="ex: 900"
-						bind:value={form.lot_size} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Building Size ㎡</legend>
-					<input
-						type="number"
-						name="building_size"
-						placeholder="ex: 810"
-						bind:value={form.building_size} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY DETAILS -->
-		<section class="section section_details">
-			<div class="header">
-				<h3>Details</h3>
-				<p>
-					Information important to the user and thus should be filled in as soon as
-					possible. Also used in filters.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Bedrooms</legend>
-					<input type="number" name="beds" placeholder="ex: 3" bind:value={form.beds} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Bathrooms</legend>
-					<input type="number" name="baths" placeholder="ex: 3" bind:value={form.baths} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Restrooms (half-baths)</legend>
-					<input
-						type="number"
-						name="half_baths"
-						placeholder="ex: 2"
-						bind:value={form.half_baths} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Rooms</legend>
-					<input type="number" name="rooms" placeholder="ex: 6" bind:value={form.rooms} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Parking Spaces</legend>
-					<input
-						type="number"
-						name="parking_spaces"
-						placeholder="ex: 9"
-						bind:value={form.parking_spaces} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY PRICING -->
-		<section class="section section_pricing">
-			<div class="header">
-				<h3>Pricing</h3>
-				<p>
-					Everything regarding money goes in here and is very important since used in
-					filters and relevent to user.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Price $</legend>
-					<input
-						type="number"
-						name="price"
-						placeholder="ex: 630000"
-						bind:value={form.price} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Rent ($/month)</legend>
-					<input
-						type="number"
-						name="rent"
-						placeholder="ex: 1800"
-						bind:value={form.rent} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Taxes ($/year)</legend>
-					<input
-						type="number"
-						name="taxes"
-						placeholder="ex: 1500"
-						bind:value={form.taxes} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Fees (condo, asssociation) ($/month)</legend>
-					<input type="number" name="fees" placeholder="ex: 120" bind:value={form.fees} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY FEATURES -->
-		<section class="section section_features">
-			<div class="header">
-				<h3>Features</h3>
-				<p>
-					Description, features, photos. Photos are important and good quality should be
-					provided.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Features</legend>
-					<input
-						type="text"
-						placeholder="ex: BBQ"
-						onkeydown={(evt) => {
-							if (evt.key == 'Enter') evt.preventDefault();
-						}}
-						use:enter={addFeature} />
-					<div class="feature-list">
-						{#each form.features || [] as feature, i}
-							<span class="feature">
-								<svg
-									class="close"
-									onclick={() => removeFeature(i)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
-									}}
-									role="button"
-									tabindex="0"
-									width="18px"
-									height="18px"
-									stroke-width="1.5"
-									viewBox="0 0 24 24"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-									color="currentColor"
-									><path
-										d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-										stroke="currentColor"
-										stroke-width="1.5"
-										stroke-linecap="round"
-										stroke-linejoin="round" /></svg>
-								{feature}
-							</span>
-						{/each}
-					</div>
-				</fieldset>
-
-				<fieldset class="description">
-					<legend>Description</legend>
-					<textarea
-						name="description"
-						class="scroller"
-						rows="6"
-						placeholder="Description (max 9 sentences)"
-						bind:value={form.description}></textarea>
-				</fieldset>
-
-				<fieldset class="photos">
-					<legend>Photos</legend>
-					<Uploader bind:attachments={form.photos} msl={form.msl} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- BUTTONS -->
-		<footer class="buttons-group">
-			{#if form.is_active && !isAdmin}
-				<Button formaction="?/remove" color="danger" {loading} disabled={loading}>
-					{#snippet icon()}
-						❌
-					{/snippet}
-					Remove
-				</Button>
-			{/if}
+		<div class="inputs">
 			{#if isAdmin}
-				<Button formaction="?/delete" color="danger" {loading} disabled={loading}>
-					{#snippet icon()}
-						❌
-					{/snippet}
-					Delete
-				</Button>
+				<fieldset>
+					<legend>Status</legend>
+					<Toggle
+						name="is_active"
+						bind:checked={form.is_active}
+						label={form.is_active ? 'Listed' : 'Delisted'} />
+				</fieldset>
 			{/if}
 
-			<!-- {#if isAdmin} -->
-			<Button
-				type="button"
-				disabled={loading}
-				onclick={() => {
-					goto(`/${form.id}/print`);
-				}}>
-				{#snippet icon()}
-					👁‍🗨
-				{/snippet}
-				Print
-			</Button>
-			<!-- {/if} -->
+			<fieldset class={form.is_active ? 'active' : 'removed'}>
+				<legend>MSL</legend>
+				<input type="text" placeholder="ex: CR-001" bind:value={form.msl} disabled />
+				{#if !form.msl}
+					<Button type="button" size="block" onclick={getMsl}>Set</Button>
+				{/if}
+			</fieldset>
 
-			<input type="hidden" hidden name="id" value={form.id} />
-			<input type="hidden" hidden name="msl" value={form.msl} />
-			<input type="hidden" hidden name="location" value={JSON.stringify(form.location)} />
-			<input
-				type="hidden"
-				hidden
-				name="property_for"
-				value={JSON.stringify(form.property_for)} />
-			<input type="hidden" hidden name="features" value={JSON.stringify(form.features)} />
-			<!-- <Button type="button" disabled={loading || !formIsValid}
+			<fieldset>
+				<legend>Land Use</legend>
+				<Select name="land_use" bind:selected={form.land_use} />
+			</fieldset>
+
+			<fieldset class="flow">
+				<legend>Property For</legend>
+				<Checkboxes bind:selected={form.property_for} kind="square" />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY LOCATION -->
+	<section class="section section_location">
+		<div class="header">
+			<h3>Location</h3>
+			<p>
+				GPS coordinates and physical address. Location displayed on map via GPS, accuracy
+				is important.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Address</legend>
+				<input
+					type="text"
+					name="address"
+					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
+					bind:value={form.address} />
+			</fieldset>
+
+			<fieldset class="location">
+				<legend>Location (lat, lng)</legend>
+				<input type="text" placeholder="ex: 9.97542" bind:value={form.location.lat} />
+				<input type="text" placeholder="ex: -84.163443" bind:value={form.location.lng} />
+				<Button type="button" size="block" onclick={getPosition}>Get current GPS</Button>
+
+				<MapPicker bind:updategps={gps} bind:position={form.location} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY CONTACTS -->
+	<section class="section section_contacts">
+		<div class="header">
+			<h3>Contacts</h3>
+			<p>
+				Email and Phone number of a realtor or person selling the property, usually found
+				on a placard in front of the property.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Phone</legend>
+				<input
+					type="tel"
+					name="contact_phone"
+					placeholder="ex: 1234-5678"
+					bind:value={form.contact_phone} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Email</legend>
+				<input
+					type="email"
+					name="contact_email"
+					placeholder="ex: this@that.there"
+					bind:value={form.contact_email} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Realtor</legend>
+				<input
+					type="text"
+					name="contact_realtor"
+					placeholder="ex: Re/Max or Jane Doe"
+					bind:value={form.contact_realtor} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY BASICS -->
+	<section class="section section_basics">
+		<div class="header">
+			<h3>Basics</h3>
+			<p>
+				These are initial values and usually first thing user looks for when narrowing
+				down their options.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Year built</legend>
+				<input
+					type="number"
+					name="year_built"
+					placeholder="ex: 2019"
+					bind:value={form.year_built} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Building Style</legend>
+				<input
+					type="text"
+					name="building_style"
+					placeholder="ex: 2 Story"
+					bind:value={form.building_style} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Lot Size ㎡</legend>
+				<input
+					type="number"
+					name="lot_size"
+					placeholder="ex: 900"
+					bind:value={form.lot_size} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Building Size ㎡</legend>
+				<input
+					type="number"
+					name="building_size"
+					placeholder="ex: 810"
+					bind:value={form.building_size} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY DETAILS -->
+	<section class="section section_details">
+		<div class="header">
+			<h3>Details</h3>
+			<p>
+				Information important to the user and thus should be filled in as soon as
+				possible. Also used in filters.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Bedrooms</legend>
+				<input type="number" name="beds" placeholder="ex: 3" bind:value={form.beds} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Bathrooms</legend>
+				<input type="number" name="baths" placeholder="ex: 3" bind:value={form.baths} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Restrooms (half-baths)</legend>
+				<input
+					type="number"
+					name="half_baths"
+					placeholder="ex: 2"
+					bind:value={form.half_baths} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Rooms</legend>
+				<input type="number" name="rooms" placeholder="ex: 6" bind:value={form.rooms} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Parking Spaces</legend>
+				<input
+					type="number"
+					name="parking_spaces"
+					placeholder="ex: 9"
+					bind:value={form.parking_spaces} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY PRICING -->
+	<section class="section section_pricing">
+		<div class="header">
+			<h3>Pricing</h3>
+			<p>
+				Everything regarding money goes in here and is very important since used in
+				filters and relevent to user.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Price $</legend>
+				<input
+					type="number"
+					name="price"
+					placeholder="ex: 630000"
+					bind:value={form.price} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Rent ($/month)</legend>
+				<input type="number" name="rent" placeholder="ex: 1800" bind:value={form.rent} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Taxes ($/year)</legend>
+				<input
+					type="number"
+					name="taxes"
+					placeholder="ex: 1500"
+					bind:value={form.taxes} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Fees (condo, asssociation) ($/month)</legend>
+				<input type="number" name="fees" placeholder="ex: 120" bind:value={form.fees} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY FEATURES -->
+	<section class="section section_features">
+		<div class="header">
+			<h3>Features</h3>
+			<p>
+				Description, features, photos. Photos are important and good quality should be
+				provided.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Features</legend>
+				<input
+					type="text"
+					placeholder="ex: BBQ"
+					onkeydown={(evt) => {
+						if (evt.key == 'Enter') evt.preventDefault();
+					}}
+					use:enter={addFeature} />
+				<div class="feature-list">
+					{#each form.features || [] as feature, i}
+						<span class="feature">
+							<svg
+								class="close"
+								onclick={() => removeFeature(i)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
+								}}
+								role="button"
+								tabindex="0"
+								width="18px"
+								height="18px"
+								stroke-width="1.5"
+								viewBox="0 0 24 24"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								color="currentColor"
+								><path
+									d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round" /></svg>
+							{feature}
+						</span>
+					{/each}
+				</div>
+			</fieldset>
+
+			<fieldset class="description">
+				<legend>Description</legend>
+				<textarea
+					name="description"
+					class="scroller"
+					rows="6"
+					placeholder="Description (max 9 sentences)"
+					bind:value={form.description}></textarea>
+			</fieldset>
+
+			<fieldset class="photos">
+				<legend>Photos</legend>
+				<Uploader bind:attachments={form.photos} msl={form.msl} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- BUTTONS -->
+	<footer class="buttons-group">
+		{#if form.is_active && !isAdmin}
+			<Button formaction="?/remove" color="danger" {loading} disabled={loading}>
+				{#snippet icon()}
+					❌
+				{/snippet}
+				Remove
+			</Button>
+		{/if}
+		{#if isAdmin}
+			<Button formaction="?/delete" color="danger" {loading} disabled={loading}>
+				{#snippet icon()}
+					❌
+				{/snippet}
+				Delete
+			</Button>
+		{/if}
+
+		<!-- {#if isAdmin} -->
+		<Button
+			type="button"
+			disabled={loading}
+			onclick={() => {
+				goto(`/${form.id}/print`);
+			}}>
+			{#snippet icon()}
+				👁‍🗨
+			{/snippet}
+			Print
+		</Button>
+		<!-- {/if} -->
+
+		<input type="hidden" hidden name="id" value={form.id} />
+		<input type="hidden" hidden name="msl" value={form.msl} />
+		<input type="hidden" hidden name="location" value={JSON.stringify(form.location)} />
+		<input
+			type="hidden"
+			hidden
+			name="property_for"
+			value={JSON.stringify(form.property_for)} />
+		<input type="hidden" hidden name="features" value={JSON.stringify(form.features)} />
+		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
-			<Button formaction="?/edit" {loading} disabled={loading}>
-				{#snippet icon()}
-					💾
-				{/snippet}
-				Submit Changes
-			</Button>
-		</footer>
+		<Button formaction="?/edit" {loading} disabled={loading}>
+			{#snippet icon()}
+				💾
+			{/snippet}
+			Submit Changes
+		</Button>
+	</footer>
 
-		<!-- NOTIFICATIONS -->
-		{#if message}
-			<Notify type="success">{message}</Notify>
-		{/if}
-		{#if error}
-			<Notify type="danger">{error}</Notify>
-		{/if}
-	</form>
-{/if}
+	<!-- NOTIFICATIONS -->
+	{#if message}
+		<Notify type="success">{message}</Notify>
+	{/if}
+	{#if error}
+		<Notify type="danger">{error}</Notify>
+	{/if}
+</form>
 
 <!-- CONFIRMATION MODAL -->
 

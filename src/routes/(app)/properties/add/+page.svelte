@@ -83,467 +83,459 @@
 	<Nav />
 {/if}
 
-{#if !page.data?.is_logged_in}
-	<Login />
-{:else}
-	<form
-		class="add-property"
-		method="POST"
-		action="?/add"
-		enctype="multipart/form-data"
-		use:enhance={({ form, data, action, cancel }) => {
-			// 'form' is the '<form>' element
-			// 'data' is it's 'FormData' object
-			// 'action' is the URL to which the form is posted
-			// 'cancel()' will prevent the submission
+<form
+	class="add-property"
+	method="POST"
+	action="?/add"
+	enctype="multipart/form-data"
+	use:enhance={({ form, data, action, cancel }) => {
+		// 'form' is the '<form>' element
+		// 'data' is it's 'FormData' object
+		// 'action' is the URL to which the form is posted
+		// 'cancel()' will prevent the submission
 
-			// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
-			won = false;
-			loading = true;
-			message = '';
-			error = '';
+		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
+		won = false;
+		loading = true;
+		message = '';
+		error = '';
 
-			if (isEmpty(property.property_for)) {
-				cancel();
-				error =
-					'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
-				loading = false;
+		if (isEmpty(property.property_for)) {
+			cancel();
+			error =
+				'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
+			loading = false;
+		}
+
+		// prevent default callback from resetting the form
+		return async ({ result, update }) => {
+			console.log('/add/+page.svelte result: ', result);
+			if (result.status === 200 && result.data.success) {
+				// reset form
+				clearStorage();
+				won = true;
+				// console.log("RESULT:", result.data);
+				addToast({
+					message: result.data.message,
+					type: 'success',
+					dismissible: true,
+					timeout: 1200,
+				});
+				update({ reset: true });
+				goto(`/${result.data.property_id}/print`);
+			} else {
+				console.log('TRIGGED DUE TO: ', result.status);
+				addToast({
+					message: `Something went wrong, server returned status: ${result.status}`,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
 			}
 
-			// prevent default callback from resetting the form
-			return async ({ result, update }) => {
-				console.log('/add/+page.svelte result: ', result);
-				if (result.status === 200 && result.data.success) {
-					// reset form
-					clearStorage();
-					won = true;
-					// console.log("RESULT:", result.data);
-					addToast({
-						message: result.data.message,
-						type: 'success',
-						dismissible: true,
-						timeout: 1200,
-					});
-					update({ reset: true });
-					goto(`/${result.data.property_id}/print`);
-				} else {
-					console.log('TRIGGED DUE TO: ', result.status);
-					addToast({
-						message: `Something went wrong, server returned status: ${result.status}`,
-						type: 'error',
-						dismissible: true,
-						timeout: 0,
-					});
-				}
+			if (result.type === 'invalid') {
+				error = result.data.message;
+				await applyAction(result);
+			}
+			loading = false;
+		};
+	}}>
+	<!-- PROPERTY TYPE -->
+	<section class="section section_property_type">
+		<div class="header">
+			<h3>Property type</h3>
+			<p>
+				Categories listing in appropriate section and coloring on the map. Is part of
+				filtering.
+			</p>
+		</div>
 
-				if (result.type === 'invalid') {
-					error = result.data.message;
-					await applyAction(result);
-				}
-				loading = false;
-			};
-		}}>
-		<!-- PROPERTY TYPE -->
-		<section class="section section_property_type">
-			<div class="header">
-				<h3>Property type</h3>
-				<p>
-					Categories listing in appropriate section and coloring on the map. Is part of
-					filtering.
-				</p>
-			</div>
-
-			<div class="inputs">
-				{#if isAdmin}
-					<fieldset>
-						<legend>Status</legend>
-						<Toggle
-							name="is_active"
-							bind:checked={property.is_active}
-							label={property.is_active ? 'Listed' : 'Delisted'} />
-					</fieldset>
-				{/if}
-
-				<fieldset class={property.is_active ? 'active' : 'removed'}>
-					<legend>MSL</legend>
-					<input
-						type="text"
-						placeholder="ex: CR-001"
-						bind:value={property.msl}
-						disabled={!isAdmin} />
-				</fieldset>
-
+		<div class="inputs">
+			{#if isAdmin}
 				<fieldset>
-					<legend>Land Use</legend>
-					<Select name="land_use" bind:selected={property.land_use} />
+					<legend>Status</legend>
+					<Toggle
+						name="is_active"
+						bind:checked={property.is_active}
+						label={property.is_active ? 'Listed' : 'Delisted'} />
 				</fieldset>
+			{/if}
 
-				<fieldset class="flow">
-					<legend>Property For</legend>
-					<Checkboxes bind:selected={property.property_for} kind="square" />
-				</fieldset>
-			</div>
-		</section>
+			<fieldset class={property.is_active ? 'active' : 'removed'}>
+				<legend>MSL</legend>
+				<input
+					type="text"
+					placeholder="ex: CR-001"
+					bind:value={property.msl}
+					disabled={!isAdmin} />
+			</fieldset>
 
-		<!-- PROPERTY LOCATION -->
-		<section class="section section_location">
-			<div class="header">
-				<h3>Location</h3>
-				<p>
-					GPS coordinates and physical address. Location displayed on map via GPS,
-					accuracy is important.
-				</p>
-			</div>
+			<fieldset>
+				<legend>Land Use</legend>
+				<Select name="land_use" bind:selected={property.land_use} />
+			</fieldset>
 
-			<div class="inputs">
+			<fieldset class="flow">
+				<legend>Property For</legend>
+				<Checkboxes bind:selected={property.property_for} kind="square" />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY LOCATION -->
+	<section class="section section_location">
+		<div class="header">
+			<h3>Location</h3>
+			<p>
+				GPS coordinates and physical address. Location displayed on map via GPS, accuracy
+				is important.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Address</legend>
+				<input
+					type="text"
+					name="address"
+					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
+					bind:value={property.address} />
+			</fieldset>
+
+			<fieldset class="location">
+				<legend>Location (lat, lng)</legend>
+				<input type="text" placeholder="ex: 9.97542" bind:value={property.location.lat} />
+				<input
+					type="text"
+					placeholder="ex: -84.163443"
+					bind:value={property.location.lng} />
+				<Button type="button" size="block" onclick={getPosition}>Get current GPS</Button>
+
+				<MapPicker bind:updategps={gps} bind:position={property.location} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY CONTACTS -->
+	<section class="section section_contacts">
+		<div class="header">
+			<h3>Contacts</h3>
+			<p>
+				Email and Phone number of a realtor or person selling the property, usually found
+				on a placard in front of the property.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Phone</legend>
+				<input
+					type="tel"
+					name="contact_phone"
+					placeholder="ex: 1234-5678"
+					bind:value={property.contact_phone} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Email</legend>
+				<input
+					type="email"
+					name="contact_email"
+					placeholder="ex: this@that.there"
+					bind:value={property.contact_email} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Realtor</legend>
+				<input
+					type="text"
+					name="contact_realtor"
+					placeholder="ex: Re/Max or Jane Doe"
+					bind:value={property.contact_realtor} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY BASICS -->
+	<section class="section section_basics">
+		<div class="header">
+			<h3>Basics</h3>
+			<p>
+				These are initial values and usually first thing user looks for when narrowing
+				down their options.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Year built</legend>
+				<input
+					type="number"
+					name="year_built"
+					placeholder="ex: 2019"
+					min="1900"
+					max="2099"
+					step="1"
+					bind:value={property.year_built} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Building Style</legend>
+				<input
+					type="text"
+					name="building_style"
+					placeholder="ex: 2 Story"
+					bind:value={property.building_style} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Lot Size ㎡</legend>
+				<input
+					type="number"
+					name="lot_size"
+					placeholder="ex: 900"
+					min="0"
+					bind:value={property.lot_size} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Building Size ㎡</legend>
+				<input
+					type="number"
+					name="building_size"
+					placeholder="ex: 810"
+					min="0"
+					bind:value={property.building_size} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY DETAILS -->
+	<section class="section section_details">
+		<div class="header">
+			<h3>Details</h3>
+			<p>
+				Information important to the user and thus should be filled in as soon as
+				possible. Also used in filters.
+			</p>
+		</div>
+
+		<div class="inputs">
+			<fieldset>
+				<legend>Bedrooms</legend>
+				<input
+					type="number"
+					name="beds"
+					placeholder="ex: 3"
+					min="0"
+					bind:value={property.beds} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Bathrooms</legend>
+				<input
+					type="number"
+					name="baths"
+					placeholder="ex: 3"
+					min="0"
+					bind:value={property.baths} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Restrooms (half-baths)</legend>
+				<input
+					type="number"
+					name="half_baths"
+					placeholder="ex: 2"
+					min="0"
+					bind:value={property.half_baths} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Rooms</legend>
+				<input
+					type="number"
+					name="rooms"
+					placeholder="ex: 6"
+					min="0"
+					bind:value={property.rooms} />
+			</fieldset>
+
+			<fieldset>
+				<legend>Parking Spaces</legend>
+				<input
+					type="number"
+					name="parking_spaces"
+					placeholder="ex: 9"
+					min="0"
+					bind:value={property.parking_spaces} />
+			</fieldset>
+		</div>
+	</section>
+
+	<!-- PROPERTY PRICING -->
+	<section class="section section_pricing">
+		<div class="header">
+			<h3>Pricing</h3>
+			<p>
+				Everything regarding money goes in here and is very important since used in
+				filters and relevent to user.
+			</p>
+		</div>
+
+		<div class="inputs">
+			{#if property.property_for.includes('Sale')}
 				<fieldset>
-					<legend>Address</legend>
-					<input
-						type="text"
-						name="address"
-						placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
-						bind:value={property.address} />
-				</fieldset>
-
-				<fieldset class="location">
-					<legend>Location (lat, lng)</legend>
-					<input
-						type="text"
-						placeholder="ex: 9.97542"
-						bind:value={property.location.lat} />
-					<input
-						type="text"
-						placeholder="ex: -84.163443"
-						bind:value={property.location.lng} />
-					<Button type="button" size="block" onclick={getPosition}
-						>Get current GPS</Button>
-
-					<MapPicker bind:updategps={gps} bind:position={property.location} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY CONTACTS -->
-		<section class="section section_contacts">
-			<div class="header">
-				<h3>Contacts</h3>
-				<p>
-					Email and Phone number of a realtor or person selling the property, usually
-					found on a placard in front of the property.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Phone</legend>
-					<input
-						type="tel"
-						name="contact_phone"
-						placeholder="ex: 1234-5678"
-						bind:value={property.contact_phone} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Email</legend>
-					<input
-						type="email"
-						name="contact_email"
-						placeholder="ex: this@that.there"
-						bind:value={property.contact_email} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Realtor</legend>
-					<input
-						type="text"
-						name="contact_realtor"
-						placeholder="ex: Re/Max or Jane Doe"
-						bind:value={property.contact_realtor} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY BASICS -->
-		<section class="section section_basics">
-			<div class="header">
-				<h3>Basics</h3>
-				<p>
-					These are initial values and usually first thing user looks for when narrowing
-					down their options.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Year built</legend>
+					<legend>Price $</legend>
 					<input
 						type="number"
-						name="year_built"
-						placeholder="ex: 2019"
-						min="1900"
-						max="2099"
-						step="1"
-						bind:value={property.year_built} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Building Style</legend>
-					<input
-						type="text"
-						name="building_style"
-						placeholder="ex: 2 Story"
-						bind:value={property.building_style} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Lot Size ㎡</legend>
-					<input
-						type="number"
-						name="lot_size"
-						placeholder="ex: 900"
+						name="price"
+						placeholder="ex: 630000"
 						min="0"
-						bind:value={property.lot_size} />
+						bind:value={property.price} />
 				</fieldset>
+			{/if}
 
+			{#if property.property_for.includes('Rent')}
 				<fieldset>
-					<legend>Building Size ㎡</legend>
+					<legend>Rent ($/month)</legend>
 					<input
 						type="number"
-						name="building_size"
-						placeholder="ex: 810"
+						name="rent"
+						placeholder="ex: 1800"
 						min="0"
-						bind:value={property.building_size} />
+						bind:value={property.rent} />
 				</fieldset>
-			</div>
-		</section>
+			{/if}
 
-		<!-- PROPERTY DETAILS -->
-		<section class="section section_details">
-			<div class="header">
-				<h3>Details</h3>
-				<p>
-					Information important to the user and thus should be filled in as soon as
-					possible. Also used in filters.
-				</p>
-			</div>
+			<fieldset>
+				<legend>Taxes ($/year)</legend>
+				<input
+					type="number"
+					name="taxes"
+					placeholder="ex: 1500"
+					min="0"
+					bind:value={property.taxes} />
+			</fieldset>
 
-			<div class="inputs">
-				<fieldset>
-					<legend>Bedrooms</legend>
-					<input
-						type="number"
-						name="beds"
-						placeholder="ex: 3"
-						min="0"
-						bind:value={property.beds} />
-				</fieldset>
+			<fieldset>
+				<legend>Fees (condo, asssociation) ($/month)</legend>
+				<input
+					type="number"
+					name="fees"
+					placeholder="ex: 120"
+					min="0"
+					bind:value={property.fees} />
+			</fieldset>
+		</div>
+	</section>
 
-				<fieldset>
-					<legend>Bathrooms</legend>
-					<input
-						type="number"
-						name="baths"
-						placeholder="ex: 3"
-						min="0"
-						bind:value={property.baths} />
-				</fieldset>
+	<!-- PROPERTY FEATURES -->
+	<section class="section section_features">
+		<div class="header">
+			<h3>Features</h3>
+			<p>
+				Description, features, photos. Photos are important and good quality should be
+				provided.
+			</p>
+		</div>
 
-				<fieldset>
-					<legend>Restrooms (half-baths)</legend>
-					<input
-						type="number"
-						name="half_baths"
-						placeholder="ex: 2"
-						min="0"
-						bind:value={property.half_baths} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Rooms</legend>
-					<input
-						type="number"
-						name="rooms"
-						placeholder="ex: 6"
-						min="0"
-						bind:value={property.rooms} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Parking Spaces</legend>
-					<input
-						type="number"
-						name="parking_spaces"
-						placeholder="ex: 9"
-						min="0"
-						bind:value={property.parking_spaces} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY PRICING -->
-		<section class="section section_pricing">
-			<div class="header">
-				<h3>Pricing</h3>
-				<p>
-					Everything regarding money goes in here and is very important since used in
-					filters and relevent to user.
-				</p>
-			</div>
-
-			<div class="inputs">
-				{#if property.property_for.includes('Sale')}
-					<fieldset>
-						<legend>Price $</legend>
-						<input
-							type="number"
-							name="price"
-							placeholder="ex: 630000"
-							min="0"
-							bind:value={property.price} />
-					</fieldset>
-				{/if}
-
-				{#if property.property_for.includes('Rent')}
-					<fieldset>
-						<legend>Rent ($/month)</legend>
-						<input
-							type="number"
-							name="rent"
-							placeholder="ex: 1800"
-							min="0"
-							bind:value={property.rent} />
-					</fieldset>
-				{/if}
-
-				<fieldset>
-					<legend>Taxes ($/year)</legend>
-					<input
-						type="number"
-						name="taxes"
-						placeholder="ex: 1500"
-						min="0"
-						bind:value={property.taxes} />
-				</fieldset>
-
-				<fieldset>
-					<legend>Fees (condo, asssociation) ($/month)</legend>
-					<input
-						type="number"
-						name="fees"
-						placeholder="ex: 120"
-						min="0"
-						bind:value={property.fees} />
-				</fieldset>
-			</div>
-		</section>
-
-		<!-- PROPERTY FEATURES -->
-		<section class="section section_features">
-			<div class="header">
-				<h3>Features</h3>
-				<p>
-					Description, features, photos. Photos are important and good quality should be
-					provided.
-				</p>
-			</div>
-
-			<div class="inputs">
-				<fieldset>
-					<legend>Features</legend>
-					<input
-						type="text"
-						placeholder="ex: BBQ"
-						onkeydown={(evt) => {
-							if (evt.key == 'Enter') evt.preventDefault();
-						}}
-						use:enter={addFeature} />
-					<div class="feature-list">
-						{#each property.features || [] as feature, i}
-							<span class="feature">
-								<svg
-									class="close"
-									onclick={() => removeFeature(i)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
-									}}
-									role="button"
-									tabindex="0"
-									width="18px"
-									height="18px"
+		<div class="inputs">
+			<fieldset>
+				<legend>Features</legend>
+				<input
+					type="text"
+					placeholder="ex: BBQ"
+					onkeydown={(evt) => {
+						if (evt.key == 'Enter') evt.preventDefault();
+					}}
+					use:enter={addFeature} />
+				<div class="feature-list">
+					{#each property.features || [] as feature, i}
+						<span class="feature">
+							<svg
+								class="close"
+								onclick={() => removeFeature(i)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
+								}}
+								role="button"
+								tabindex="0"
+								width="18px"
+								height="18px"
+								stroke-width="1.5"
+								viewBox="0 0 24 24"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								color="currentColor"
+								><path
+									d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
+									stroke="currentColor"
 									stroke-width="1.5"
-									viewBox="0 0 24 24"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-									color="currentColor"
-									><path
-										d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"
-										stroke="currentColor"
-										stroke-width="1.5"
-										stroke-linecap="round"
-										stroke-linejoin="round" /></svg>
-								{feature}
-							</span>
-						{/each}
-					</div>
-				</fieldset>
+									stroke-linecap="round"
+									stroke-linejoin="round" /></svg>
+							{feature}
+						</span>
+					{/each}
+				</div>
+			</fieldset>
 
-				<fieldset class="description">
-					<legend>Description</legend>
-					<textarea
-						name="description"
-						class="scroller"
-						rows="6"
-						placeholder="Description (max 9 sentences)"
-						bind:value={property.description}></textarea>
-				</fieldset>
+			<fieldset class="description">
+				<legend>Description</legend>
+				<textarea
+					name="description"
+					class="scroller"
+					rows="6"
+					placeholder="Description (max 9 sentences)"
+					bind:value={property.description}></textarea>
+			</fieldset>
 
-				<fieldset class="photos">
-					<legend>Photos</legend>
+			<fieldset class="photos">
+				<legend>Photos</legend>
 
-					<Uploader bind:attachments={property.photos} msl={property.msl} />
-				</fieldset>
-			</div>
-		</section>
+				<Uploader bind:attachments={property.photos} msl={property.msl} />
+			</fieldset>
+		</div>
+	</section>
 
-		<!-- BUTTONS -->
-		<footer class="buttons-group">
-			<input type="hidden" hidden name="user_id" value={page.data?.session?.user.id} />
-			<input type="hidden" hidden name="msl" value={property.msl} />
-			<input
-				type="hidden"
-				hidden
-				name="location"
-				value={JSON.stringify(property.location)} />
-			<input
-				type="hidden"
-				hidden
-				name="property_for"
-				value={JSON.stringify(property.property_for)} />
-			<input
-				type="hidden"
-				hidden
-				name="features"
-				value={JSON.stringify(property.features)} />
-			<!-- <Button type="button" disabled={loading || !formIsValid}
+	<!-- BUTTONS -->
+	<footer class="buttons-group">
+		<input type="hidden" hidden name="user_id" value={page.data?.session?.user.id} />
+		<input type="hidden" hidden name="msl" value={property.msl} />
+		<input
+			type="hidden"
+			hidden
+			name="location"
+			value={JSON.stringify(property.location)} />
+		<input
+			type="hidden"
+			hidden
+			name="property_for"
+			value={JSON.stringify(property.property_for)} />
+		<input
+			type="hidden"
+			hidden
+			name="features"
+			value={JSON.stringify(property.features)} />
+		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
-			<Button {loading} disabled={loading}>
-				{#snippet icon()}
-					💾
-				{/snippet}
-				Add Property
-			</Button>
-		</footer>
+		<Button {loading} disabled={loading}>
+			{#snippet icon()}
+				💾
+			{/snippet}
+			Add Property
+		</Button>
+	</footer>
 
-		<!-- NOTIFICATIONS -->
-		{#if message}
-			<Notify type="success">{message}</Notify>
-		{/if}
-		{#if error}
-			<Notify type="danger">{error}</Notify>
-		{/if}
-	</form>
-{/if}
+	<!-- NOTIFICATIONS -->
+	{#if message}
+		<Notify type="success">{message}</Notify>
+	{/if}
+	{#if error}
+		<Notify type="danger">{error}</Notify>
+	{/if}
+</form>
 
 <!-- CONFETTI -->
 {#if won}

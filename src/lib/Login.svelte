@@ -1,68 +1,69 @@
 <script>
-	import { page } from '$app/state';
-	import { goto, invalidateAll } from '$app/navigation';
-	import Text from '$lib/Text.svelte';
-	import { Button } from '$lib/buttons';
-	import { isEmpty } from '$lib/utils/helpers.js';
+	  import { page } from '$app/state';
+import { goto, invalidateAll } from '$app/navigation';
+import Text from '$lib/Text.svelte';
+import { Button } from '$lib/buttons';
+import { isEmpty } from '$lib/utils/helpers.js';
 
-	let error = $state(''),
-		message = $state(''),
-		loading = $state(false),
-		email = $state(''),
-		token = $state(''),
-		view = $state('magic');
+let { redirectTo = '/' } = $props();
 
-	async function submit() {
-		error = '';
-		message = '';
-		loading = true;
+let error = $state('');
+let message = $state('');
+let loading = $state(false);
+let email = $state('');
+let token = $state('');
+let view = $state('magic');
 
-		if (isEmpty(email)) {
-			error = 'Email must not be empty';
-			loading = false;
-			return false;
-		}
+async function submit() {
+  error = '';
+  message = '';
+  loading = true;
 
-		const { error: err } = await page.data.supabase.auth.signInWithOtp({
-			email,
-			sendOtp: true,
-		});
-		// const { error: err } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo:  "https://example.com/login" } });
+  if (isEmpty(email)) {
+    error = 'Email must not be empty';
+    loading = false;
+    return false;
+  }
 
-		if (err) error = err.message;
-		else {
-			view = 'verify';
-			message = 'Verification token sent!';
-			// goto("/");
-		}
+  const { error: err } = await page.data.supabase.auth.signInWithOtp({
+    email,
+    sendOtp: true,
+  });
 
-		loading = false;
-	}
+  if (err) {
+    error = err.message;
+  } else {
+    view = 'verify';
+    message = 'Verification token sent!';
+  }
 
-	async function verify() {
-		error = '';
-		message = '';
-		loading = true;
+  loading = false;
+}
 
-		const { data: verifyData, error: verifyError } =
-			await page.data.supabase.auth.verifyOtp({
-				email,
-				token,
-				type: 'magiclink',
-			});
+async function verify() {
+  error = '';
+  message = '';
+  loading = true;
 
-		if (verifyError) {
-			view = 'magic';
-			token = '';
-			error = verifyError.message;
-		} else {
-			message = 'Verified!';
-			view = 'verified'; // Hide the login form
-			invalidateAll(); // Invalidate all data to force full re-render
-		}
+  const { data: verifyData, error: verifyError } = await page.data.supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'magiclink',
+  });
 
-		loading = false;
-	}
+  if (verifyError) {
+    view = 'magic';
+    token = '';
+    error = verifyError.message;
+  } else {
+    message = 'Verified!';
+    view = 'verified';
+    await invalidateAll();
+    goto(redirectTo);
+  }
+
+  loading = false;
+}
 </script>
 
 <aside class="login">

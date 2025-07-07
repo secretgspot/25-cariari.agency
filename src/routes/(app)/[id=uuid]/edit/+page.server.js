@@ -8,15 +8,11 @@ export async function load(event) {
 	const session = await event.locals.getSession();
 	const supabaseClient = event.locals.supabase;
 
-	// if (!session) {
-	// 	throw redirect(303, '/login');
-	// }
+	if (!session.session) {
+		throw redirect(303, '/login');
+	}
 
 	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> session:', session);
-
-	if (session?.is_admin) {
-		console.log('edit 🌟');
-	}
 
 	// Get the SLUG
 	const { id: property_id } = params;

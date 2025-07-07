@@ -12,9 +12,9 @@ export async function load(event) {
 	const session = await event.locals.getSession();
 	const supabaseClient = event.locals.supabase;
 
-	// if (!session) {
-	// 	throw redirect(303, '/login');
-	// }
+	if (!session.session) {
+		throw redirect(303, '/login');
+	}
 
 	const getMsl = async () => {
 		const { data, error: err } = await supabaseClient
