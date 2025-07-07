@@ -9,7 +9,7 @@
 	import { Button, LinkButton } from '$lib/buttons';
 
 	let { data } = $props();
-	// console.log('(app)/[id=uuid]/print/+page.svelte data:', data);
+	// console.log('(app)/[id=uuid]/print/+page.svelte page:', page);
 </script>
 
 <svelte:head>
@@ -26,8 +26,8 @@
 
 	<div class="grid-container">
 		<div class="qr">
-			<QR size={180} message="{data.hostname}/{data.property.id}" />
-			<small>{data.hostname}/{data.property.id}</small>
+			<QR size={180} message="{page.url.hostname}/{data.property.id}/edit" />
+			<small>{page.url.hostname}/{data.property.id}/edit</small>
 		</div>
 
 		<div class="address">
@@ -40,14 +40,22 @@
 		</div>
 
 		<div class="header">
-			Hello, your property has been added to our online list of properties that are
-			currently on the market. If you would like to update details that are missing or
-			unlist this property from our website, please scan QR code which will take you to
-			our editing page where you can update details and or remove it from being listed.
-			You can visit same page by navigating to
-			<LinkButton href="/{data.property.id}/edit" title="Add you property"
-				>{data.hostname}/{data.property.id}/edit</LinkButton>
-			This service is free.
+			<strong>Great news!</strong> Your property is now live on our online listings.<br />
+			<br />
+			To manage your property (update details, add missing information, or unlist it), please
+			use one of the following options to access your editing page:
+
+			<ul>
+				<li>Scan the QR code provided.</li>
+				<li>
+					Visit this direct link: <LinkButton
+						href="/{data.property.id}/edit"
+						title="Add you property"
+						>{page.url.hostname}/{data.property.id}/edit</LinkButton>
+				</li>
+			</ul>
+
+			There is no charge for this service.
 		</div>
 
 		<div class="features">
@@ -97,10 +105,10 @@
 		<h2>Scan this QR to view details of this {data.property.msl} listing.</h2>
 
 		<div class="qr-wrapper">
-			<QR size={360} message="{data.hostname}/{data.property.id}" />
+			<QR size={360} message="{page.url.hostname}/{data.property.id}" />
 		</div>
 
-		<h3>{data.hostname}/{data.property.id}</h3>
+		<h3>{page.url.hostname}/{data.property.id}</h3>
 	</div>
 
 	<!--
