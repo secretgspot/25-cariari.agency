@@ -67,7 +67,7 @@
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href="/css/leaflet.css" />
+	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
 </svelte:head>
 
 <div id="map-canvas" class="map"></div>

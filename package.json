@@ -21,7 +21,6 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.2.0",
-		"leaflet.markercluster": "^1.5.3",
 		"qr.js": "^0.0.0"
 	}
 }

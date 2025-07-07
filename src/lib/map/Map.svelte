@@ -8,18 +8,17 @@
 
 	let map = $state(null);
 	let baseLayer = $state(null);
-	let mclusters = $state(null);
 	let L_instance = $state(null); // Use a distinct name for the Leaflet instance
 	let mapReady = $state(false); // New state variable to track map readiness
+	let markersLayer = $state(null); // Layer group for markers
 
 	onMount(async () => {
 		if (browser) {
 			const leaflet = await import('leaflet');
-			L_instance = leaflet; // Assign to the state variable
+			L_instance = leaflet;
 			if (typeof window !== 'undefined') {
 				window.L = L_instance; // Make it globally available for plugins
 			}
-			const markercluster = await import('leaflet.markercluster');
 
 			baseLayer = L_instance.tileLayer(
 				'//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
@@ -31,7 +30,7 @@
 				},
 			);
 
-			mclusters = L_instance.markerClusterGroup({ disableClusteringAtZoom: 16 });
+			markersLayer = L_instance.layerGroup(); // Initialize layer group for markers
 
 			map = L_instance.map('map-canvas', {
 				zoomControl: false,
@@ -43,7 +42,7 @@
 				zoom: 16,
 				attributionControl: false,
 				scrollWheelZoom: true,
-				layers: [baseLayer, mclusters],
+				layers: [baseLayer, markersLayer], // Add markersLayer to the map
 			}).invalidateSize();
 
 			L_instance.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -65,11 +64,11 @@
 		map.setView(e.target.getLatLng(), 17);
 	};
 
-	// Function to update markers, depends on L_instance, map, mclusters
+	// Function to update markers, depends on L_instance, map, markersLayer
 	const updateMarkers = (currentMarkers) => {
-		if (!L_instance || !map || !mclusters) return; // Ensure dependencies are ready
+		if (!L_instance || !map || !markersLayer) return; // Ensure dependencies are ready
 
-		mclusters.clearLayers();
+		markersLayer.clearLayers(); // Clear existing markers
 		currentMarkers.forEach((item) => {
 			let marker;
 			let property_id = item.id;
@@ -91,15 +90,15 @@
 				});
 				marker.bindTooltip(`${msl} - ${property_for}`).openTooltip();
 				marker.on('click', onMarkerClick);
-				mclusters.addLayer(marker);
+				markersLayer.addLayer(marker); // Add marker to the layer group
 			}
 		});
 	};
 
 	// Use $effect to react to changes in markers and mapReady
 	$effect(() => {
-		if (mapReady) {
-			// Only run this effect when the map is ready
+		if (mapReady && markersLayer) {
+			// Only run this effect when the map is ready and markersLayer is initialized
 			updateMarkers(markers);
 		}
 	});
@@ -113,12 +112,6 @@
 
 <svelte:head>
 	<link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
-	<link
-		rel="stylesheet"
-		href="/node_modules/leaflet.markercluster/dist/MarkerCluster.css" />
-	<link
-		rel="stylesheet"
-		href="/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 </svelte:head>
 
 <div id="map-canvas" class="map"></div>
