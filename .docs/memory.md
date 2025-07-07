@@ -85,6 +85,20 @@ Properties are the core data entity. Main fields:
 - `/src/routes/(app)/` contains main app pages: map, property detail, add/edit/print, about
 - `/src/routes/(app)/properties/` contains property list, add, filter logic
 
+## Project Structure
+
+- **`.docs/`**: Contains project documentation, including memory files, setup guides, and other relevant markdown files.
+- **`src/`**: Contains the main application source code.
+- **`static/`**: Contains static assets served directly by the web server.
+  - `favicon.png`, `favicon.svg`: Favicon files.
+  - `robots.txt`: Defines rules for web crawlers.
+  - `ads/`: Contains advertisement images.
+  - `css/`: Contains global CSS files, including `leaflet.css` (for maps), `normalize.css` (CSS reset), `print.css` (print-specific styles), and `styles.css` (main application styles).
+  - `icons/`: Contains SVG icons used throughout the application (e.g., `icon_arrow_left.svg`, `icon_baths.svg`).
+  - `logo/`: Contains various versions of the company logo in different formats and colors.
+  - `map/`: Contains assets related to the map functionality, such as Leaflet marker icons and property type SVG markers (`Rent.svg`, `Sale.svg`).
+  - `placeholder/`: Contains placeholder images for various purposes.
+
 ## Utilities
 
 - `/src/lib/utils/` contains helpers for formatting, validation, local storage, time, etc.
@@ -119,7 +133,5 @@ Properties are the core data entity. Main fields:
 - Print view is a separate route with QR code
 - Admin/regular user logic is handled in server actions and UI
 
-- The user will be making all of the commits.
-
 ---
-*Generated July 2, 2025. This file is intended as a memory/context file for rebuilding Cariari.Agency with a new tech stack. It summarizes all key features, data, and flows.*
+*Generated July 7, 2025. This file is intended as a memory/context file for rebuilding Cariari.Agency with a new tech stack. It summarizes all key features, data, and flows.*

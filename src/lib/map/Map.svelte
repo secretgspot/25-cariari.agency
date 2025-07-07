@@ -11,6 +11,7 @@
 	let L_instance = $state(null); // Use a distinct name for the Leaflet instance
 	let mapReady = $state(false); // New state variable to track map readiness
 	let markersLayer = $state(null); // Layer group for markers
+	let resizeObserver;
 
 	onMount(async () => {
 		if (browser) {
@@ -48,7 +49,12 @@
 			L_instance.control.zoom({ position: 'bottomleft' }).addTo(map);
 			L_instance.control.scale({ position: 'bottomright' }).addTo(map);
 
-			map.on('resize', () => console.log('resized map'));
+			resizeObserver = new ResizeObserver(() => {
+				if (map) {
+					map.invalidateSize();
+				}
+			});
+			resizeObserver.observe(document.getElementById('map-canvas'));
 			baseLayer.on('load', () => {
 				console.log(`🗺 loaded`);
 				if (onLoaded) onLoaded(true);
@@ -119,6 +125,7 @@
 		if (map) {
 			map.remove();
 		}
+		resizeObserver.disconnect();
 	});
 </script>
 
