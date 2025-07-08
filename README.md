@@ -36,6 +36,52 @@
 
 Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit, Supabase, and Vercel. It allows users to browse, add, edit, and print property listings. The project is structured as a modern SvelteKit app with a focus on property data management, user authentication, and map-based property browsing.
 
+## Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+- Node.js and npm installed.
+- A Supabase account and project.
+
+### Installation
+
+1.  Clone the repo
+    ```sh
+    git clone https://your-repo-url.com
+    ```
+2.  Install NPM packages
+    ```sh
+    npm install
+    ```
+3.  Set up your environment variables in a `.env` file. You will need your Supabase URL and anon key.
+    ```
+    PUBLIC_SUPABASE_URL=your_supabase_url
+    PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
+
+### Generating Supabase Types
+
+For full type-safety and editor autocompletion, you must generate the TypeScript definitions from your Supabase schema.
+
+1.  **Log in to the Supabase CLI:**
+    ```bash
+    npx supabase login
+    ```
+2.  **Generate the types file:**
+    You can find your `<your-project-id>` in your Supabase project's dashboard under `Project Settings > General`.
+    ```bash
+    npx supabase gen types typescript --project-id <your-project-id> > src/database.types.ts
+    ```
+    This will create a `database.types.ts` file in your `src` directory, which is automatically used by SvelteKit to provide a fully typed Supabase client.
+
+### Running the Development Server
+
+```bash
+npm run dev
+```
+
 ## TODO
 
 - <https://supabase.com/docs/guides/auth/server-side/migrating-to-ssr-from-auth-helpers?queryGroups=framework&framework=sveltekit>

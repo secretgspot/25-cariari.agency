@@ -4,6 +4,32 @@
 
 Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit and Supabase, and is hosted on Vercel. It allows users to browse, add, edit, and print property listings. The project is structured as a modern SvelteKit app with a focus on property data management, user authentication, and map-based property browsing.
 
+## Supabase Type Generation
+
+To ensure the project has up-to-date TypeScript definitions for the Supabase database schema, you need to generate the `database.types.ts` file. This is crucial for type safety and autocompletion, even in a JavaScript-based project.
+
+1.  **Log in to the Supabase CLI:**
+    ```bash
+    npx supabase login
+    ```
+2.  **Generate the types:**
+    Replace `<your-project-id>` with the actual ID from your Supabase project dashboard.
+    ```bash
+    npx supabase gen types typescript --project-id <your-project-id> > src/database.types.ts
+    ```
+3.  **Update `src/app.d.ts`:**
+    Ensure the `app.d.ts` file points to the newly generated types file.
+    ```typescript
+    // src/app.d.ts
+    declare namespace App {
+      interface Supabase {
+        Database: import('./database.types').Database;
+        SchemaName: 'public';
+      }
+      // ... other interfaces
+    }
+    ```
+
 ## Development Guidelines
 
 - **Frameworks**: Always use Svelte 5 and SvelteKit 2 for all new features and refactoring.
