@@ -180,6 +180,7 @@ The `/properties` page underwent significant refactoring to improve filtering an
     *   The number inputs for beds and baths were replaced with `Select` dropdowns offering predefined options (e.g., 'Any', '1+', '2+').
     *   The filtering logic in `filter-store.js` was updated to correctly parse these 'X+' values and handle potential `null`/`undefined` property values by defaulting them to 0 for comparison.
     *   The 'rooms' filter was completely removed.
+*   **Lot Size Filter:** A new text input filter for 'Lot Size' was added to the 'Features' section, allowing users to filter properties by minimum lot size.
 *   **Supabase Function for `jsonb` Array Overlaps:** A custom PostgreSQL function `jsonb_array_overlaps` was added to the Supabase database to handle `jsonb` array filtering more robustly. This function checks if any elements from a provided text array exist within a `jsonb` array column.
     *   **SQL for Function Creation:**
         ```sql

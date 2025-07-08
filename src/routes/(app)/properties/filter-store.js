@@ -7,7 +7,8 @@ export const filterStore = writable({
 	price: 10000000,
 	beds: 'Any',
 	baths: 'Any',
-	
+	lot_size: '',
+
 	active: true,
 	msl: ''
 });
@@ -19,7 +20,7 @@ export function getFilteredProperties(properties, filter) {
 			return false;
 		}
 
-		// Filter by transaction type (Rent, Sale, Investment)
+		// Filter by transaction type (Rent, Sale)
 		if (filter.filter_for.length > 0) {
 			const hasMatchingTransaction = property.property_for.some((type) =>
 				filter.filter_for.includes(type)
@@ -43,7 +44,7 @@ export function getFilteredProperties(properties, filter) {
 		if (filter.beds !== 'Any') {
 			const minBeds = parseInt(filter.beds.replace('+', ''));
 			const propertyBeds = Number(property.beds) || 0;
-			console.log(`Property ID: ${property.id}, Beds: ${property.beds} (parsed: ${propertyBeds}), Filter: ${filter.beds} (parsed: ${minBeds})`);
+			// console.log(`Property ID: ${property.id}, Beds: ${property.beds} (parsed: ${propertyBeds}), Filter: ${filter.beds} (parsed: ${minBeds})`);
 			if (propertyBeds < minBeds) {
 				return false;
 			}
@@ -53,13 +54,20 @@ export function getFilteredProperties(properties, filter) {
 		if (filter.baths !== 'Any') {
 			const minBaths = parseInt(filter.baths.replace('+', ''));
 			const propertyBaths = Number(property.baths) || 0;
-			console.log(`Property ID: ${property.id}, Baths: ${property.baths} (parsed: ${propertyBaths}), Filter: ${filter.baths} (parsed: ${minBaths})`);
+			// console.log(`Property ID: ${property.id}, Baths: ${property.baths} (parsed: ${propertyBaths}), Filter: ${filter.baths} (parsed: ${minBaths})`);
 			if (propertyBaths < minBaths) {
 				return false;
 			}
 		}
 
-		
+		// Filter by lot size
+		if (filter.lot_size) {
+			const minLotSize = Number(filter.lot_size);
+			const propertyLotSize = Number(property.lot_size) || 0;
+			if (propertyLotSize < minLotSize) {
+				return false;
+			}
+		}
 
 		// Filter by active status
 		if (property.is_active !== filter.active) {

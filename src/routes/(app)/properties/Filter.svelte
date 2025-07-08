@@ -23,7 +23,7 @@
 		</div>
 	</div>
 
-	{#if $filterStore.filter_for.includes('Rent') || $filterStore.filter_for.includes('Sale') || $filterStore.filter_for.includes('Investment')}
+	{#if $filterStore.filter_for.includes('Rent') || $filterStore.filter_for.includes('Sale')}
 		<div class="price_range">
 			<h3>Price Range</h3>
 
@@ -41,7 +41,7 @@
 					</label>
 				{/if}
 
-				{#if $filterStore.filter_for.includes('Sale') || $filterStore.filter_for.includes('Investment')}
+				{#if $filterStore.filter_for.includes('Sale')}
 					<label class="range column">
 						<!-- {formatter.format($filterStore.price)} -->
 						<input
@@ -73,6 +73,10 @@
 					name="baths"
 					bind:selected={$filterStore.baths}
 					options={['Any', '1+', '2+', '3+', '4+', '5+']} /> baths
+			</label>
+
+			<label class="number">
+				<input type="number" min="0" bind:value={$filterStore.lot_size} /> min lot size
 			</label>
 		</div>
 	</div>
