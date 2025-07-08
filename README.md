@@ -47,15 +47,20 @@ To get a local copy up and running, follow these simple steps.
 
 ### Installation
 
-1.  Clone the repo
+1. Clone the repo
+
     ```sh
     git clone https://your-repo-url.com
     ```
-2.  Install NPM packages
+
+2. Install NPM packages
+
     ```sh
     npm install
     ```
-3.  Set up your environment variables in a `.env` file. You will need your Supabase URL and anon key.
+
+3. Set up your environment variables in a `.env` file. You will need your Supabase URL and anon key.
+
     ```
     PUBLIC_SUPABASE_URL=your_supabase_url
     PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -65,15 +70,19 @@ To get a local copy up and running, follow these simple steps.
 
 For full type-safety and editor autocompletion, you must generate the TypeScript definitions from your Supabase schema.
 
-1.  **Log in to the Supabase CLI:**
+1. **Log in to the Supabase CLI:**
+
     ```bash
     npx supabase login
     ```
-2.  **Generate the types file:**
+
+2. **Generate the types file:**
     You can find your `<your-project-id>` in your Supabase project's dashboard under `Project Settings > General`.
+
     ```bash
     npx supabase gen types typescript --project-id <your-project-id> > src/database.types.ts
     ```
+
     This will create a `database.types.ts` file in your `src` directory, which is automatically used by SvelteKit to provide a fully typed Supabase client.
 
 ### Running the Development Server
@@ -84,9 +93,7 @@ npm run dev
 
 ## TODO
 
-- <https://supabase.com/docs/guides/auth/server-side/migrating-to-ssr-from-auth-helpers?queryGroups=framework&framework=sveltekit>
-- <https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=sveltekit&queryGroups=environment&environment=hooks>
-- <https://docs.maptiler.com/leaflet/examples/vector-tiles-in-leaflet-js/?key=DhQpjXh8PGRqdyEyI8mD&mapId=toner-v2>
+- <https://docs.maptiler.com/leaflet/examples/vector-tiles-in-leaflet-js/>
 - <https://cloud.maptiler.com/maps/>
 
 ## Tech Stack
