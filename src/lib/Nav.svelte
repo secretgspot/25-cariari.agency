@@ -60,8 +60,8 @@
 		display: flex;
 		gap: var(--gap-extra-small);
 		list-style: none;
-		background: hsl(var(--p) / 0.9);
-		backdrop-filter: blur(3px);
+		background: var(--primary);
+		/* backdrop-filter: blur(3px); */
 		padding: var(--padding-extra-small);
 		border-radius: var(--border-radius);
 	}

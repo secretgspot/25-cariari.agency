@@ -21,18 +21,19 @@
 		/* margin: 2rem 0; */
 		text-align: center;
 		opacity: var(--brightness);
-	}
-	.advertising::after {
-		content: "ad";
-		position: absolute;
-		bottom: 100%;
-		right: 0;
-		font-size: 9px;
-		color: var(--secondary-content);
-		line-height: 1;
-		text-transform: uppercase;
-	}
-	.advertising small {
-		font-size: 12px;
+		&::after {
+			content: 'ad';
+			position: absolute;
+			bottom: 100%;
+			right: 0;
+			font-size: 9px;
+			color: var(--secondary-content);
+			line-height: 1;
+			text-transform: uppercase;
+			margin-block: 0 var(--padding-extra-small);
+		}
+		small {
+			font-size: 12px;
+		}
 	}
 </style>

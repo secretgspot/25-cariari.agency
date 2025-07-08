@@ -6,6 +6,7 @@
 	import Preview from '$lib/Preview.svelte';
 	import Nav from '$lib/Nav.svelte';
 	import JsonDump from '$lib/JSONDump.svelte';
+	import Checkbox from '$lib/Checkbox.svelte';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
@@ -52,13 +53,8 @@
 	<section class="map-wrapper">
 		<Nav />
 		<div class="filter-controls">
-			<label>
-				<input type="checkbox" bind:checked={saleFilter} /> Sale
-			</label>
-
-			<label>
-				<input type="checkbox" bind:checked={rentFilter} /> Rent
-			</label>
+			<Checkbox name="sale" label="Sale" kind="circle" bind:checked={saleFilter} />
+			<Checkbox name="rent" label="Rent" kind="circle" bind:checked={rentFilter} />
 		</div>
 		<Map
 			markers={filteredProperties()}
@@ -109,7 +105,7 @@
 		gap: var(--gap-extra-small);
 		margin-block: var(--padding-extra-small);
 		border-bottom: 1px solid var(--color-border);
-		position: absolute;
+		position: fixed;
 		top: calc(var(--padding-small) * 3);
 		right: var(--padding-small);
 		row-gap: var(--gap-extra-small);
@@ -118,11 +114,5 @@
 		background: var(--primary);
 		padding: var(--padding-extra-small);
 		border-radius: var(--border-radius);
-	}
-
-	.filter-controls label {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 	}
 </style>
