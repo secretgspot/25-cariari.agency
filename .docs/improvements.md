@@ -1,0 +1,12 @@
+| Area | Improvement | SEO Impact | How to Implement |
+| :--- | :--- | :--- | :--- |
+| **Meta Tags** | Add descriptive meta titles and descriptions to each page. | High | Use `<svelte:head>` to dynamically set `<title>` and `<meta name="description">` tags in your page components based on the content. |
+| **Semantic HTML** | Use semantic HTML5 elements like `<main>`, `<article>`, `<section>`, and `<nav>` to structure your content. | Medium | Review your components and replace `<div>` elements with more appropriate semantic tags where applicable. |
+| **Image SEO** | Add descriptive `alt` text to all images. | Medium | Ensure all `<img>` tags have an `alt` attribute that accurately describes the image content. |
+| **Structured Data** | Implement structured data (Schema.org) for properties and other relevant content. | High | Use JSON-LD in a `<script type="application/ld+json">` tag within `<svelte:head>` to provide structured data about your content to search engines. |
+| **Robots.txt** | Create a `robots.txt` file to guide search engine crawlers. | Medium | A `robots.txt` file already exists in the `static` folder. Review its contents to ensure it's not blocking important pages. |
+| **Sitemap** | Generate a `sitemap.xml` file to help search engines discover all your pages. | High | You can create a `sitemap.xml.js` file in your `routes` directory to dynamically generate the sitemap from your app's routes. |
+| **Performance** | Optimize image sizes and consider code splitting to improve page load times. | High | Use an image optimization tool to compress images in the `static` folder. SvelteKit handles code splitting automatically, but you can analyze your build output for large chunks. |
+| **Accessibility** | Ensure your site is accessible to users with disabilities. | Medium | Use tools like Lighthouse or axe to audit your site's accessibility and address any issues found. This includes things like color contrast and keyboard navigation. |
+| **URL Structure** | Use clean and descriptive URLs. | Medium | SvelteKit's file-based routing already encourages clean URLs. Ensure your file and folder names in the `routes` directory are descriptive. |
+| **Content** | Create high-quality, relevant content for your target audience. | High | This is an ongoing process. Regularly add new properties, blog posts, or other content that is valuable to your users. |
