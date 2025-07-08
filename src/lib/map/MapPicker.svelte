@@ -1,58 +1,41 @@
 <script>
-	import { onMount, onDestroy, untrack } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { isEmpty } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
 
-	/** @type {{position?: any}} */
 	let { position = $bindable({}) } = $props();
 
 	let mapElement;
 	let mapInstance = $state(null);
 	let leafletInstance = $state(null);
-	let baseLayer = $state(null);
 	let marker = $state(null);
 	let pickerIcon = $state(null);
 	let isMapReady = $state(false);
 	let resizeObserver;
-	let isUpdatingFromUser = false; // Flag to prevent effect loops
 
-	// Default position fallback
-	const DEFAULT_POSITION = {
-		lat: 9.970881419133026,
-		lng: -84.16046619415285,
-	};
+	const DEFAULT_POSITION = { lat: 9.97088, lng: -84.16046 };
 
-	// Validate position data
-	const isValidPosition = (pos) => {
-		return (
-			pos &&
-			typeof pos === 'object' &&
-			!isEmpty(pos.lat) &&
-			!isEmpty(pos.lng) &&
-			!isNaN(Number(pos.lat)) &&
-			!isNaN(Number(pos.lng)) &&
-			Number(pos.lat) >= -90 &&
-			Number(pos.lat) <= 90 &&
-			Number(pos.lng) >= -180 &&
-			Number(pos.lng) <= 180
-		);
-	};
+	// --- Helper Functions ---
 
-	// Normalize position to ensure it's a valid object
+	const isValidPosition = (pos) =>
+		pos &&
+		typeof pos === 'object' &&
+		!isEmpty(pos.lat) &&
+		!isEmpty(pos.lng) &&
+		!isNaN(Number(pos.lat)) &&
+		!isNaN(Number(pos.lng)) &&
+		Math.abs(Number(pos.lat)) <= 90 &&
+		Math.abs(Number(pos.lng)) <= 180;
+
 	const normalizePosition = (pos) => {
 		if (!pos) return null;
-
 		try {
-			// Handle array format [lat, lng]
 			if (Array.isArray(pos) && pos.length >= 2) {
 				return { lat: Number(pos[0]), lng: Number(pos[1]) };
 			}
-
-			// Handle object format { lat, lng }
 			if (typeof pos === 'object' && pos.lat !== undefined && pos.lng !== undefined) {
 				return { lat: Number(pos.lat), lng: Number(pos.lng) };
 			}
-
 			return null;
 		} catch (error) {
 			console.error('Error normalizing position:', error);
@@ -60,182 +43,54 @@
 		}
 	};
 
-	// Update marker position on map
-	const updateMarkerPosition = (newPosition) => {
-		if (!mapInstance || !leafletInstance || !isMapReady) {
-			console.warn('Map not ready for position update');
-			return;
-		}
+	// --- Event Handlers (Update State Only) ---
 
-		try {
-			const validPosition = normalizePosition(newPosition);
-			if (!isValidPosition(validPosition)) {
-				console.warn('Invalid position provided:', newPosition);
-				return;
-			}
-
-			const { lat, lng } = validPosition;
-			const latLng = new leafletInstance.LatLng(lat, lng);
-
-			// Create marker if it doesn't exist
-			if (!marker) {
-				marker = leafletInstance.marker(latLng, {
-					icon: pickerIcon,
-					draggable: true,
-				});
-
-				// Add drag event listener
-				marker.on('dragend', handleMarkerDrag);
-				marker.addTo(mapInstance);
-			} else {
-				// Update existing marker position
-				marker.setLatLng(latLng);
-			}
-
-			// Update map view smoothly
-			mapInstance.setView(latLng, 16, {
-				animate: true,
-				pan: { duration: 0.3 },
-			});
-
-			console.log('Marker position updated:', { lat, lng });
-		} catch (error) {
-			console.error('Error updating marker position:', error);
-		}
-	};
-
-	// Handle marker drag events
 	const handleMarkerDrag = (e) => {
-		try {
-			const newLatLng = e.target.getLatLng();
-			if (newLatLng) {
-				const newPosition = {
-					lat: newLatLng.lat,
-					lng: newLatLng.lng,
-				};
-
-				// Set flag to prevent effect loop
-				isUpdatingFromUser = true;
-				position = newPosition;
-				// Reset flag after a tick
-				setTimeout(() => {
-					isUpdatingFromUser = false;
-				}, 0);
-			}
-		} catch (error) {
-			console.error('Error handling marker drag:', error);
+		const newLatLng = e.target.getLatLng();
+		if (newLatLng) {
+			position = { lat: newLatLng.lat, lng: newLatLng.lng };
 		}
 	};
 
-	// Handle map click events
 	const handleMapClick = (e) => {
-		try {
-			if (!e.latlng) return;
-
-			const newPosition = {
-				lat: e.latlng.lat,
-				lng: e.latlng.lng,
-			};
-
-			// Set flag to prevent effect loop
-			isUpdatingFromUser = true;
-			position = newPosition;
-
-			// Update marker position directly
-			if (marker) {
-				marker.setLatLng(e.latlng);
-			} else {
-				updateMarkerPosition(newPosition);
-			}
-
-			// Reset flag after a tick
-			setTimeout(() => {
-				isUpdatingFromUser = false;
-			}, 0);
-		} catch (error) {
-			console.error('Error handling map click:', error);
+		if (e.latlng) {
+			position = { lat: e.latlng.lat, lng: e.latlng.lng };
 		}
 	};
 
-	// Public function to update GPS position
 	export function updategps(coords) {
-		try {
-			if (!coords) {
-				console.warn('No coordinates provided to updategps');
-				return;
-			}
-
-			const newPosition = {
-				lat: coords.latitude || coords.lat,
-				lng: coords.longitude || coords.lng,
-			};
-
-			if (isValidPosition(newPosition)) {
-				// Set flag to prevent effect loop
-				isUpdatingFromUser = true;
-				position = newPosition;
-				updateMarkerPosition(newPosition);
-				// Reset flag after a tick
-				setTimeout(() => {
-					isUpdatingFromUser = false;
-				}, 0);
-			} else {
-				console.warn('Invalid GPS coordinates:', coords);
-			}
-		} catch (error) {
-			console.error('Error updating GPS position:', error);
+		if (!coords) return;
+		const newPosition = {
+			lat: coords.latitude || coords.lat,
+			lng: coords.longitude || coords.lng,
+		};
+		if (isValidPosition(newPosition)) {
+			position = newPosition;
+		} else {
+			console.warn('Invalid GPS coordinates provided:', coords);
 		}
 	}
 
-	// Debounced resize handler
-	let resizeTimeout;
-	const handleResize = () => {
-		if (resizeTimeout) clearTimeout(resizeTimeout);
-		resizeTimeout = setTimeout(() => {
-			if (mapInstance) {
-				mapInstance.invalidateSize();
-			}
-		}, 100);
-	};
+	// --- Lifecycle and Initialization ---
 
-	onMount(async () => {
+	onMount(() => {
 		if (!browser) return;
 
-		try {
-			// Dynamically import Leaflet
-			const leaflet = await import('leaflet');
-			// await import('leaflet/dist/leaflet.css');
-			leafletInstance = leaflet;
-
-			// Wait for DOM to be ready
-			await new Promise((resolve) => setTimeout(resolve, 0));
-
-			// Ensure the map container is ready
+		const init = async () => {
 			if (!mapElement) {
 				console.error('Map element not found');
 				return;
 			}
 
-			// Check if element has dimensions
-			const rect = mapElement.getBoundingClientRect();
-			if (rect.width === 0 || rect.height === 0) {
-				console.warn('Map element has no dimensions, waiting...');
-				await new Promise((resolve) => setTimeout(resolve, 100));
-			}
+			leafletInstance = await import('leaflet');
 
-			// Create picker icon
 			pickerIcon = leafletInstance.icon({
 				iconUrl: '/map/marker-icon.svg',
-				// shadowUrl: '/map/marker-shadow.svg',
 				iconSize: [25, 41],
 				iconAnchor: [13, 41],
-				popupAnchor: [1, -34],
-				// shadowSize: [36, 36],
-				// shadowAnchor: [4, 33],
 			});
 
-			// Initialize base layer
-			baseLayer = leafletInstance.tileLayer(
+			const baseLayer = leafletInstance.tileLayer(
 				'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
 				{
 					subdomains: 'abcd',
@@ -247,16 +102,15 @@
 				},
 			);
 
-			// Initialize map
-			const initialPosition = isValidPosition(position) ? position : DEFAULT_POSITION;
+			const initialPos = isValidPosition(position) ? position : DEFAULT_POSITION;
 			const maxBounds = leafletInstance.latLngBounds([
-				[9.980261288306549, -84.17891979217531],
-				[9.962086432098069, -84.14235591888429],
+				[9.9802, -84.1789],
+				[9.962, -84.1423],
 			]);
 
 			mapInstance = leafletInstance.map(mapElement, {
 				zoomControl: false,
-				center: [initialPosition.lat, initialPosition.lng],
+				center: [initialPos.lat, initialPos.lng],
 				maxBounds: maxBounds,
 				maxBoundsViscosity: 0.8,
 				zoom: 15,
@@ -266,96 +120,66 @@
 				preferCanvas: true,
 			});
 
-			// Add controls
-			// leafletInstance.control.zoom({ position: 'topright' }).addTo(mapInstance);
+			mapInstance.on('click', handleMapClick);
 
-			// Set up resize observer
 			if (window.ResizeObserver) {
-				resizeObserver = new ResizeObserver(handleResize);
+				resizeObserver = new ResizeObserver(() => mapInstance.invalidateSize());
 				resizeObserver.observe(mapElement);
 			}
 
-			// Wait for map to be ready
 			mapInstance.whenReady(() => {
 				isMapReady = true;
 				mapInstance.invalidateSize();
 				console.log('🗺 Position picker map ready');
-
-				// Set initial position if provided
-				if (isValidPosition(position)) {
-					updateMarkerPosition(position);
-				}
 			});
+		};
 
-			// Add event listeners
-			mapInstance.on('click', handleMapClick);
-
-			// Handle tile load events
-			baseLayer.on('load', () => {
-				console.log('🗺 Base layer loaded');
-			});
-
-			baseLayer.on('tileerror', (error) => {
-				console.warn('Tile load error:', error);
-			});
-		} catch (error) {
-			console.error('Error initializing position picker map:', error);
-		}
-	});
-
-	// Position comparison function
-	const positionsEqual = (a, b) => {
-		if (a === b) return true;
-		if (!a || !b) return false;
-
-		const normalizedA = normalizePosition(a);
-		const normalizedB = normalizePosition(b);
-
-		if (!normalizedA || !normalizedB) return false;
-
-		return (
-			Math.abs(normalizedA.lat - normalizedB.lat) < 0.000001 &&
-			Math.abs(normalizedB.lng - normalizedB.lng) < 0.000001
-		);
-	};
-
-	// React to position changes from outside (props)
-	$effect(() => {
-		// Only respond to external position changes when map is ready
-		// and when the update is not coming from user interaction
-		if (isMapReady && !isUpdatingFromUser && position && isValidPosition(position)) {
-			updateMarkerPosition(position);
-		}
+		init().catch((error) => console.error('Error initializing map:', error));
 	});
 
 	onDestroy(() => {
-		try {
-			if (resizeTimeout) clearTimeout(resizeTimeout);
+		if (resizeObserver) resizeObserver.disconnect();
+		if (marker) marker.off('dragend', handleMarkerDrag);
+		if (mapInstance) {
+			mapInstance.off('click', handleMapClick);
+			mapInstance.remove();
+		}
+	});
 
-			if (resizeObserver) {
-				resizeObserver.disconnect();
-				resizeObserver = null;
-			}
+	// --- Reactive Effect (Single Source of Truth for UI Updates) ---
 
+	$effect(() => {
+		if (!isMapReady || !leafletInstance) return;
+
+		const validPosition = normalizePosition(position);
+
+		if (!isValidPosition(validPosition)) {
 			if (marker) {
-				marker.off('dragend', handleMarkerDrag);
 				marker.remove();
 				marker = null;
 			}
-
-			if (mapInstance) {
-				mapInstance.off('click', handleMapClick);
-				mapInstance.remove();
-				mapInstance = null;
-			}
-
-			baseLayer = null;
-			pickerIcon = null;
-			leafletInstance = null;
-			isMapReady = false;
-		} catch (error) {
-			console.error('Error during cleanup:', error);
+			return;
 		}
+
+		const latLng = leafletInstance.latLng(validPosition.lat, validPosition.lng);
+
+		if (!marker) {
+			marker = leafletInstance
+				.marker(latLng, { icon: pickerIcon, draggable: true })
+				.on('dragend', handleMarkerDrag)
+				.addTo(mapInstance);
+		} else {
+			const currentLatLng = marker.getLatLng();
+			if (!currentLatLng.equals(latLng)) {
+				marker.setLatLng(latLng);
+			}
+		}
+
+		// Center the view on the marker
+		mapInstance.setView(latLng, mapInstance.getZoom() || 16, {
+			animate: true,
+			pan: { duration: 0.3 },
+		});
 	});
 </script>
 

@@ -105,12 +105,14 @@
 						);
 
 						const tooltipText = `${msl || 'N/A'} - ${
-							Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'
+							Array.isArray(property_for)
+								? property_for.join(', ')
+								: property_for || 'N/A'
 						}`;
 						marker.bindTooltip(tooltipText, {
 							permanent: false,
 							direction: 'top',
-								offset: [0, -10],
+							offset: [0, -10],
 						});
 
 						marker.on('click', handleMarkerClick);
@@ -156,7 +158,10 @@
 			default: createIcon('/map/default.svg'),
 		};
 
-		const initialCenter = new leafletInstance.LatLng(9.970881419133026, -84.16046619415285);
+		const initialCenter = new leafletInstance.LatLng(
+			9.970881419133026,
+			-84.16046619415285,
+		);
 		const maxBounds = leafletInstance.latLngBounds([
 			[9.98943, -84.199448],
 			[9.938958, -84.128766],
