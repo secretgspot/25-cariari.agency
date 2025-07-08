@@ -48,7 +48,6 @@
 	</aside>
 </main>
 
-
 <style>
 	main {
 		display: grid;
@@ -100,21 +99,6 @@
 		.properties_list.grid {
 			grid-template-columns: repeat(auto-fit, minmax(min-content, 313px));
 		}
-	} */
-
-	/*
-		NOTHING TO SEE LIST SECTION
-	 */
-	:global(.nothing_to_see) {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		background: var(--bg-secondary);
-	}
-	/* .nothing_to_see :global(svg) {
-		max-width: 63%;
-		filter: brightness(var(--brightness));
 	} */
 
 	/*

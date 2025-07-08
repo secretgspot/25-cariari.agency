@@ -61,16 +61,18 @@
 		<h3>Features</h3>
 
 		<div class="row">
-			<label class="number">
-				<input type="number" min="0" bind:value={$filterStore.beds} /> beds
+			<label class="select">
+				<Select
+					name="beds"
+					bind:selected={$filterStore.beds}
+					options={['Any', '1+', '2+', '3+', '4+', '5+']} /> bedrooms
 			</label>
 
-			<label class="number">
-				<input type="number" min="0" bind:value={$filterStore.baths} /> baths
-			</label>
-
-			<label class="number">
-				<input type="number" min="0" bind:value={$filterStore.rooms} /> rooms
+			<label class="select">
+				<Select
+					name="baths"
+					bind:selected={$filterStore.baths}
+					options={['Any', '1+', '2+', '3+', '4+', '5+']} /> baths
 			</label>
 		</div>
 	</div>

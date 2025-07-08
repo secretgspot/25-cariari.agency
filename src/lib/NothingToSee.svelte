@@ -13,5 +13,6 @@
 		justify-content: center;
 		align-items: center;
 		background: var(--bg-secondary);
+		height: 60vh;
 	}
 </style>

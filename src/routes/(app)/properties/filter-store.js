@@ -5,9 +5,9 @@ export const filterStore = writable({
 	filter_for: ['Rent', 'Sale'],
 	rent: 10000,
 	price: 10000000,
-	beds: 99,
-	baths: 99,
-	rooms: 99,
+	beds: 'Any',
+	baths: 'Any',
+	
 	active: true,
 	msl: ''
 });
@@ -40,19 +40,26 @@ export function getFilteredProperties(properties, filter) {
 		}
 
 		// Filter by number of beds
-		if (property.beds > filter.beds) {
-			return false;
+		if (filter.beds !== 'Any') {
+			const minBeds = parseInt(filter.beds.replace('+', ''));
+			const propertyBeds = Number(property.beds) || 0;
+			console.log(`Property ID: ${property.id}, Beds: ${property.beds} (parsed: ${propertyBeds}), Filter: ${filter.beds} (parsed: ${minBeds})`);
+			if (propertyBeds < minBeds) {
+				return false;
+			}
 		}
 
 		// Filter by number of baths
-		if (property.baths > filter.baths) {
-			return false;
+		if (filter.baths !== 'Any') {
+			const minBaths = parseInt(filter.baths.replace('+', ''));
+			const propertyBaths = Number(property.baths) || 0;
+			console.log(`Property ID: ${property.id}, Baths: ${property.baths} (parsed: ${propertyBaths}), Filter: ${filter.baths} (parsed: ${minBaths})`);
+			if (propertyBaths < minBaths) {
+				return false;
+			}
 		}
 
-		// Filter by number of rooms
-		if (property.rooms > filter.rooms) {
-			return false;
-		}
+		
 
 		// Filter by active status
 		if (property.is_active !== filter.active) {
