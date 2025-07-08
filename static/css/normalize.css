@@ -9,11 +9,11 @@ Document
 Use a better box model (opinionated).
 */
 
-*,
+/* *,
 ::before,
 ::after {
 	box-sizing: border-box;
-}
+} */
 
 /**
 1. Improve consistency of default fonts in all browsers. (https://github.com/sindresorhus/modern-normalize/issues/3)
@@ -46,9 +46,9 @@ Sections
 Remove the margin in all browsers.
 */
 
-body {
+/* body {
 	margin: 0;
-}
+} */
 
 /*
 Text-level semantics
