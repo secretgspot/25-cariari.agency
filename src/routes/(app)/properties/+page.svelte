@@ -11,6 +11,7 @@
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
 	let filtered = $derived(getFilteredProperties(data.properties, $filterStore));
+	let totalDisplayCount = $derived(data.properties.filter(p => p.is_active === $filterStore.active && (p.land_use === $filterStore.filter_type || $filterStore.filter_type === 'Any')).length);
 </script>
 
 <svelte:head>
@@ -35,7 +36,7 @@
 	<aside class="filter-wrapper">
 		<div class="filter-sticky">
 			<div class="filters-menu">
-				<h3>{filtered.length} / {data.properties.length}</h3>
+				<h3>{filtered.length} / {totalDisplayCount}</h3>
 
 				<!-- {#if isAdmin}
 				<Button href="/property">Add new</Button>

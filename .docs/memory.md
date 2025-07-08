@@ -181,6 +181,7 @@ The `/properties` page underwent significant refactoring to improve filtering an
     *   The filtering logic in `filter-store.js` was updated to correctly parse these 'X+' values and handle potential `null`/`undefined` property values by defaulting them to 0 for comparison.
     *   The 'rooms' filter was completely removed.
 *   **Lot Size Filter:** A new text input filter for 'Lot Size' was added to the 'Features' section, allowing users to filter properties by minimum lot size.
+*   **Property Count Display:** The property count display was updated to show both the filtered count and the total count (`{filtered.length} / {data.properties.length}`). The total count now dynamically reflects the total number of properties that match both the `active` status and the selected `property_type`.
 *   **Supabase Function for `jsonb` Array Overlaps:** A custom PostgreSQL function `jsonb_array_overlaps` was added to the Supabase database to handle `jsonb` array filtering more robustly. This function checks if any elements from a provided text array exist within a `jsonb` array column.
     *   **SQL for Function Creation:**
         ```sql
@@ -197,6 +198,5 @@ The `/properties` page underwent significant refactoring to improve filtering an
         $function$;
         ```
     *   **Note:** While the function was added, the client-side filtering approach was ultimately adopted to simplify the URL and address immediate issues. The function remains available for potential future server-side filtering needs.
-*   **Property Count Display:** The property count display was reverted to show both the filtered count and the total count (`{filtered.length} / {data.properties.length}`).
 *   **Code Cleanliness:** Removed commented-out code and debug `console.log` statements.
 *   **New Component:** A `NothingToSee.svelte` component was created in `src/lib/` to encapsulate the empty state message.
