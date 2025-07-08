@@ -1,8 +1,9 @@
 <script>
-	import { filterStore } from "./filter-store.js";
-	import Toggle from "$lib/Toggle.svelte";
-	import Checkboxes from "$lib/Checkboxes.svelte";
-	import { formatter } from "$lib/utils/helpers.js";
+	import { filterStore } from './filter-store.js';
+	import Toggle from '$lib/Toggle.svelte';
+	import Checkboxes from '$lib/Checkboxes.svelte';
+	import Select from '$lib/Select.svelte';
+	import { formatter } from '$lib/utils/helpers.js';
 </script>
 
 <section class="filters">
@@ -10,11 +11,7 @@
 		<h3>Property Type</h3>
 
 		<label class="select">
-			<select name="property_type" bind:value={$filterStore.filter_type}>
-				<option>Residential</option>
-				<option>Commercial</option>
-				<option>Industrial</option>
-			</select>
+			<Select name="property_type" bind:selected={$filterStore.filter_type} />
 		</label>
 	</div>
 
@@ -26,12 +23,12 @@
 		</div>
 	</div>
 
-	{#if $filterStore.filter_for.includes("Rent") || $filterStore.filter_for.includes("Sale") || $filterStore.filter_for.includes("Investment")}
+	{#if $filterStore.filter_for.includes('Rent') || $filterStore.filter_for.includes('Sale') || $filterStore.filter_for.includes('Investment')}
 		<div class="price_range">
 			<h3>Price Range</h3>
 
 			<div class="column">
-				{#if $filterStore.filter_for.includes("Rent")}
+				{#if $filterStore.filter_for.includes('Rent')}
 					<label class="range column">
 						<!-- {formatter.format($filterStore.rent)} -->
 						<input
@@ -39,12 +36,12 @@
 							min="100"
 							max="10000"
 							step="100"
-							bind:value={$filterStore.rent}
-						/> <small>{formatter.format($filterStore.rent)} monthly</small>
+							bind:value={$filterStore.rent} />
+						<small>{formatter.format($filterStore.rent)} monthly</small>
 					</label>
 				{/if}
 
-				{#if $filterStore.filter_for.includes("Sale") || $filterStore.filter_for.includes("Investment")}
+				{#if $filterStore.filter_for.includes('Sale') || $filterStore.filter_for.includes('Investment')}
 					<label class="range column">
 						<!-- {formatter.format($filterStore.price)} -->
 						<input
@@ -52,8 +49,8 @@
 							min="10000"
 							max="10000000"
 							step="10000"
-							bind:value={$filterStore.price}
-						/> <small>{formatter.format($filterStore.price)} price</small>
+							bind:value={$filterStore.price} />
+						<small>{formatter.format($filterStore.price)} price</small>
 					</label>
 				{/if}
 			</div>
@@ -85,8 +82,7 @@
 			<Toggle
 				name="active"
 				bind:checked={$filterStore.active}
-				label={$filterStore.active ? "Listed" : "Delisted"}
-			/>
+				label={$filterStore.active ? 'Listed' : 'Delisted'} />
 			<!-- <label class="checkbox">
 				<input type="checkbox" bind:checked="{$filterStore.active}" />
 				<span>Active</span>
@@ -117,9 +113,9 @@
 		flex-direction: column;
 	}
 
-	input[type="text"],
-	input[type="number"],
-	select {
+	input[type='text'],
+	input[type='number'],
+	:global(select) {
 		display: block;
 		padding: var(--padding-extra-small);
 		border: var(--border);

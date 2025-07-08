@@ -7,35 +7,11 @@
 	import Filter from './Filter.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
-	import { filterStore } from './filter-store.js';
+	import { filterStore, getFilteredProperties } from './filter-store.js';
 
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
-
-	let view_style = $state('grid');
-
-	const filterFunctions = {
-		is_active: (is_active) => is_active == $filterStore.active,
-		land_use: (land_use) => land_use == $filterStore.filter_type,
-		property_for: (property_for) =>
-			property_for.find((x) => $filterStore.filter_for.includes(x)),
-		rent: (rent) => rent <= $filterStore.rent,
-		price: (price) => price <= $filterStore.price,
-		beds: (beds) => beds <= $filterStore.beds,
-		baths: (baths) => baths <= $filterStore.baths,
-		rooms: (rooms) => rooms <= $filterStore.rooms,
-		msl: (msl) => msl.includes($filterStore.msl),
-	};
-
-	let filtered = $derived(
-		data.properties.filter((item) => {
-			return Object.keys(filterFunctions).every((key) => {
-				const filter = filterFunctions[key];
-				if (typeof filter !== 'function') return true;
-				return filter(item[key]);
-			});
-		}),
-	);
+	let filtered = $derived(getFilteredProperties(data.properties, $filterStore));
 </script>
 
 <svelte:head>
@@ -47,7 +23,7 @@
 {/if}
 
 <main>
-	<div class="properties_list {view_style}">
+	<div class="properties_list grid">
 		{#if filtered.length > 0}
 			{#each filtered as property (property.id)}
 				<Property {property} />
@@ -62,24 +38,6 @@
 	<aside class="filter-wrapper">
 		<div class="filter-sticky">
 			<div class="filters-menu">
-				<div class="view_type {view_style}">
-					<label
-						class="radio radio_grid"
-						class:active={view_style == 'grid'}
-						for="radio_grid">
-						<span>☷<!-- &#9783; --></span>
-						<input type="radio" id="radio_grid" bind:group={view_style} value="grid" />
-					</label>
-
-					<label
-						class="radio radio_list"
-						class:active={view_style == 'list'}
-						for="radio_list">
-						<span>☰<!-- &#9776; --></span>
-						<input type="radio" id="radio_list" bind:group={view_style} value="list" />
-					</label>
-				</div>
-
 				<h3>{filtered.length} / {data.properties.length}</h3>
 
 				<!-- {#if isAdmin}
@@ -113,16 +71,6 @@
 	/*
 		PROPERTIES LIST SECTION
 	 */
-	.properties_list.grid > :global(.property) {
-		grid-template-columns: 1fr;
-		/* grid-template-rows: minmax(auto, 222px) min-content auto min-content; */
-		grid-template-rows: minmax(auto, 222px) min-content min-content;
-		grid-template-areas:
-			'property-image'
-			'property-header'
-			'property-footer';
-		/* padding: 1rem 0 0; */
-	}
 	.properties_list {
 		grid-area: properties-list;
 		display: grid;
@@ -133,12 +81,22 @@
 		row-gap: var(--gap-small);
 		padding: var(--padding-large) 0;
 		position: relative;
-	}
-	@media (min-width: 768px) {
-		.properties_list.grid {
+
+		@media (min-width: 768px) {
 			/* grid-template-columns: repeat(auto-fit, minmax(min-content, 369px)); */
 			grid-template-columns: repeat(auto-fit, minmax(0, 369px));
 			justify-content: space-evenly;
+		}
+
+		> :global(.property) {
+			grid-template-columns: 1fr;
+			/* grid-template-rows: minmax(auto, 222px) min-content auto min-content; */
+			grid-template-rows: minmax(auto, 222px) min-content min-content;
+			grid-template-areas:
+				'property-image'
+				'property-header'
+				'property-footer';
+			/* padding: 1rem 0 0; */
 		}
 	}
 	/* @media (min-width: 1024px) {
@@ -150,7 +108,7 @@
 	/*
 		NOTHING TO SEE LIST SECTION
 	 */
-	.nothing_to_see {
+	:global(.nothing_to_see) {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -165,66 +123,35 @@
 	/*
 		FILTER SECTION
 	 */
-	.filters-wrappers {
+	.filter-wrapper {
 		position: relative;
-	}
-	.filter-sticky {
-		position: sticky;
-		top: 0;
-	}
 
-	.filters-menu {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		align-items: center;
-		justify-items: center;
-		/* margin: 0 var(--padding-small); */
-		padding: var(--padding-small);
-
-		@media (min-width: 720px) {
-			grid-template-columns: repeat(3, 1fr);
+		.filter-sticky {
+			position: sticky;
+			top: 0;
 		}
 
-		h3 {
-			white-space: nowrap;
-			margin: 0;
-			justify-self: end;
+		.filters-menu {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			align-items: center;
+			justify-items: center;
+			/* margin: 0 var(--padding-small); */
+			padding: var(--padding-small);
 
 			@media (min-width: 720px) {
-				justify-self: auto;
+				grid-template-columns: repeat(2, 1fr);
 			}
-		}
-	}
 
-	.view_type {
-		display: none;
-		@media (min-width: 720px) {
-			display: flex;
-		}
+			h3 {
+				white-space: nowrap;
+				margin: 0;
+				justify-self: end;
 
-		label {
-			border: var(--border);
-			padding: var(--padding-extra-small);
-			border-radius: var(--border-radius);
-			box-shadow: var(--shadow);
-			cursor: pointer;
-
-			&:not(:first-of-type) {
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
+				@media (min-width: 720px) {
+					justify-self: auto;
+				}
 			}
-			&:not(:last-of-type) {
-				border-top-right-radius: 0;
-				border-bottom-right-radius: 0;
-			}
-			&:has(input[type='radio']:checked) {
-				border: 1px solid var(--accent);
-				box-shadow: inset 0px 0px 0 3px var(--success);
-			}
-		}
-
-		input[type='radio'] {
-			display: none;
 		}
 	}
 </style>

@@ -7,8 +7,8 @@
 	/** @type {{property: any}} */
 	let { property } = $props();
 
-	let isAdmin = page.data.session?.user.app_metadata.claims_admin ?? false;
-	let user_id = page.data?.session?.user.id;
+	let isAdmin = page.data.is_admin ?? false;
+	let user_id = page.data?.user?.id;
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
@@ -95,16 +95,15 @@
 		box-shadow: var(--shadow-small);
 		cursor: default;
 		position: relative;
-	}
-	@media (min-width: 1024px) {
-		.property {
+
+		@media (min-width: 1024px) {
 			grid-template-areas:
 				'property-image property-header'
 				'property-image property-footer';
 			margin: 1rem;
-		}
-		.property:hover {
-			outline: 6px solid hsl(var(--a) / 0.1);
+			&:hover {
+				outline: 6px solid hsl(var(--a) / 0.1);
+			}
 		}
 	}
 	.deactivated::after {
@@ -124,27 +123,31 @@
 		padding: var(--padding-small);
 		/* box-shadow: var(--shadow-small); */
 		gap: var(--gap-extra-small);
-	}
-	.property-header .land_use {
-		display: flex;
-		justify-content: space-between;
-	}
-	.property-header .type_age {
-		text-transform: uppercase;
-		color: var(--secondary-content);
-	}
-	.property-header .price_rent {
-		/* font-size: 144%; */
-		display: flex;
-		justify-content: space-between;
-		/* margin: 0.3rem 0; */
-	}
-	.property-header .loc_address {
-		/* font-size: 90%; */
-		display: flex;
-		flex-direction: column;
-		color: var(--secondary-content);
-		display: none;
+
+		.land_use {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.type_age {
+			text-transform: uppercase;
+			color: var(--secondary-content);
+		}
+
+		.price_rent {
+			/* font-size: 144%; */
+			display: flex;
+			justify-content: space-between;
+			/* margin: 0.3rem 0; */
+		}
+
+		.loc_address {
+			/* font-size: 90%; */
+			display: flex;
+			flex-direction: column;
+			color: var(--secondary-content);
+			display: none;
+		}
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> IMAGE */
@@ -158,15 +161,12 @@
 		background-size: cover;
 		filter: brightness(var(--brightness));
 		cursor: pointer;
-	}
-	:global(.property-image) img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-	/* .property-image caption { display: none; } */
-	@media (min-width: 768px) {
-		/* .property-image img { width: 208px; height: auto; } */
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> FOOTER */
@@ -177,23 +177,26 @@
 		background: var(--primary-focus);
 		padding: var(--padding-small);
 		gap: var(--gap-extra-small);
-	}
-	.property-footer .dates {
-		display: flex;
-		justify-content: space-between;
-		color: var(--accent-content);
-		font-size: smaller;
-		/* margin: 1rem; */
-	}
-	.property-footer .details {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		/* margin: 0 1rem 1rem; */
-	}
-	.property-footer .details .loc {
-		color: var(--accent-content);
-		font-size: x-small;
+
+		.dates {
+			display: flex;
+			justify-content: space-between;
+			color: var(--accent-content);
+			font-size: smaller;
+			/* margin: 1rem; */
+		}
+
+		.details {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			/* margin: 0 1rem 1rem; */
+
+			.loc {
+				color: var(--accent-content);
+				font-size: x-small;
+			}
+		}
 	}
 
 	.property:hover .property-footer .buttons {
