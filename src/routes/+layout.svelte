@@ -5,6 +5,10 @@
 	import { Toasts } from '$lib/toasts';
 	import Splash from '$lib/Splash.svelte';
 	// import 'leaflet/dist/leaflet.css';
+	import '../styles/normalize.css';
+	import '../styles/styles.css';
+	import '../styles/leaflet.css';
+	import '../styles/print.css';
 
 	let { children, data } = $props();
 
