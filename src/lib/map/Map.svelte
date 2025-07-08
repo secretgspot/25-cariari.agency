@@ -350,23 +350,4 @@
 			filter: invert(1) brightness(0.8) hue-rotate(180deg);
 		}
 	}
-
-	/* Ensure Leaflet controls are visible */
-	:global(.leaflet-control-zoom),
-	:global(.leaflet-control-scale) {
-		background: rgba(255, 255, 255, 0.9) !important;
-		border-radius: 4px !important;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:global(.leaflet-control-zoom),
-		:global(.leaflet-control-scale) {
-			background: rgba(0, 0, 0, 0.9) !important;
-			color: white !important;
-		}
-
-		:global(.leaflet-control-zoom a) {
-			color: white !important;
-		}
-	}
 </style>

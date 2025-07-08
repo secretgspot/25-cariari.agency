@@ -90,35 +90,4 @@
 			filter: invert(1) brightness(0.8) hue-rotate(180deg);
 		}
 	}
-
-	/* Ensure Leaflet controls are visible */
-	:global(.leaflet-control-zoom) {
-		background: rgba(255, 255, 255, 0.9) !important;
-		border-radius: 4px !important;
-		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2) !important;
-	}
-
-	:global(.leaflet-control-zoom a) {
-		color: #333 !important;
-		text-decoration: none !important;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:global(.leaflet-control-zoom) {
-			background: rgba(0, 0, 0, 0.9) !important;
-		}
-
-		:global(.leaflet-control-zoom a) {
-			color: white !important;
-		}
-	}
-
-	/* Improve marker visibility */
-	:global(.leaflet-marker-icon) {
-		transition: transform 0.2s ease;
-	}
-
-	:global(.leaflet-marker-icon:hover) {
-		transform: scale(1.1);
-	}
 </style>
