@@ -29,6 +29,7 @@
 	}
 
 	select {
+		min-width: 69px;
 		&:open::picker-icon {
 			rotate: 180deg;
 		}
