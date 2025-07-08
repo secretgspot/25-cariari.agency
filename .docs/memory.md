@@ -161,3 +161,37 @@ Properties are the core data entity. Main fields:
 
 ---
 *Generated July 7, 2025. This file is intended as a memory/context file for rebuilding Cariari.Agency with a new tech stack. It summarizes all key features, data, and flows.*
+
+## Refactoring of `/properties` Page (July 8, 2025)
+
+The `/properties` page underwent significant refactoring to improve filtering and overall user experience.
+
+**Key Changes:**
+
+*   **Client-Side Filtering:** The filtering logic for properties was moved from server-side to client-side. This eliminates complex URL parameters and simplifies the server-side data fetching, which now retrieves all properties.
+    *   `src/routes/(app)/properties/+page.server.js`: Reverted to fetching all properties without filtering.
+    *   `src/routes/(app)/properties/filter-store.js`: The `getFilteredProperties` function was re-introduced to handle client-side filtering based on the `filterStore` values.
+    *   `src/routes/(app)/properties/+page.svelte`: No longer uses URL parameters for filtering. The `loading` state and related logic were removed.
+*   **Improved Property Type Selection:**
+    *   The default "Property Type" in the filter is now pre-selected to 'Residential'.
+    *   The "Select Property Type" placeholder option was removed from the dropdown in `src/lib/Select.svelte`.
+*   **Removed 'Investment' Filter:** The 'Investment' option was removed from the property transaction type filters, as it is no longer used.
+*   **Supabase Function for `jsonb` Array Overlaps:** A custom PostgreSQL function `jsonb_array_overlaps` was added to the Supabase database to handle `jsonb` array filtering more robustly. This function checks if any elements from a provided text array exist within a `jsonb` array column.
+    *   **SQL for Function Creation:**
+        ```sql
+        CREATE OR REPLACE FUNCTION public.jsonb_array_overlaps(
+            jsonb_array jsonb,
+            text_array text[]
+        )
+        RETURNS boolean
+        LANGUAGE plpgsql
+        AS $function$
+        BEGIN
+            RETURN jsonb_array @> to_jsonb(text_array);
+        END;
+        $function$;
+        ```
+    *   **Note:** While the function was added, the client-side filtering approach was ultimately adopted to simplify the URL and address immediate issues. The function remains available for potential future server-side filtering needs.
+*   **Property Count Display:** The property count display was reverted to show both the filtered count and the total count (`{filtered.length} / {data.properties.length}`).
+*   **Code Cleanliness:** Removed commented-out code and debug `console.log` statements.
+*   **New Component:** A `NothingToSee.svelte` component was created in `src/lib/` to encapsulate the empty state message.

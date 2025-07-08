@@ -1,8 +1,7 @@
 <script>
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import JsonDump from '$lib/JSONDump.svelte';
-	import ErrorImage from '$lib/ErrorImage.svelte';
+	import NothingToSee from '$lib/NothingToSee.svelte';
 	import Property from './Property.svelte';
 	import Filter from './Filter.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -29,9 +28,7 @@
 				<Property {property} />
 			{/each}
 		{:else}
-			<!-- <div class="nothing_to_see"> -->
-			<ErrorImage type="empty" />
-			<!-- </div> -->
+			<NothingToSee />
 		{/if}
 	</div>
 
@@ -51,7 +48,7 @@
 	</aside>
 </main>
 
-<!-- <JsonDump name="data" {data} /> -->
+
 <style>
 	main {
 		display: grid;
