@@ -8,8 +8,8 @@
 	// import JSONDump from '$lib/JSONDump.svelte';
 	// console.log('Uploader page', page);
 
-	/** @type {{msl: any, attachments?: any}} */
-	let { msl, attachments } = $props();
+	/** @type {{msl: any, attachments?: any, propertyId?: string}} */
+	let { msl, attachments, propertyId } = $props();
 
 	let error = '',
 		message = '',
@@ -111,16 +111,17 @@
 
 		if (publicUrlData) {
 			// console.log("update", target);
-			const { data: updatePhotosTableData, error: updatePhotosTableErr } =
+			const { data: insertPhotosTableData, error: insertPhotosTableErr } =
 				await page.data.supabase
 					.from('photos')
-					.update({
+					.insert({
 						name: target.name,
 						extension: target.name.split('.').pop(),
 						msl,
 						file_url: publicUrlData.publicUrl,
+						property_id: propertyId, // New: Link to property_id
+						user_id: page.data.session.user.id, // New: Link to user_id
 					})
-					.eq('file_path', `${msl}/${target.name}`)
 					.select('*')
 					.single();
 			if (updatePhotosTableErr) {

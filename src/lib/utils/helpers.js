@@ -1,10 +1,20 @@
 export function isEmpty(val) {
-	let valType = typeof val;
-
-	if (valType === 'object') return Object.keys(val || {}).length === 0;
-	if (valType === 'string') return val.trim().length === 0;
-	if (valType === 'number') return val.length === 0;
-	if (val instanceof Array) return val.length === 0;
+	if (val === null || typeof val === 'undefined') {
+		return true; // null or undefined are considered empty
+	}
+	if (typeof val === 'object') {
+		return Object.keys(val).length === 0;
+	}
+	if (typeof val === 'string') {
+		return val.trim().length === 0;
+	}
+	if (typeof val === 'number') {
+		return false; // A number is not empty in this context
+	}
+	if (val instanceof Array) {
+		return val.length === 0;
+	}
+	return false; // Default for other types
 }
 
 export const pickFrom = (arr) => arr[Math.floor(Math.random() * arr.length)];

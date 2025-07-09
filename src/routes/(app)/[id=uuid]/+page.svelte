@@ -51,7 +51,7 @@
 		<ul
 			id="cards"
 			style="--numcards:{data.property.photos ? data.property.photos.length : 1}">
-			{#if data.property.photos}
+			{#if data.property.photos && data.property.photos.length > 0}
 				{#each data.property.photos as photo, index}
 					<li class="card" id="card_{index + 1}" style="--index: {index + 1}">
 						<div class="card__content">

@@ -87,27 +87,27 @@ export const actions = {
 		console.log('/properties/add/+page.server.js action -> add: ', property);
 
 		// push it to the server
-		// const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
-		// if (resErr) {
-		// 	if (resErr instanceof AuthApiError && resErr.status === 400) {
-		// 		return fail(400, {
-		// 			error: true,
-		// 			message: `Unable to add property, ${resErr.message}`,
-		// 			property,
-		// 		});
-		// 	}
-		// 	return fail(500, {
-		// 		error: true,
-		// 		message: `Unable to add property, ${resErr.message}`,
-		// 		property,
-		// 	});
-		// }
+		const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
+		if (resErr) {
+			if (resErr instanceof AuthApiError && resErr.status === 400) {
+				return fail(400, {
+					error: true,
+					message: `Unable to add property, ${resErr.message}`,
+					property,
+				});
+			}
+			return fail(500, {
+				error: true,
+				message: `Unable to add property, ${resErr.message}`,
+				property,
+			});
+		}
 
-		// return {
-		// 	success: true,
-		// 	property_id: resData.id,
-		// 	message: `Property ${resData.msl} added successfully!`
-		// }
+		return {
+			success: true,
+			property_id: resData.id,
+			message: `Property ${resData.msl} added successfully!`
+		}
 
 	},
 }

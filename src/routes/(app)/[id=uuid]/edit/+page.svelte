@@ -20,7 +20,13 @@
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
-	let form = $state(data.property);
+	let form = $state({
+		...data.property,
+		property_for: data.property?.property_for || [],
+		features: data.property?.features || [],
+		photos: data.property?.photos || [],
+		location: data.property?.location || { lat: null, lng: null }
+	});
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', form);
 
 	let loading = $state(false),
@@ -111,9 +117,10 @@
 <form
 	class="edit-property"
 	method="POST"
-	use:enhance={({ form, data, action, cancel }) => {
-		// 'form' is the '<form>' element
-		// 'data' is it's 'FormData' object
+	enctype="multipart/form-data"
+	use:enhance={({ form: htmlFormElement, data: formData, action, cancel }) => {
+		// 'htmlFormElement' is the '<form>' element
+		// 'formData' is it's 'FormData' object
 		// 'action' is the URL to which the form is posted
 		// 'cancel()' will prevent the submission
 
