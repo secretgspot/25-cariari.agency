@@ -105,7 +105,7 @@
 		gap: var(--gap-extra-small);
 		margin-block: var(--padding-extra-small);
 		border-bottom: 1px solid var(--color-border);
-		position: fixed;
+		position: absolute;
 		top: calc(var(--padding-small) * 3);
 		right: var(--padding-small);
 		row-gap: var(--gap-extra-small);

@@ -158,13 +158,10 @@
 			default: createIcon('/map/default.svg'),
 		};
 
-		const initialCenter = new leafletInstance.LatLng(
-			9.970881419133026,
-			-84.16046619415285,
-		);
+		const initialCenter = new leafletInstance.LatLng(9.97088, -84.16046);
 		const maxBounds = leafletInstance.latLngBounds([
-			[9.98943, -84.199448],
-			[9.938958, -84.128766],
+			[9.962, -84.1789],
+			[9.9802, -84.1423],
 		]);
 
 		const cartoDbLight = leafletInstance.tileLayer(
