@@ -8,7 +8,7 @@
 	import Nav from '$lib/Nav.svelte';
 	import { Button } from '$lib/buttons';
 	import Toggle from '$lib/Toggle.svelte';
-	import MapPicker from '$lib/map/MapPicker.svelte';
+	import MapPicker from '$lib/map/MapPicker.svelte'; // MapPickerLibre
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Select from '$lib/Select.svelte';

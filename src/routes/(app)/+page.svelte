@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import LogoSvg from '$lib/LogoSvg.svelte';
-	import Map from '$lib/map/Map.svelte';
+	import Map from '$lib/map/Map.svelte'; // MapLibre
 	import Preview from '$lib/Preview.svelte';
 	import Nav from '$lib/Nav.svelte';
 	import JsonDump from '$lib/JSONDump.svelte';
