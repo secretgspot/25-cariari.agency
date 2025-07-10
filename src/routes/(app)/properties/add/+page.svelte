@@ -13,12 +13,10 @@
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Select from '$lib/Select.svelte';
 	import { confetti } from '@neoconfetti/svelte';
-	// import { storable } from '$lib/utils/storable.js';
-	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
-	import JsonDump from '$lib/JSONDump.svelte';
-	import { onMount } from 'svelte';
 	import { addToast } from '$lib/toasts/store';
 	import Notify from '$lib/Notify.svelte';
+	import { isEmpty, getPosition, addFeature, removeFeature } from '$lib/utils/helpers.js';
+	import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
@@ -56,18 +54,6 @@
 				node.removeEventListener('keydown', onkeydown);
 			},
 		};
-	}
-
-	function addFeature(input) {
-		if (input.value == '') return;
-		property.features = [...(property?.features ?? []), input.value];
-		input.value = '';
-	}
-	function removeFeature(index) {
-		property.features = [
-			...property.features.slice(0, index),
-			...property.features.slice(index + 1),
-		];
 	}
 
 	const clearStorage = async () => await localStorage.clear();
@@ -448,13 +434,13 @@
 					onkeydown={(evt) => {
 						if (evt.key == 'Enter') evt.preventDefault();
 					}}
-					use:enter={addFeature} />
+					use:enter={(input) => addFeature(input, property)} />
 				<div class="feature-list">
 					{#each property.features || [] as feature, i}
 						<span class="feature">
 							<svg
 								class="close"
-								onclick={() => removeFeature(i)}
+								onclick={() => removeFeature(i, property)}
 								onkeydown={(e) => {
 									if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
 								}}

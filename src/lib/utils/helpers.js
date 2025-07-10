@@ -158,3 +158,14 @@ export const getPosition = async () => {
 		console.log('YOUR BROWSER DOESN"T SUPPORT GEOLOCATION'); // Corrected typo
 	}
 }
+
+// Functions for FEATURES input component on add and edit pages
+export function addFeature(input, form) {
+	if (input.value == '') return;
+	const newFeatures = input.value.split(',').map((feature) => feature.trim()).filter((feature) => feature !== '');
+	form.features = [...(form?.features ?? []), ...newFeatures];
+	input.value = '';
+}
+export function removeFeature(index, form) {
+	form.features = [...form.features.slice(0, index), ...form.features.slice(index + 1)];
+}

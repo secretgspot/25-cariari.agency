@@ -14,7 +14,7 @@
 	import Select from '$lib/Select.svelte';
 	import Notify from '$lib/Notify.svelte';
 	// import { confetti } from "@neoconfetti/svelte";
-	import { pad, isEmpty, getPosition } from '$lib/utils/helpers.js';
+	import { isEmpty, getPosition, addFeature, removeFeature } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	let { data } = $props();
@@ -25,7 +25,7 @@
 		property_for: data.property?.property_for || [],
 		features: data.property?.features || [],
 		photos: data.property?.photos || [],
-		location: data.property?.location || { lat: null, lng: null }
+		location: data.property?.location || { lat: null, lng: null },
 	});
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', form);
 
@@ -34,42 +34,6 @@
 		message = $state(''),
 		isAdmin = data.is_admin || false,
 		gps = $state();
-
-	async function getMsl() {
-		const { data: mslData, error: mslErr } = await data.supabase
-			.from('properties')
-			.select('msl')
-			.order('msl', { ascending: false })
-			.limit(1)
-			.single();
-		if (mslErr) error = mslErr.message;
-		if (mslData) {
-			form.msl = `CR-${pad(Number(mslData.msl.substring(3)) + 1, 3)}`;
-			console.log('LAST MSL DIGIT', mslData.msl);
-		}
-	}
-
-	function startDrag(item, i, e) {
-		startLoc = e.clientY;
-		dragging = true;
-		dragFrom = item;
-		console.log(dragFrom, i);
-	}
-
-	function finishDrag(item, pos) {
-		property.photos.splice(pos, 1);
-		property.photos.splice(over.pos, 0, item);
-		over = {};
-		property.photos = property.photos;
-	}
-
-	function onDragOver(item, pos, e) {
-		const dir = startLoc < e.clientY ? 'down' : 'up';
-		setTimeout(() => {
-			over = { item, pos, dir };
-		}, 50);
-		console.log(dir, over);
-	}
 
 	// Helper function to allow on Enter events for AddFeature
 	function enter(node, callback) {
@@ -82,26 +46,6 @@
 				node.removeEventListener('keydown', onkeydown);
 			},
 		};
-	}
-
-	function addFeature(input) {
-		if (input.value == '') return;
-		form.features = [...(form?.features ?? []), input.value];
-		input.value = '';
-	}
-	function removeFeature(index) {
-		form.features = [...form.features.slice(0, index), ...form.features.slice(index + 1)];
-	}
-
-	function addPhoto(input) {
-		// let valInput = /(https?:\/\/.*\.(?:png|jpg|gif))/i;
-		// if (!valInput.test(input.value)) return;
-		if (input.value == '') return;
-		form.photos = [...form.photos, input.value];
-		input.value = '';
-	}
-	function removePhoto(index) {
-		form.photos = [...form.photos.slice(0, index), ...form.photos.slice(index + 1)];
 	}
 </script>
 
@@ -179,9 +123,6 @@
 			<fieldset class={form.is_active ? 'active' : 'removed'}>
 				<legend>MSL</legend>
 				<input type="text" placeholder="ex: CR-001" bind:value={form.msl} disabled />
-				{#if !form.msl}
-					<Button type="button" size="block" onclick={getMsl}>Set</Button>
-				{/if}
 			</fieldset>
 
 			<fieldset>
@@ -422,13 +363,13 @@
 					onkeydown={(evt) => {
 						if (evt.key == 'Enter') evt.preventDefault();
 					}}
-					use:enter={addFeature} />
+					use:enter={(input) => addFeature(input, form)} />
 				<div class="feature-list">
 					{#each form.features || [] as feature, i}
 						<span class="feature">
 							<svg
 								class="close"
-								onclick={() => removeFeature(i)}
+								onclick={() => removeFeature(i, form)}
 								onkeydown={(e) => {
 									if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
 								}}
