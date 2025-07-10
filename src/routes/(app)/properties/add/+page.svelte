@@ -120,7 +120,7 @@
 					dismissible: true,
 					timeout: 1200,
 				});
-				update({ reset: true });
+				// update({ reset: true }); // resets form, but is it needed in add?
 				goto(`/${result.data.property_id}/print`);
 			} else {
 				console.log('TRIGGED DUE TO: ', result.status);

@@ -2,8 +2,11 @@
 	import { page } from '$app/state';
 	import { Button } from '$lib/buttons';
 	import { slide } from 'svelte/transition';
-
 	import { addToast } from '$lib/toasts/store';
+
+	/**
+	 * UPLOAD uploads file to bucket but issue with populating photos table. needs investigating
+	 */
 
 	// import JSONDump from '$lib/JSONDump.svelte';
 	// console.log('Uploader page', page);
@@ -46,59 +49,29 @@
 		loading = true;
 
 		// console.log("UPLOAD FILE: ", target);
-		const { data: uploadData, error: uploadError } = await page.data.supabase.storage
+		const { data: uploadSuccess, error: uploadFailed } = await page.data.supabase.storage
 			.from('photos')
 			.upload(`/${msl}/${target.name}`, target.file);
-		if (uploadError) {
-			// console.log("upload err: ", uploadError);
+		if (uploadFailed) {
+			// console.log("upload err: ", uploadFailed);
 			addToast({
-				message: `Failed to upload ${uploadError.message}`,
+				message: `Failed to upload ${uploadFailed.message}`,
 				type: 'error',
 				dismissible: false,
 				timeout: 3000,
 			});
 		}
-		if (uploadData) {
-			// console.log("upload data: ", uploadData);
+		if (uploadSuccess) {
+			// console.log("upload data: ", uploadSuccess);
 			await populatePhotosTable(target);
 			addToast({
-				message: `Photo ${uploadData.path} added!`,
+				message: `Photo ${uploadSuccess.path} added!`,
 				type: 'success',
 				dismissible: false,
 				timeout: 1200,
 			});
 		}
 
-		loading = false;
-	};
-
-	const deleteFile = async (target) => {
-		loading = true;
-
-		// console.log("DELETE FILE: ", target);
-		const { data: deleteFile, error: errDelete } = await page.data.supabase.storage
-			.from('photos')
-			.remove([`${msl}/${target}`]);
-		if (errDelete) {
-			// console.log(errDelete);
-			// addToast({
-			// 	message: `Failed to delete file ${errDelete.message}, try again in few seconds`,
-			// 	type: 'error',
-			// 	dismissible: false,
-			// 	timeout: 3000,
-			// });
-		}
-		if (deleteFile) {
-			// console.log("deleteFile + index: ", deleteFile);
-			attachments = attachments.filter((item) => item.name != target);
-
-			addToast({
-				message: `Photo ${target} deleted!`,
-				type: 'success',
-				dismissible: false,
-				timeout: 1200,
-			});
-		}
 		loading = false;
 	};
 
@@ -110,18 +83,21 @@
 			.getPublicUrl(`${msl}/${target.name}`);
 
 		if (publicUrlData) {
-			// console.log("update", target);
-			const { data: insertPhotosTableData, error: insertPhotosTableErr } =
+			// console.log('update', target);
+			const { data: updatePhotosTableData, error: updatePhotosTableErr } =
 				await page.data.supabase
 					.from('photos')
-					.insert({
+					.update({
 						name: target.name,
 						extension: target.name.split('.').pop(),
 						msl,
 						file_url: publicUrlData.publicUrl,
-						property_id: propertyId, // New: Link to property_id
-						user_id: page.data.session.user.id, // New: Link to user_id
+						file_path: `${msl}/${target.name}`,
+						property_id: propertyId,
+						user_id: page.data.session.user.id,
+						bucket_id: 'photos',
 					})
+					.eq('file_path', `${msl}/${target.name}`)
 					.select('*')
 					.single();
 			if (updatePhotosTableErr) {
@@ -148,15 +124,37 @@
 		loading = false;
 	};
 
-	const emptyBucket = async () => {
-		const { data, error } = await page.data.supabase.storage.emptyBucket('photos');
-		if (error) console.error(error);
-		if (data) console.log(data);
+	const deleteFile = async (target) => {
+		loading = true;
+
+		// console.log("DELETE FILE: ", target);
+		const { data: deleteFileSuccess, error: deleteFileError } =
+			await page.data.supabase.storage.from('photos').remove([`${msl}/${target}`]);
+		if (deleteFileError) {
+			// console.log(deleteFileError);
+			addToast({
+				message: `Failed to delete file ${deleteFileError.message}, try again in few seconds`,
+				type: 'error',
+				dismissible: false,
+				timeout: 3000,
+			});
+		}
+		if (deleteFileSuccess) {
+			// console.log("fn deleteFile + index: ", deleteFileSuccess);
+			attachments = attachments.filter((item) => item.name != target);
+
+			addToast({
+				message: `Photo ${target} deleted!`,
+				type: 'success',
+				dismissible: false,
+				timeout: 1200,
+			});
+		}
+		loading = false;
 	};
 </script>
 
 <!-- <JSONDump name="attachments" data={attachments} /> -->
-<!-- <button onclick|preventDefault={emptyBucket}>Clear Bucket</button> -->
 
 <div class="drop-container">
 	<div
@@ -227,7 +225,6 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		/* box-shadow: var(--shadow-small); */
 		height: 90px;
 	}
 
@@ -277,10 +274,4 @@
 		width: 27px;
 		height: 27px;
 	}
-
-	/* @media only screen and (min-width: 541px) {
-		.drop-container {
-			grid-template-columns: 1fr 1fr;
-		}
-	} */
 </style>

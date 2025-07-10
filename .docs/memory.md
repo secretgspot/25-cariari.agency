@@ -194,9 +194,20 @@ The `/properties` page underwent significant refactoring to improve filtering an
         AS $function$
         BEGIN
             RETURN jsonb_array @> to_jsonb(text_array);
-        END;
+        END;f
         $function$;
         ```
     *   **Note:** While the function was added, the client-side filtering approach was ultimately adopted to simplify the URL and address immediate issues. The function remains available for potential future server-side filtering needs.
 *   **Code Cleanliness:** Removed commented-out code and debug `console.log` statements.
 *   **New Component:** A `NothingToSee.svelte` component was created in `src/lib/` to encapsulate the empty state message.
+
+## Current State Update (July 8, 2025)
+
+The edit form functionality has been thoroughly refactored and tested.
+
+*   **Edit Form Submission:** Changing random values on the edit form and submitting now works correctly. Updates are reflected in the database and visible upon page refresh.
+*   **UI Notifications:** Error notifications are now correctly displayed in the UI for failed form submissions, addressing previous issues where only console errors were visible.
+*   **Uploader Component:** The `Uploader.svelte` component has been refactored to implement direct client-side uploads and deletions to Supabase Storage, aligning with recommended best practices for file integrity and efficiency. This involved significant changes to `Uploader.svelte`, `+page.svelte`, and `+page.server.js`.
+*   **Photo Management:** Photo data is now managed in a separate `photos` table, linked to the `properties` table. The server-side logic (`+page.server.js`) correctly handles adding and deleting photo records in the database based on changes made via the `Uploader` component.
+
+We are now proceeding with testing the Uploader functionality.
