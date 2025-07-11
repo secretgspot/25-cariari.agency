@@ -130,9 +130,18 @@
 			[-84.128766, 9.9970008], // Northeast coordinates [lng, lat] - moved up by 15% from original
 		];
 
+		/*
+		 * stadiamaps styles https://docs.stadiamaps.com/themes/
+		 * https://tiles.stadiamaps.com/styles/alidade_smooth.json
+		 * https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json
+		 * https://tiles.stadiamaps.com/styles/stamen_toner.json
+		 * https://tiles.stadiamaps.com/styles/stamen_toner_lite.json
+		 * https://tiles.stadiamaps.com/styles/alidade_satellite.json
+		 */
+
 		mapInstance = new Map({
 			container: mapElement,
-			style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json', // Use imported style.json
+			style: 'https://tiles.stadiamaps.com/styles/stamen_toner_lite.json', // Use imported style.json
 			center: initialCenter,
 			zoom: 16,
 			minZoom: 15,
