@@ -2,11 +2,11 @@
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
 import { isEmpty, pad } from '$lib/utils/helpers.js';
+import { v4 as uuidv4 } from 'uuid'; // For unique file names
+
+// You'll need to install uuid: npm install uuid
 
 export async function load(event) {
-	// console.log('/formulario/edit/[msl]+page.server.js event: ', event);
-	// something returned from +layout.server.js
-	// const { something } = await parent();
 	const { params, route } = event;
 
 	const session = await event.locals.getSession();
@@ -33,31 +33,30 @@ export async function load(event) {
 		}
 	}
 
-
 	return {
-		msl: await getMsl()
+		msl: await getMsl(),
+		session: session.session // Pass the session to the client for currentUserId in Uploader
 	};
 };
 
 export const actions = {
-
 	// ADD PROPERTY
 	add: async (event) => {
+		const { request, locals } = event; // Destructure locals to get supabaseClient and session
+		const supabaseClient = locals.supabase;
 
-		const { request } = event;
-		const session = await event.locals.getSession();
-		const supabaseClient = event.locals.supabase;
-
-		// if (!session) {
-		// 	// the user is not signed in
-		// 	throw error(403, { message: 'You need to log in to edit your listing' });
-		// }
+		const { data: { session } } = await locals.supabase.auth.getSession();
+		if (!session) {
+			// The user is not signed in
+			throw redirect(307, '/login?redirectTo=/properties/add'); // Redirect if not logged in
+		}
+		const userId = session.user.id; // Get the current user's ID
 
 		const formData = await request.formData();
 
+		// Extract property details
 		const property = {
-			// updated_at: new Date().toISOString(),
-			user_id: formData.get('user_id'),
+			user_id: userId, // Ensure user_id is from the authenticated session
 			msl: formData.get('msl'),
 			is_active: (formData.get('is_active') == 'Listed' ? true : false),
 			description: formData.get('description'),
@@ -82,32 +81,113 @@ export const actions = {
 			contact_email: formData.get('contact_email'),
 			contact_phone: formData.get('contact_phone'),
 			contact_realtor: formData.get('contact_realtor'),
-		}
+		};
 
-		console.log('/properties/add/+page.server.js action -> add: ', property);
+		// Extract files from formData
+		const photos = formData.getAll('photos'); // This will be an array of File objects
 
-		// push it to the server
-		const { data: resData, error: resErr } = await supabaseClient.from('properties').insert(property).select().maybeSingle();
-		if (resErr) {
-			if (resErr instanceof AuthApiError && resErr.status === 400) {
-				return fail(400, {
+		let newPropertyId = null;
+
+		try {
+			// 1. Insert new property into 'properties' table
+			console.log('/properties/add/+page.server.js action -> add: ', property);
+			const { data: resData, error: resErr } = await supabaseClient
+				.from('properties')
+				.insert(property)
+				.select('id, msl') // Select the id and msl for later use
+				.maybeSingle();
+
+			if (resErr) {
+				console.error('Error inserting property:', resErr);
+				if (resErr instanceof AuthApiError && resErr.status === 400) {
+					return fail(400, {
+						error: true,
+						message: `Unable to add property, ${resErr.message}`,
+						property,
+					});
+				}
+				return fail(500, {
 					error: true,
 					message: `Unable to add property, ${resErr.message}`,
 					property,
 				});
 			}
-			return fail(500, {
-				error: true,
-				message: `Unable to add property, ${resErr.message}`,
-				property,
-			});
-		}
 
-		return {
-			success: true,
-			property_id: resData.id,
-			message: `Property ${resData.msl} added successfully!`
-		}
+			newPropertyId = resData.id; // Get the ID of the newly created property
+			const photoRecords = [];
 
+			// 2. Upload each photo to Supabase Storage
+			for (const photo of photos) {
+				// Ensure it's a File object and not empty
+				if (!(photo instanceof File) || photo.size === 0) {
+					continue;
+				}
+
+				const fileName = `${uuidv4()}-${photo.name.replace(/\s/g, '_')}`; // Unique filename
+				const filePath = `${formData.get('msl')}/${fileName}`; // Path in storage bucket
+
+				const { data: uploadData, error: uploadError } = await supabaseClient.storage
+					.from('photos') // Your Supabase Storage bucket name
+					.upload(filePath, photo, {
+						cacheControl: '3600', // Cache for 1 hour
+						upsert: false // Do not overwrite if file exists with same path
+					});
+
+				if (uploadError) {
+					console.error('Error uploading photo:', uploadError);
+					// Decide how to handle this: fail the whole operation, or log and continue
+					// For now, we'll fail the operation if any photo upload fails.
+					return fail(500, { message: `Failed to upload photo: ${photo.name}. Error: ${uploadError.message}` });
+				}
+
+				// Get public URL of the uploaded photo
+				const { data: publicUrlData } = supabaseClient.storage
+					.from('photos')
+					.getPublicUrl(filePath);
+
+				if (!publicUrlData || !publicUrlData.publicUrl) {
+					console.error('Could not get public URL for photo:', filePath);
+					return fail(500, { message: `Failed to get public URL for photo: ${photo.name}` });
+				}
+
+				photoRecords.push({
+					property_id: newPropertyId,
+					msl: property.msl,
+					file_url: publicUrlData.publicUrl,
+					file_path: filePath,
+					name: photo.name, // Store original name
+					user_id: userId, // Associate with the uploader
+				});
+			}
+
+			// 3. Insert photo records into 'photos' table
+			if (photoRecords.length > 0) {
+				const { error: photosInsertError } = await supabaseClient
+					.from('photos')
+					.insert(photoRecords);
+
+				if (photosInsertError) {
+					console.error('Error inserting photo records:', photosInsertError);
+					// This is a critical error, consider rolling back storage uploads
+					// or marking the property for review.
+					return fail(500, { message: 'Failed to save photo references in the database.' });
+				}
+			}
+
+			return {
+				success: true,
+				property_id: resData.id,
+				message: `Property ${resData.msl} added successfully!`
+			};
+
+		} catch (error) {
+			console.error('Unhandled error in add property action:', error);
+			// If a property was created but photo upload failed, you might want to clean up
+			if (newPropertyId) {
+				// Optionally delete the property if no photos were successfully linked
+				// await supabaseClient.from('properties').delete().eq('id', newPropertyId);
+			}
+			return fail(500, { message: error.message || 'An unexpected error occurred during property creation.' });
+		}
 	},
-}
+};

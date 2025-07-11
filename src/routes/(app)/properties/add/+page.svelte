@@ -39,6 +39,8 @@
 		photos: [],
 	});
 
+	let newPropertyFiles = $state([]);
+
 	// $effect(() => {
 	// 	$inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
@@ -106,7 +108,7 @@
 					dismissible: true,
 					timeout: 1200,
 				});
-				// update({ reset: true }); // resets form, but is it needed in add?
+				// update({ reset: true }); // resets form, not needed in add since page redirects to print
 				goto(`/${result.data.property_id}/print`);
 			} else {
 				console.log('TRIGGED DUE TO: ', result.status);
@@ -477,8 +479,7 @@
 
 			<fieldset class="photos">
 				<legend>Photos</legend>
-
-				<Uploader bind:attachments={property.photos} msl={property.msl} />
+				<Uploader bind:newFiles={newPropertyFiles} />
 			</fieldset>
 		</div>
 	</section>

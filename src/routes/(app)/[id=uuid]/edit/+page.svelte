@@ -20,7 +20,7 @@
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
-	let form = $state({
+	let propertyData = $state({
 		...data.property,
 		property_for: data.property?.property_for || [],
 		features: data.property?.features || [],
@@ -29,7 +29,10 @@
 	});
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', form);
 
+	let newPhotosToUpload = $state([]); // Bindable for Uploader
+
 	let loading = $state(false),
+		isError = $state(false),
 		error = $state(''),
 		message = $state(''),
 		isAdmin = data.is_admin || false,
@@ -47,10 +50,46 @@
 			},
 		};
 	}
+
+	/**
+	 * Handles the custom event dispatched from Uploader to delete an existing photo.
+	 * This will trigger a separate form action.
+	 * @param {Object} photo - The photo object to delete (from Uploader).
+	 */
+	async function handleDeleteExistingPhoto(photo) {
+		const { id, file_path } = photo; // Access id and file_path directly from the passed photo object
+		loading = true;
+		message = 'Deleting photo...';
+		isError = false;
+
+		// Use a separate form action for deletion
+		const deleteFormData = new FormData();
+		deleteFormData.append('photoId', id);
+		deleteFormData.append('filePath', file_path);
+
+		const response = await fetch('?/deletePhoto', {
+			// Call the new deletePhoto action
+			method: 'POST',
+			body: deleteFormData,
+		});
+
+		const result = await response.json(); // Assuming your action returns JSON
+
+		loading = false;
+		if (response.ok) {
+			message = 'Photo deleted successfully!';
+			isError = false;
+			// Optimistically update the UI by removing the photo
+			propertyData.photos = propertyData.photos.filter((p) => p.id !== id);
+		} else {
+			message = `Error deleting photo: ${result.message || 'Unknown error'}`;
+			isError = true;
+		}
+	}
 </script>
 
 <svelte:head>
-	<title>Editing {form.msl} - Cariari Agency</title>
+	<title>Editing {propertyData.msl} - Cariari Agency</title>
 </svelte:head>
 
 {#if !navigating.complete}
@@ -73,7 +112,7 @@
 		message = '';
 		error = '';
 
-		if (isEmpty(form.property_for)) {
+		if (isEmpty(propertyData.property_for)) {
 			cancel();
 			error = 'Must select at least one for PROPERTY FOR in Property Type section';
 			loading = false;
@@ -115,24 +154,28 @@
 					<legend>Status</legend>
 					<Toggle
 						name="is_active"
-						bind:checked={form.is_active}
-						label={form.is_active ? 'Listed' : 'Delisted'} />
+						bind:checked={propertyData.is_active}
+						label={propertyData.is_active ? 'Listed' : 'Delisted'} />
 				</fieldset>
 			{/if}
 
-			<fieldset class={form.is_active ? 'active' : 'removed'}>
+			<fieldset class={propertyData.is_active ? 'active' : 'removed'}>
 				<legend>MSL</legend>
-				<input type="text" placeholder="ex: CR-001" bind:value={form.msl} disabled />
+				<input
+					type="text"
+					placeholder="ex: CR-001"
+					bind:value={propertyData.msl}
+					disabled />
 			</fieldset>
 
 			<fieldset>
 				<legend>Land Use</legend>
-				<Select name="land_use" bind:selected={form.land_use} />
+				<Select name="land_use" bind:selected={propertyData.land_use} />
 			</fieldset>
 
 			<fieldset class="flow">
 				<legend>Property For</legend>
-				<Checkboxes bind:selected={form.property_for} kind="square" />
+				<Checkboxes bind:selected={propertyData.property_for} kind="square" />
 			</fieldset>
 		</div>
 	</section>
@@ -154,16 +197,22 @@
 					type="text"
 					name="address"
 					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
-					bind:value={form.address} />
+					bind:value={propertyData.address} />
 			</fieldset>
 
 			<fieldset class="location">
 				<legend>Location (lat, lng)</legend>
-				<input type="text" placeholder="ex: 9.97542" bind:value={form.location.lat} />
-				<input type="text" placeholder="ex: -84.163443" bind:value={form.location.lng} />
+				<input
+					type="text"
+					placeholder="ex: 9.97542"
+					bind:value={propertyData.location.lat} />
+				<input
+					type="text"
+					placeholder="ex: -84.163443"
+					bind:value={propertyData.location.lng} />
 				<Button type="button" size="block" onclick={getPosition}>Get current GPS</Button>
 
-				<MapPicker bind:updategps={gps} bind:position={form.location} />
+				<MapPicker bind:updategps={gps} bind:position={propertyData.location} />
 			</fieldset>
 		</div>
 	</section>
@@ -185,7 +234,7 @@
 					type="tel"
 					name="contact_phone"
 					placeholder="ex: 1234-5678"
-					bind:value={form.contact_phone} />
+					bind:value={propertyData.contact_phone} />
 			</fieldset>
 
 			<fieldset>
@@ -194,7 +243,7 @@
 					type="email"
 					name="contact_email"
 					placeholder="ex: this@that.there"
-					bind:value={form.contact_email} />
+					bind:value={propertyData.contact_email} />
 			</fieldset>
 
 			<fieldset>
@@ -203,7 +252,7 @@
 					type="text"
 					name="contact_realtor"
 					placeholder="ex: Re/Max or Jane Doe"
-					bind:value={form.contact_realtor} />
+					bind:value={propertyData.contact_realtor} />
 			</fieldset>
 		</div>
 	</section>
@@ -225,7 +274,7 @@
 					type="number"
 					name="year_built"
 					placeholder="ex: 2019"
-					bind:value={form.year_built} />
+					bind:value={propertyData.year_built} />
 			</fieldset>
 
 			<fieldset>
@@ -234,7 +283,7 @@
 					type="text"
 					name="building_style"
 					placeholder="ex: 2 Story"
-					bind:value={form.building_style} />
+					bind:value={propertyData.building_style} />
 			</fieldset>
 
 			<fieldset>
@@ -243,7 +292,7 @@
 					type="number"
 					name="lot_size"
 					placeholder="ex: 900"
-					bind:value={form.lot_size} />
+					bind:value={propertyData.lot_size} />
 			</fieldset>
 
 			<fieldset>
@@ -252,7 +301,7 @@
 					type="number"
 					name="building_size"
 					placeholder="ex: 810"
-					bind:value={form.building_size} />
+					bind:value={propertyData.building_size} />
 			</fieldset>
 		</div>
 	</section>
@@ -270,12 +319,20 @@
 		<div class="inputs">
 			<fieldset>
 				<legend>Bedrooms</legend>
-				<input type="number" name="beds" placeholder="ex: 3" bind:value={form.beds} />
+				<input
+					type="number"
+					name="beds"
+					placeholder="ex: 3"
+					bind:value={propertyData.beds} />
 			</fieldset>
 
 			<fieldset>
 				<legend>Bathrooms</legend>
-				<input type="number" name="baths" placeholder="ex: 3" bind:value={form.baths} />
+				<input
+					type="number"
+					name="baths"
+					placeholder="ex: 3"
+					bind:value={propertyData.baths} />
 			</fieldset>
 
 			<fieldset>
@@ -284,12 +341,16 @@
 					type="number"
 					name="half_baths"
 					placeholder="ex: 2"
-					bind:value={form.half_baths} />
+					bind:value={propertyData.half_baths} />
 			</fieldset>
 
 			<fieldset>
 				<legend>Rooms</legend>
-				<input type="number" name="rooms" placeholder="ex: 6" bind:value={form.rooms} />
+				<input
+					type="number"
+					name="rooms"
+					placeholder="ex: 6"
+					bind:value={propertyData.rooms} />
 			</fieldset>
 
 			<fieldset>
@@ -298,7 +359,7 @@
 					type="number"
 					name="parking_spaces"
 					placeholder="ex: 9"
-					bind:value={form.parking_spaces} />
+					bind:value={propertyData.parking_spaces} />
 			</fieldset>
 		</div>
 	</section>
@@ -320,12 +381,16 @@
 					type="number"
 					name="price"
 					placeholder="ex: 630000"
-					bind:value={form.price} />
+					bind:value={propertyData.price} />
 			</fieldset>
 
 			<fieldset>
 				<legend>Rent ($/month)</legend>
-				<input type="number" name="rent" placeholder="ex: 1800" bind:value={form.rent} />
+				<input
+					type="number"
+					name="rent"
+					placeholder="ex: 1800"
+					bind:value={propertyData.rent} />
 			</fieldset>
 
 			<fieldset>
@@ -334,12 +399,16 @@
 					type="number"
 					name="taxes"
 					placeholder="ex: 1500"
-					bind:value={form.taxes} />
+					bind:value={propertyData.taxes} />
 			</fieldset>
 
 			<fieldset>
 				<legend>Fees (condo, asssociation) ($/month)</legend>
-				<input type="number" name="fees" placeholder="ex: 120" bind:value={form.fees} />
+				<input
+					type="number"
+					name="fees"
+					placeholder="ex: 120"
+					bind:value={propertyData.fees} />
 			</fieldset>
 		</div>
 	</section>
@@ -363,13 +432,13 @@
 					onkeydown={(evt) => {
 						if (evt.key == 'Enter') evt.preventDefault();
 					}}
-					use:enter={(input) => addFeature(input, form)} />
+					use:enter={(input) => addFeature(input, propertyData)} />
 				<div class="feature-list">
-					{#each form.features || [] as feature, i}
+					{#each propertyData.features || [] as feature, i}
 						<span class="feature">
 							<svg
 								class="close"
-								onclick={() => removeFeature(i, form)}
+								onclick={() => removeFeature(i, propertyData)}
 								onkeydown={(e) => {
 									if (e.key === 'Enter' || e.key === ' ') removeFeature(i);
 								}}
@@ -401,19 +470,25 @@
 					class="scroller"
 					rows="6"
 					placeholder="Description (max 9 sentences)"
-					bind:value={form.description}></textarea>
+					bind:value={propertyData.description}></textarea>
 			</fieldset>
 
 			<fieldset class="photos">
 				<legend>Photos</legend>
-				<Uploader bind:attachments={form.photos} msl={form.msl} />
+				<Uploader
+					bind:existingAttachments={propertyData.photos}
+					bind:newFiles={newPhotosToUpload}
+					propertyId={data.property.id}
+					currentUserId={data.session?.user?.id}
+					isAdmin={data.isAdmin}
+					onDeleteExistingPhoto={handleDeleteExistingPhoto} />
 			</fieldset>
 		</div>
 	</section>
 
 	<!-- BUTTONS -->
 	<footer class="buttons-group">
-		{#if form.is_active && !isAdmin}
+		{#if propertyData.is_active && !isAdmin}
 			<Button formaction="?/remove" color="danger" {loading} disabled={loading}>
 				{#snippet icon()}
 					❌
@@ -435,7 +510,7 @@
 			type="button"
 			disabled={loading}
 			onclick={() => {
-				goto(`/${form.id}/print`);
+				goto(`/${propertyData.id}/print`);
 			}}>
 			{#snippet icon()}
 				👁‍🗨
@@ -444,15 +519,23 @@
 		</Button>
 		<!-- {/if} -->
 
-		<input type="hidden" hidden name="id" value={form.id} />
-		<input type="hidden" hidden name="msl" value={form.msl} />
-		<input type="hidden" hidden name="location" value={JSON.stringify(form.location)} />
+		<input type="hidden" hidden name="id" value={propertyData.id} />
+		<input type="hidden" hidden name="msl" value={propertyData.msl} />
+		<input
+			type="hidden"
+			hidden
+			name="location"
+			value={JSON.stringify(propertyData.location)} />
 		<input
 			type="hidden"
 			hidden
 			name="property_for"
-			value={JSON.stringify(form.property_for)} />
-		<input type="hidden" hidden name="features" value={JSON.stringify(form.features)} />
+			value={JSON.stringify(propertyData.property_for)} />
+		<input
+			type="hidden"
+			hidden
+			name="features"
+			value={JSON.stringify(propertyData.features)} />
 		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
