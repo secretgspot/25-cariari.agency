@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
+	import Contact from '$lib/Contact.svelte';
 	import { LinkButton } from '$lib/buttons';
 </script>
 
@@ -150,24 +151,27 @@
 
 	<p>Hello Visitor,</p>
 
+	<p>Welcome! This is a free service for the Cariari area of La Asunción, Heredia.</p>
+
+	<h2>Listing Your Property</h2>
 	<p>
-		This is a free service application for general Cariari area of La Assunction, Heredia. <br />If
-		you would like to add your property on here, add it thru <LinkButton
+		Ready to list your property? Just click <LinkButton
 			href="/properties/add"
-			title="Add you property">Add</LinkButton> or the link with same name at the top on the
-		main page. With your confirmed email you'll be able to modify it at any time or delist
-		from the app.
+			title="Add you property">Add</LinkButton> or find the "Add" link at the top of the page.
+		Once your email is confirmed, you'll have full control to edit or remove your listing anytime.
 	</p>
 
+	<h2>Advertising Inquiries</h2>
 	<p>
-		If you have questions regarding advertising, contact at <LinkButton
-			href="mailto:secretgspot@gmail.com?subject=I%20would%20like%20to%20advertise%20on%20cariari.agency"
-			title="Add you property">me</LinkButton> by email.
+		For any questions about advertising or anything else, please don't hesitate to contact
+		us below.
 	</p>
 
 	<blockquote>
 		<i>— Cariari.Agency</i>
 	</blockquote>
+
+	<Contact />
 
 	<figure>
 		<svg viewBox="0 0 757 350" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -232,6 +236,14 @@
 		font-family: 'Gabriola', Times, serif;
 		font-size: 2.1rem;
 		text-align: justify;
+	}
+	h2 {
+		font-family: 'Gabriola', Times, serif;
+
+		margin-bottom: 0;
+		+ p {
+			margin-top: 0;
+		}
 	}
 	p {
 		font-size: 1.2rem;
