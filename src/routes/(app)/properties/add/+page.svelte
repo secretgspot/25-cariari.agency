@@ -42,7 +42,7 @@
 	let newPropertyFiles = $state([]);
 
 	// $effect(() => {
-	// 	$inspect('🐍 ADD PROPERTY temp data:', property);
+	$inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
 
 	// Helper function to allow on Enter events for AddFeature

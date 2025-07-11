@@ -58,7 +58,9 @@ export const actions = {
 		const property = {
 			user_id: userId, // Ensure user_id is from the authenticated session
 			msl: formData.get('msl'),
-			is_active: (formData.get('is_active') == 'Listed' ? true : false),
+			is_active: Boolean(formData.get('is_active')),
+			// is_active: true,
+			// is_active: (formData.get('is_active') == 'Listed' ? true : false),
 			description: formData.get('description'),
 			address: formData.get('address'),
 			location: JSON.parse(formData.get('location')),

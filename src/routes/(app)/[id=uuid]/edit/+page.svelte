@@ -2,7 +2,7 @@
 	/** @type {import('./$types').PageData} */
 
 	import { navigating, page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
@@ -27,7 +27,8 @@
 		photos: data.property?.photos || [],
 		location: data.property?.location || { lat: null, lng: null },
 	});
-	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', form);
+	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', propertyData);
+	// $inspect('(app)/[id=uuid]/edit/+page.svelte session:', data.session);
 
 	let newPhotosToUpload = $state([]); // Bindable for Uploader
 
@@ -120,11 +121,11 @@
 
 		// prevent default callback from resetting the form
 		return async ({ result, update }) => {
-			console.log('RESULT TYPE:', result.type);
+			console.log('RESULT:', result);
 			if (result.type === 'success') {
-				// reset form
-				// clearStorage();
-				// form.reset();
+				if (result.data.delisted) {
+					propertyData.is_active = false;
+				}
 				message = result.data.message;
 				await applyAction(result);
 			}
@@ -135,7 +136,6 @@
 			}
 			loading = false;
 			update({ reset: false });
-			// update();
 		};
 	}}>
 	<!-- PROPERTY TYPE -->
@@ -149,13 +149,16 @@
 		</div>
 
 		<div class="inputs">
-			{#if isAdmin}
+			{#if isAdmin || propertyData.user_id === data.session.user.id}
 				<fieldset>
 					<legend>Status</legend>
 					<Toggle
 						name="is_active"
 						bind:checked={propertyData.is_active}
-						label={propertyData.is_active ? 'Listed' : 'Delisted'} />
+						label={propertyData.is_active ? 'Listed' : 'Delisted'}
+						kind="flip"
+						on="Listed"
+						off="Delisted" />
 				</fieldset>
 			{/if}
 
@@ -505,19 +508,19 @@
 			</Button>
 		{/if}
 
-		<!-- {#if isAdmin} -->
-		<Button
-			type="button"
-			disabled={loading}
-			onclick={() => {
-				goto(`/${propertyData.id}/print`);
-			}}>
-			{#snippet icon()}
-				👁‍🗨
-			{/snippet}
-			Print
-		</Button>
-		<!-- {/if} -->
+		{#if isAdmin || propertyData.is_active}
+			<Button
+				type="button"
+				disabled={loading}
+				onclick={() => {
+					goto(`/${propertyData.id}/print`);
+				}}>
+				{#snippet icon()}
+					👁‍🗨
+				{/snippet}
+				Print
+			</Button>
+		{/if}
 
 		<input type="hidden" hidden name="id" value={propertyData.id} />
 		<input type="hidden" hidden name="msl" value={propertyData.msl} />

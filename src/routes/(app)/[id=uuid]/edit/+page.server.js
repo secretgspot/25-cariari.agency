@@ -69,11 +69,13 @@ export const actions = {
 
 		const formData = await request.formData();
 
+		console.log('♥💔: ', Boolean(formData.get('is_active')));
+
 		// Extract property details (excluding photos for now, they are handled separately)
 		const propertyUpdates = {
 			updated_at: new Date().toISOString(),
 			msl: formData.get('msl'),
-			is_active: (formData.get('is_active') == 'Listed' ? true : false),
+			is_active: Boolean(formData.get('is_active')),
 			description: formData.get('description'),
 			address: formData.get('address'),
 			location: JSON.parse(formData.get('location')),
@@ -256,19 +258,20 @@ export const actions = {
 				return fail(400, {
 					error: true,
 					message: `Unable to delist property, ${resErr.message}`,
-					property,
+					resErr,
 				});
 			}
 			return fail(500, {
 				error: true,
 				message: `Unable to delist property, ${resErr.message}`,
-				property,
+				resErr,
 			});
 		}
 
 		return {
 			success: true,
-			message: `Property ${resData.msl} has been delisted!`
+			message: `Property ${resData.msl} has been delisted!`,
+			delisted: true
 		}
 	},
 

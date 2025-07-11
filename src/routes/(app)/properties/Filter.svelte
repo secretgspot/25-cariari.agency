@@ -81,18 +81,17 @@
 		</div>
 	</div>
 
-	<div class="others">
-		<h3>Others</h3>
+	<div class="other">
+		<h3>Other</h3>
 
 		<div class="row">
 			<Toggle
 				name="active"
 				bind:checked={$filterStore.active}
-				label={$filterStore.active ? 'Listed' : 'Delisted'} />
-			<!-- <label class="checkbox">
-				<input type="checkbox" bind:checked="{$filterStore.active}" />
-				<span>Active</span>
-			</label> -->
+				label={$filterStore.active ? 'Listed' : 'Delisted'}
+				kind="skewed"
+				on="Listed"
+				off="Delisted" />
 
 			<label class="text">
 				<input type="text" bind:value={$filterStore.msl} /> msl
@@ -139,7 +138,7 @@
 	.transaction_type,
 	.price_range,
 	.features,
-	.others {
+	.other {
 		box-shadow: var(--shadow-small);
 		padding: 0 var(--padding-medium) var(--padding-medium);
 	}
@@ -148,11 +147,16 @@
 		margin-bottom: var(--padding-small);
 	}
 
+	.transaction_type .row {
+		justify-content: space-around;
+	}
+
 	.features .row {
 		gap: var(--gap-small);
 	}
 
-	.others .row {
+	.other .row {
 		align-items: flex-start;
+		gap: var(--gap-medium);
 	}
 </style>
