@@ -267,7 +267,7 @@
 		max-width: 150px;
 		max-height: 150px;
 		border-radius: var(--border-radius); /* Ensure rounded corners for cards */
-		overflow: hidden; /* Hide overflow from images */
+		/* overflow: hidden; */
 	}
 	.card img {
 		width: 100%;

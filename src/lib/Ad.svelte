@@ -18,6 +18,7 @@
 		justify-content: center;
 		align-items: center;
 		box-shadow: var(--shadow-small);
+		border-radius: var(--border-radius);
 		/* margin: 2rem 0; */
 		text-align: center;
 		opacity: var(--brightness);
