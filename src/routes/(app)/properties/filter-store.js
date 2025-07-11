@@ -10,11 +10,17 @@ export const filterStore = writable({
 	lot_size: '',
 
 	active: true,
+	user_only: false,
 	msl: ''
 });
 
-export function getFilteredProperties(properties, filter) {
+export function getFilteredProperties(properties, filter, user) {
 	return properties.filter((property) => {
+		// Filter by user
+		if (filter.user_only && property.user_id !== user?.id) {
+			return false;
+		}
+
 		// Filter by property type
 		if (filter.filter_type && property.land_use !== filter.filter_type) {
 			return false;

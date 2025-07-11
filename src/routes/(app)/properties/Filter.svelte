@@ -89,9 +89,17 @@
 				name="active"
 				bind:checked={$filterStore.active}
 				label={$filterStore.active ? 'Listed' : 'Delisted'}
-				kind="skewed"
+				kind="flip"
 				on="Listed"
 				off="Delisted" />
+
+			<Toggle
+				name="user_only"
+				bind:checked={$filterStore.user_only}
+				label={$filterStore.user_only ? 'My Properties' : 'All Properties'}
+				kind="flip"
+				on="Mine"
+				off="All" />
 
 			<label class="text">
 				<input type="text" bind:value={$filterStore.msl} /> msl

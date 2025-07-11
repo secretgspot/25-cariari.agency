@@ -10,7 +10,7 @@
 
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
-	let filtered = $derived(getFilteredProperties(data.properties, $filterStore));
+	let filtered = $derived(getFilteredProperties(data.properties, $filterStore, data.user));
 	let totalDisplayCount = $derived(data.properties.filter(p => p.is_active === $filterStore.active && (p.land_use === $filterStore.filter_type || $filterStore.filter_type === 'Any')).length);
 </script>
 
