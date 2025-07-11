@@ -34,74 +34,18 @@
 
 [Cariari.Agency]<https://cariari.agency>
 
-Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit, Supabase, and Vercel. It allows users to browse, add, edit, and print property listings. The project is structured as a modern SvelteKit app with a focus on property data management, user authentication, and map-based property browsing.
-
-## Getting Started
-
-To get a local copy up and running, follow these simple steps.
-
-### Prerequisites
-
-- Node.js and npm installed.
-- A Supabase account and project.
-
-### Installation
-
-1. Clone the repo
-
-    ```sh
-    git clone https://your-repo-url.com
-    ```
-
-2. Install NPM packages
-
-    ```sh
-    npm install
-    ```
-
-3. Set up your environment variables in a `.env` file. You will need your Supabase URL and anon key.
-
-    ```
-    PUBLIC_SUPABASE_URL=your_supabase_url
-    PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
-
-### Generating Supabase Types
-
-For full type-safety and editor autocompletion, you must generate the TypeScript definitions from your Supabase schema.
-
-1. **Log in to the Supabase CLI:**
-
-    ```bash
-    npx supabase login
-    ```
-
-2. **Generate the types file:**
-    You can find your `<your-project-id>` in your Supabase project's dashboard under `Project Settings > General`.
-
-    ```bash
-    npx supabase gen types typescript --project-id <your-project-id> > src/database.types.ts
-    ```
-
-    This will create a `database.types.ts` file in your `src` directory, which is automatically used by SvelteKit to provide a fully typed Supabase client.
-
-### Running the Development Server
-
-```bash
-npm run dev
-```
+Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit, Supabase, and hosted on Vercel. It allows users to browse, add, edit, and print property listings.
 
 ## TODO
 
-- <https://docs.maptiler.com/leaflet/examples/vector-tiles-in-leaflet-js/>
-- <https://cloud.maptiler.com/maps/>
+- [ ] Check if user flow is proper with new signup
 
 ## Tech Stack
 
 - **Frontend:** SvelteKit [SvelteLit Docs](https://svelte.dev/docs/kit/introduction)
 - **Backend/DB:** Supabase [Supabase Docs](https://supabase.com/docs)
 - **Hosting:** Vercel [Vercel Docs](https://vercel.com/docs)
-- **Map:** Leaflet (maps) [Leaflet Docs](https://leafletjs.com/reference.html)
+- **Map:** Leaflet/MapLibre (maps) [Leaflet Docs](https://leafletjs.com/reference.html) [Maplibre Docs](https://maplibre.org/maplibre-gl-js/docs/)
 - **QR:** QR [QR Docs](https://github.com/Castlenine/svelte-qrcode)
 
 ## Main Features
@@ -109,7 +53,7 @@ npm run dev
 - Property listing, filtering, and detail views
 - Add/Edit/Delete/Delist property (CRUD)
 - Print-friendly property pages with QR codes
-- Map-based property browsing (Leaflet)
+- Map-based property browsing (Leaflet/MapLibre)
 - User authentication (Supabase Auth)
 - Admin and regular user flows
 - Responsive, modern UI with reusable Svelte components
@@ -126,7 +70,7 @@ Properties are the core data entity. Main fields:
 - address (string)
 - location (object: {lat, lng})
 - land_use (string)
-- property_for (array: e.g. ["Sale", "Rent", "Investment"])
+- property_for (array: e.g. ["Sale", "Rent"])
 - lot_size (number, m²)
 - year_built (number)
 - building_size (number, m²)
@@ -151,13 +95,6 @@ Properties are the core data entity. Main fields:
 - **GET /properties/[id]**: Get property details
 - **GET /properties/[id]/print**: Print-friendly property page with QR code
 
-## Authentication & Authorization
-
-- Supabase Auth (email/password, magic link)
-- Session is available in all server actions via `getSupabase(event)`
-- Only authenticated users can add/edit/delete their own listings
-- Admins can edit/delete any listing
-
 ## Main User Flows
 
 - **Browse Properties:** Map and list view, filter by type, price, beds, etc.
@@ -165,46 +102,3 @@ Properties are the core data entity. Main fields:
 - **Add Property:** Form with all property fields, photo upload, map picker
 - **Edit Property:** Same as add, pre-filled, with delete/delist options
 - **Print Property:** Print-optimized page with QR code for sharing
-
-## Svelte Components
-
-- `/src/lib/` contains reusable UI: Badge, Button, Checkbox, Editor, Map, Nav, Notify, Preview, QR, Splash, Uploader, etc.
-- `/src/routes/(app)/` contains main app pages: map, property detail, add/edit/print, about
-- `/src/routes/(app)/properties/` contains property list, add, filter logic
-
-## Utilities
-
-- `/src/lib/utils/` contains helpers for formatting, validation, local storage, time, etc.
-- `/src/lib/db.js` sets up Supabase client and user store
-
-## Data Usage
-
-- All property data is stored in Supabase tables: `properties`, `properties_preview`, `photos`
-- Filtering and sorting is done client-side and server-side
-- Photos are stored as URLs (potentially in a separate `photos` table)
-
-## External Services
-
-- Supabase (DB, Auth)
-- Google Analytics (gtag.js)
-
-## Configuration
-
-- Environment variables for Supabase URL and anon key
-- SvelteKit config for Vite, adapters, etc.
-
-## Deployment
-
-- Deployed to Vercel
-- Static assets in `/static/`
-
-## Notes for Rebuild
-
-- All property CRUD is via SvelteKit server actions using Supabase
-- Auth is required for all property modifications
-- Map and photo features are important for UX
-- Print view is a separate route with QR code
-- Admin/regular user logic is handled in server actions and UI
-
----
-*Generated July 2, 2025. This file is intended as a memory/context file for rebuilding Cariari.Agency with a new tech stack. It summarizes all key features, data, and flows.*

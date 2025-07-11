@@ -21,8 +21,18 @@ export const actions = {
 			const body = formData.get("message");
 
 			let html = `
-				<h3>New message from ${name}, ${email}</h3>
-				<pre>${body}</pre>
+				<div style="font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #333333;">
+						<h3 style="color: #000000; font-size: 20px; margin-bottom: 15px;">New message from Cariari.Agency Contact Form</h3>
+
+						<p style="margin-bottom: 8px;"><strong>From:</strong> <span style="color: #000000;">${name}</span></p>
+						<p style="margin-bottom: 20px;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #C49A2F; text-decoration: none;">${email}</a></p>
+
+						<div style="background-color: #f8f8f8; border: 1px solid #e0e0e0; padding: 15px; border-radius: 5px; margin-top: 15px; word-wrap: break-word;">
+								${body}
+						</div>
+
+						<p style="margin-top: 20px; font-size: 14px; color: #777777;">This message was sent via the contact form on your website.</p>
+				</div>
 			`;
 
 			const message = {
