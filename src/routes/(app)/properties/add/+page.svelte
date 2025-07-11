@@ -42,7 +42,7 @@
 	let newPropertyFiles = $state([]);
 
 	// $effect(() => {
-	$inspect('🐍 ADD PROPERTY temp data:', property);
+	// $inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
 
 	// Helper function to allow on Enter events for AddFeature
@@ -144,7 +144,11 @@
 					<Toggle
 						name="is_active"
 						bind:checked={property.is_active}
-						label={property.is_active ? 'Listed' : 'Delisted'} />
+						label={property.is_active ? 'Listed' : 'Delisted'}
+						kind="flip"
+						colored
+						on="Listed"
+						off="Delisted" />
 				</fieldset>
 			{/if}
 

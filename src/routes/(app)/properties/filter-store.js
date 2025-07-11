@@ -15,6 +15,13 @@ export const filterStore = writable({
 });
 
 export function getFilteredProperties(properties, filter, user) {
+	// If MSL filter is present, it overrides all other filters
+	if (filter.msl) {
+		return properties.filter((property) => {
+			return property.msl && property.msl.includes(filter.msl);
+		});
+	}
+
 	return properties.filter((property) => {
 		// Filter by user
 		if (filter.user_only && property.user_id !== user?.id) {

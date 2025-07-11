@@ -157,6 +157,7 @@
 						bind:checked={propertyData.is_active}
 						label={propertyData.is_active ? 'Listed' : 'Delisted'}
 						kind="flip"
+						colored
 						on="Listed"
 						off="Delisted" />
 				</fieldset>

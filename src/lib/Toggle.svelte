@@ -1,11 +1,12 @@
 <script>
-	/** @type {{checked?: boolean, label?: string, name?: string, disabled?: boolean, kind?: string, on?: string, off?: string}} */
+	/** @type {{checked?: boolean, label?: string, name?: string, disabled?: boolean, kind?: string, colored?: boolean, on?: string, off?: string}} */
 	let {
 		checked = $bindable(false),
 		label = '',
 		name = '',
 		disabled = false,
 		kind = 'basic', // basic|skewed|flip
+		colored = false,
 		on = '',
 		off = '',
 		...rest
@@ -16,6 +17,7 @@
 	<input
 		type="checkbox"
 		bind:checked
+		class:colored
 		class="tgl {kind}"
 		{...rest}
 		id={name}
@@ -33,9 +35,6 @@
 			&,
 			&:after,
 			&:before,
-			/* & *,
-			& *:after,
-			& *:before, */
 			& + label {
 				box-sizing: border-box;
 				&::selection {
@@ -79,11 +78,9 @@
 				border: var(--border);
 				border-radius: var(--border-radius);
 				padding: 2px;
-				/* transition: all 0.3s ease; */
 				&:after {
 					border-radius: var(--border-radius);
 					background: var(--error);
-					/* transition: all 0.1s ease; */
 				}
 			}
 
@@ -98,7 +95,7 @@
 				transform: skew(-10deg);
 				backface-visibility: hidden;
 				transition: all 0.2s ease;
-				background: var(--error);
+				border: 1px solid var(--accent);
 				min-width: 100px;
 				&:after,
 				&:before {
@@ -110,7 +107,7 @@
 					position: absolute;
 					line-height: 2em;
 					font-weight: bold;
-					color: var(--color-white);
+					color: var(--primary-content);
 					text-shadow: var(--shadow-small);
 				}
 
@@ -125,15 +122,22 @@
 				}
 
 				&:active {
-					background: var(--error);
 					&:before {
 						left: -10%;
 					}
 				}
 			}
 
+			&.colored + label {
+				background: var(--error);
+				border-color: transparent;
+				&::before,
+				&::after {
+					color: var(--color-white);
+				}
+			}
+
 			&:checked + label {
-				background: var(--success);
 				&:before {
 					left: -100%;
 				}
@@ -145,6 +149,9 @@
 				&:active:after {
 					left: 10%;
 				}
+			}
+			&.colored:checked + label {
+				background: var(--success);
 			}
 		}
 
@@ -162,27 +169,38 @@
 					text-align: center;
 					position: absolute;
 					line-height: 2em;
-					color: var(--color-white);
+					color: var(--primary-content);
 					position: absolute;
 					top: 0;
 					left: 0;
 					backface-visibility: hidden;
 					border-radius: var(--border-radius);
+					border: 1px solid var(--accent);
 				}
 
 				&:after {
 					content: attr(data-tg-on);
-					background: var(--success);
 					transform: rotateY(-180deg);
 				}
 
 				&:before {
-					background: var(--error);
 					content: attr(data-tg-off);
 				}
 
 				&:active:before {
 					transform: rotateY(-20deg);
+				}
+			}
+			&.colored + label {
+				&::before {
+					background: var(--error);
+					border-color: var(--error);
+					color: var(--color-white);
+				}
+				&::after {
+					background: var(--success);
+					border-color: var(--success);
+					color: var(--color-white);
 				}
 			}
 
@@ -194,7 +212,6 @@
 				&:after {
 					transform: rotateY(0);
 					left: 0;
-					background: var(--success);
 				}
 
 				&:active:after {
