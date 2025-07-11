@@ -1,0 +1,18 @@
+{
+	"@context": "https://schema.org",
+	"@type": "RealEstateAgent",
+	"name": "Cariari.Agency",
+	"url": "https://cariari.agency",
+	"logo": "https://cariari.agency/logo/logo_regular_gold.svg",
+	"address": {
+		"@type": "PostalAddress",
+		"streetAddress": "Cariari, La Asunción",
+		"addressLocality": "Heredia",
+		"addressCountry": "CR"
+	},
+	"contactPoint": {
+		"@type": "ContactPoint",
+		"contactType": "customer service",
+		"email": "secretgspot@gmail.com"
+	}
+}
