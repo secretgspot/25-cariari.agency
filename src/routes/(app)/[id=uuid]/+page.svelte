@@ -6,7 +6,7 @@
 	import Badge from '$lib/Badge.svelte';
 	import Icon from '$lib/Icon.svelte';
 	import Ad from '$lib/Ad.svelte';
-	import MapStatic from '$lib/map/MapStaticLibre.svelte'; // MapStaticLibre
+	import MapStatic from '$lib/map/MapStatic.svelte'; // MapStaticLibre
 	import { formatter, ago } from '$lib/utils/helpers.js';
 	import Nav from '$lib/Nav.svelte';
 	// import JsonDump from '$lib/JSONDump.svelte';
