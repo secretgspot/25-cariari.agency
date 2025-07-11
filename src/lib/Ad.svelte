@@ -30,10 +30,17 @@
 			color: var(--secondary-content);
 			line-height: 1;
 			text-transform: uppercase;
-			margin-block: 0 var(--padding-extra-small);
+			/* margin-block: 0 var(--padding-extra-small); */
 		}
 		small {
 			font-size: 12px;
+		}
+
+		:global(a) {
+			line-height: 0;
+		}
+		:global(img) {
+			border-radius: var(--border-radius);
 		}
 	}
 </style>

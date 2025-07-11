@@ -145,14 +145,6 @@
 			{/if}
 		</div>
 
-		<div class="commercial-wrapper">
-			<Ad width="320" height="100">
-				<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
-					<img src="/ads/pintarcariari-300x100.jpg" alt="Cariari Pintor" />
-				</a>
-			</Ad>
-		</div>
-
 		<p class="description" class:nodescription={!data.property.description}>
 			{data.property.description || 'No description available.'}
 		</p>
@@ -212,6 +204,13 @@
 			</div>
 		{/if}
 	</footer>
+	<div class="commercial-wrapper">
+		<Ad width="320" height="100">
+			<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
+				<img src="/ads/pintarcariari-300x100.jpg" alt="Cariari Pintor" />
+			</a>
+		</Ad>
+	</div>
 </article>
 
 <style>
@@ -368,6 +367,7 @@
 
 		p.description {
 			text-align: justify;
+			justify-self: center;
 
 			&.nodescription {
 				text-align: center;
@@ -401,18 +401,17 @@
 			}
 		}
 
-		.commercial-wrapper {
-			margin: 0 0 var(--padding-medium) 0;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
 		.location {
 			margin-block: var(--padding-large) 0;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 		}
+	}
+	.commercial-wrapper {
+		margin: 0 0 var(--padding-medium) 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>
