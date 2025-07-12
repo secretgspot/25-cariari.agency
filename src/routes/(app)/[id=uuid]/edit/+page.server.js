@@ -1,7 +1,7 @@
 /** @type {import('./$types').PageServerLoad} */
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail, json } from '@sveltejs/kit';
-import { isEmpty } from '$lib/utils/helpers.js';
+// import { isEmpty } from '$lib/utils/helpers.js';
 import { v4 as uuidv4 } from 'uuid'; // For unique file names
 
 export async function load(event) {
@@ -12,8 +12,13 @@ export async function load(event) {
 
 	if (!session) {
 		const currentPath = url.pathname;
-		throw redirect(307, `/login?redirectTo=${encodeURIComponent(currentPath)}`);
+		// console.log('🐍 currentPath: ', currentPath);
+		// redirect(307, `/login?redirectTo=${encodeURIComponent(currentPath)}`);
+		redirect(307, `/login?redirectTo=${currentPath}`);
 	}
+
+	// Determine if the current user is an admim
+	const isAdmin = session.user.app_metadata.claims_admin
 
 	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> isAdmin:', session.user.app_metadata.claims_admin);
 	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> session:', session);
@@ -35,8 +40,11 @@ export async function load(event) {
 		error(404, `Can't get property with id: ${property_id}, ${err.message}`);
 	}
 
-	// Determine if the current user is an admim
-	const isAdmin = session.user.app_metadata.claims_admin
+	// Boot user to whom this property doesn't belong to as long as it's not admin
+	if (session.user.id !== property.user_id && !isAdmin) {
+		console.log('⛔ YOU DON"T BELONG HERE!')
+		redirect(307, `/`);
+	}
 
 	// Filter out any photos that might have a null or undefined ID
 	// This addresses the "each_key_duplicate" error if IDs are missing from DB records.
@@ -63,13 +71,11 @@ export const actions = {
 		const { data: { session } } = await locals.supabase.auth.getSession();
 		if (!session) {
 			// the user is not signed in
-			throw redirect(307, `/login?redirectTo=${encodeURIComponent(event.url.pathname)}`);
+			redirect(307, `/login?redirectTo=${encodeURIComponent(event.url.pathname)}`);
 		}
 		const userId = session.user.id; // Get the current user's ID
 
 		const formData = await request.formData();
-
-		console.log('♥💔: ', Boolean(formData.get('is_active')));
 
 		// Extract property details (excluding photos for now, they are handled separately)
 		const propertyUpdates = {

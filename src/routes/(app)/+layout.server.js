@@ -1,12 +1,12 @@
 /** @type {import('./$types').LayoutServerLoad} */
-import { AuthApiError } from '@supabase/supabase-js';
+// import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
 
 export async function load(event) {
 	const session = await event.locals.getSession();
 
 	if (!session.session) {
-		// throw redirect(303, '/login');
+		// redirect(303, '/login');
 		console.log('(app)/+layout.server:  session detected 👎');
 	}
 

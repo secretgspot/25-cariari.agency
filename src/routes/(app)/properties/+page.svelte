@@ -10,8 +10,19 @@
 
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
-	let filtered = $derived(getFilteredProperties(data.properties, $filterStore, data.user));
-	let totalDisplayCount = $derived(data.properties.filter(p => p.is_active === $filterStore.active && (p.land_use === $filterStore.filter_type || $filterStore.filter_type === 'Any')).length);
+
+	// console.log('(app)/properties/+page.svelte data: ', data);
+
+	let filtered = $derived(
+		getFilteredProperties(data.properties, $filterStore, data.user),
+	);
+	let totalDisplayCount = $derived(
+		data.properties.filter(
+			(p) =>
+				p.is_active === $filterStore.active &&
+				(p.land_use === $filterStore.filter_type || $filterStore.filter_type === 'Any'),
+		).length,
+	);
 </script>
 
 <svelte:head>
@@ -44,7 +55,7 @@
 				<Nav basic />
 			</div>
 
-			<Filter />
+			<Filter loggedIn={data.is_logged_in} />
 		</div>
 	</aside>
 </main>

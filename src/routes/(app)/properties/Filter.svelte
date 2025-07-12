@@ -4,6 +4,11 @@
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Select from '$lib/Select.svelte';
 	import { formatter } from '$lib/utils/helpers.js';
+
+	/** @type {import('./$types').PageData} */
+	let { loggedIn } = $props();
+
+	// console.log('(app)/properties/+page.svelte filter loggedIn: ', loggedIn);
 </script>
 
 <section class="filters">
@@ -93,13 +98,15 @@
 				on="Listed"
 				off="Delisted" />
 
-			<Toggle
-				name="user_only"
-				bind:checked={$filterStore.user_only}
-				label={$filterStore.user_only ? 'My Properties' : 'All Properties'}
-				kind="flip"
-				on="Mine"
-				off="All" />
+			{#if loggedIn}
+				<Toggle
+					name="user_only"
+					bind:checked={$filterStore.user_only}
+					label={$filterStore.user_only ? 'My Properties' : 'All Properties'}
+					kind="flip"
+					on="Mine"
+					off="All" />
+			{/if}
 
 			<label class="text">
 				<input type="text" bind:value={$filterStore.msl} /> msl

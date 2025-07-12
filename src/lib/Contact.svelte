@@ -99,21 +99,15 @@
 
 <style>
 	.contact {
-		/* @media (prefers-color-scheme: dark) {
-			--text-1: oklch(95% none none);
-			--text-2: oklch(85% none none);
-			--text-3: oklch(70% none none);
-		} */
-
-		/* font-family: system-ui, sans-serif; */
 		display: grid;
-		place-content: center;
 		grid-column: 1 / -1;
+		margin-block: var(--padding-large);
 
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
-			grid-template-columns: 1fr 1.5fr;
-			margin: 5vmin;
+			place-content: center;
+			grid-template-columns: 1fr 2fr;
+			grid-column: 2 / -2;
 		}
 
 		/* Tablets and small laptops (769px - 1024px) */
@@ -140,14 +134,14 @@
 
 	.message {
 		display: grid;
-		gap: 2ch;
-		margin-inline: 12vmin;
-		margin-block: 7.2vmin;
+		margin-block: var(--padding-large);
+		place-content: center;
+		text-align: center;
 
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
-			margin-inline: 5vmin;
-			margin-block: 7.5vmin;
+			margin-inline: 0 var(--padding-large);
+			text-align: left;
 		}
 
 		header {
@@ -173,13 +167,11 @@
 
 	.contact-form {
 		display: grid;
-		gap: 1.5ch;
-		/* margin-inline: 5vmin; */
-		margin-block: 7.5vmin;
+		gap: 2ch;
+		margin-block: var(--padding-large);
 		background: var(--primary);
 		padding: var(--padding-medium);
 		border-radius: var(--border-radius);
-		box-shadow: var(--shadow-large);
 
 		.inputs {
 			display: flex;
@@ -187,16 +179,11 @@
 		}
 
 		fieldset {
-			/* border: var(--border); */
 			border-radius: var(--border-radius);
 			border: none;
 			display: grid;
 			gap: var(--gap-small);
 			padding: 0;
-
-			/* &.flow {
-				grid-auto-flow: column;
-			} */
 
 			legend {
 				text-transform: uppercase;
@@ -228,6 +215,16 @@
 		border-radius: var(--border-radius);
 		padding: var(--padding-large);
 		place-content: center;
+		margin-inline: var(--padding-large);
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			margin-inline: 0;
+		}
+
+		p {
+			text-wrap: balance;
+			line-height: 1.5;
+		}
 	}
 
 	span.error {

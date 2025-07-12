@@ -13,7 +13,7 @@ export async function load(event) {
 	const supabaseClient = event.locals.supabase;
 
 	if (!session.session) {
-		throw redirect(307, '/login?redirectTo=/properties/add');
+		redirect(307, '/login?redirectTo=/properties/add');
 	}
 
 	const getMsl = async () => {
@@ -48,7 +48,7 @@ export const actions = {
 		const { data: { session } } = await locals.supabase.auth.getSession();
 		if (!session) {
 			// The user is not signed in
-			throw redirect(307, '/login?redirectTo=/properties/add'); // Redirect if not logged in
+			redirect(307, '/login?redirectTo=/properties/add'); // Redirect if not logged in
 		}
 		const userId = session.user.id; // Get the current user's ID
 

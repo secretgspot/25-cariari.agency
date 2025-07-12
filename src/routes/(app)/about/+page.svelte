@@ -1,7 +1,7 @@
 <script>
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import Logo from '$lib/Logo.svelte';
+	import LogoSvg from '$lib/LogoSvg.svelte';
 	import Nav from '$lib/Nav.svelte';
 	import Contact from '$lib/Contact.svelte';
 	import { LinkButton } from '$lib/buttons';
@@ -17,110 +17,11 @@
 {/if}
 
 <article>
-	<svg
-		data-name="Layer 1"
-		xmlns="http://www.w3.org/2000/svg"
-		xmlns:xlink="http://www.w3.org/1999/xlink"
-		viewBox="0 0 222 222"
-		><defs
-			><linearGradient
-				id="c30d6575-5b9d-416f-aa0d-21f1cdd41e1c"
-				x1="8.9"
-				y1="111"
-				x2="212.51"
-				y2="111"
-				gradientUnits="userSpaceOnUse"
-				><stop offset="0" stop-color="#c49a2f" /><stop
-					offset="0.12"
-					stop-color="#b1872d" /><stop offset="0.31" stop-color="#faf394" /><stop
-					offset="0.41"
-					stop-color="#e5d06d" /><stop offset="0.56" stop-color="#c49a2f" /><stop
-					offset="0.59"
-					stop-color="#ceaa41" /><stop offset="0.65" stop-color="#e1ca65" /><stop
-					offset="0.7"
-					stop-color="#efe07f" /><stop offset="0.75" stop-color="#f7ee8f" /><stop
-					offset="0.79"
-					stop-color="#faf394" /><stop offset="0.88" stop-color="#b1872d" /><stop
-					offset="1"
-					stop-color="#c49a2f" /></linearGradient
-			><linearGradient
-				id="5e3e7936-ae2d-4705-8535-b52783b61bfa"
-				x1="64.68"
-				y1="111"
-				x2="157.32"
-				y2="111"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="e6eb33a4-f63b-41cf-87cc-12598e951e9d"
-				x1="41.94"
-				y1="62.67"
-				x2="85.41"
-				y2="62.67"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="19df4e30-fcc3-49a8-8d9e-97affa45bf6b"
-				x1="136.21"
-				y1="62.67"
-				x2="179.68"
-				y2="62.67"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="48a8a8b5-733e-4dde-ba48-9fd9da52eb99"
-				x1="41.94"
-				y1="159.48"
-				x2="85.41"
-				y2="159.48"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="113ae0a3-006f-4b6b-aabf-4f44714f307e"
-				x1="136.21"
-				y1="159.48"
-				x2="179.68"
-				y2="159.48"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="01b8f8e9-5fc5-4bbb-8200-e20fd3f4c123"
-				x1="20.5"
-				y1="111"
-				x2="51.1"
-				y2="111"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="2a24f39a-5a6e-4459-a0d3-c0b2b9a7b573"
-				x1="171.7"
-				y1="111"
-				x2="202.3"
-				y2="111"
-				xlink:href="#c30d6575-5b9d-416f-aa0d-21f1cdd41e1c" /><linearGradient
-				id="f7d27643-be75-46ab-bb08-b113560f6a6e"
-				x1="82.15"
-				y1="111"
-				x2="139.47"
-				y2="111"
-				gradientUnits="userSpaceOnUse"
-				><stop offset="0" stop-color="#c49a2f" /><stop
-					offset="0.12"
-					stop-color="#b1872d" /><stop offset="0.3" stop-color="#faf394" /><stop
-					offset="0.38"
-					stop-color="#e5d06d" /><stop offset="0.5" stop-color="#c49a2f" /><stop
-					offset="0.52"
-					stop-color="#ceaa41" /><stop offset="0.57" stop-color="#e1ca65" /><stop
-					offset="0.62"
-					stop-color="#efe07f" /><stop offset="0.67" stop-color="#f7ee8f" /><stop
-					offset="0.7"
-					stop-color="#faf394" /><stop offset="0.88" stop-color="#b1872d" /><stop
-					offset="1"
-					stop-color="#c49a2f" /></linearGradient
-			><linearGradient
-				id="661089a7-79c6-4340-ae4b-43dc203b504d"
-				x1="81.17"
-				y1="111"
-				x2="140.45"
-				y2="111"
-				xlink:href="#f7d27643-be75-46ab-bb08-b113560f6a6e" /></defs
-		><circle
-			cx="111"
-			cy="111"
-			r="44.85"
-			style="fill:none;stroke-width:2.940612588677318px;stroke:url(#5e3e7936-ae2d-4705-8535-b52783b61bfa)" /><path
-			d="M139.27,134.3,136,138.66a1.37,1.37,0,0,1-1.18.5c-5.25-.37-13.69-3.76-13.69-3.76L113,132.72a18.1,18.1,0,0,1-1.76-.73,1.4,1.4,0,0,0-.4-.11,1.32,1.32,0,0,0-.4.11c-.58.26-1.16.53-1.76.73l-8.17,2.68s-8.43,3.39-13.68,3.76a1.39,1.39,0,0,1-1.19-.5l-3.26-4.36a1.06,1.06,0,0,1,.87-1.66c3.21-.44,6.24-1.14,7.44-2.39l13-13.5a1,1,0,0,0,.15-1.2c0-.06-.1-.12-.15-.18L91,102.08c-1.18-1.24-4.39-2-7.52-2.36a1.07,1.07,0,0,1-.89-1.67l3.26-4.38a1.34,1.34,0,0,1,1.17-.5l21.13,7.41a2.68,2.68,0,0,1,0-.4V99.07a2.69,2.69,0,0,0-1.23-2.26L97,90.34c-1.41-.85-2.12-2.71-2.47-4.57a2.28,2.28,0,0,1,1.27-2.48l.53-.24a2.27,2.27,0,0,1,3.08,1.29,6.69,6.69,0,0,0,.35.76,2.27,2.27,0,0,0,1.58,1.11l8.76,1.58a2.7,2.7,0,0,0,.49,0h.52a2.42,2.42,0,0,0,.47,0l8.78-1.58a2.25,2.25,0,0,0,1.57-1.11,5.31,5.31,0,0,0,.35-.76,2.27,2.27,0,0,1,3.08-1.29l.53.24a2.28,2.28,0,0,1,1.27,2.48c-.34,1.86-1.06,3.72-2.46,4.57l-9.94,6.47a2.71,2.71,0,0,0-1.22,2.26v1.11a2.69,2.69,0,0,1,0,.4l21.13-7.41a1.34,1.34,0,0,1,1.17.5L139,98.05a1.07,1.07,0,0,1-.88,1.67c-3.14.39-6.34,1.12-7.52,2.36L118,115.37a1.1,1.1,0,0,0-.14.18,1,1,0,0,0,.15,1.2l13,13.5c1.19,1.25,4.22,1.95,7.43,2.39A1.07,1.07,0,0,1,139.27,134.3Z"
-			transform="translate(0.29)"
-			style="stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9604084478468395px;fill:url(#f7d27643-be75-46ab-bb08-b113560f6a6e);stroke:url(#661089a7-79c6-4340-ae4b-43dc203b504d)" /></svg>
-	<h1>Property listings for the greater Area of The Real Cariari.</h1>
+	<div class="logo-wrap">
+		<LogoSvg animate={true} kind="gold" size="150" time={3} />
+	</div>
+
+	<!-- <h1>Property listings for the greater Area of The Real Cariari.</h1> -->
 
 	<p>Hello Visitor,</p>
 
@@ -197,32 +98,40 @@
 <style>
 	article {
 		display: grid;
-		max-width: 930px;
-		margin: var(--padding-large) auto;
-		row-gap: var(--gap-medium);
-		grid-template-columns: 1fr 3fr 1fr;
-	}
-	article > * {
-		grid-column: 2 / -2;
-	}
-	h1 {
-		font-family: 'Gabriola', Times, serif;
-		font-size: 2.1rem;
-		text-align: justify;
-	}
-	h2 {
-		font-family: 'Gabriola', Times, serif;
-
-		margin-bottom: 0;
-		+ p {
-			margin-top: 0;
+		grid-template-columns: 1fr 42ch 1fr;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			grid-template-columns: 1fr 69ch 1fr;
 		}
+
+		> * {
+			grid-column: 2 / -2;
+		}
+	}
+
+	.logo-wrap {
+		text-align: center;
+		height: 45vh;
+		place-content: center;
+	}
+
+	/* h1 {
+		font-family: cursive;
+		font-size: 2.1rem;
+		font-weight: normal;
+		text-align: justify;
+		line-height: 1.3;
+	} */
+	h2 {
+		font-family: cursive;
+		margin-bottom: 0;
 	}
 	p {
 		font-size: 1.2rem;
-		line-height: 1.8;
-		font-family: cursive;
+		line-height: 1.2;
+		font-family: monospace;
 		text-align: justify;
+		/* text-wrap: balance; */
 	}
 
 	svg {
@@ -230,18 +139,18 @@
 	}
 
 	figure {
-		margin: 0;
 		grid-column: 1 / -1;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			grid-column: 2 / -2;
+		}
 	}
-	/* figcaption {
-		font-size: 10px;
-		font-style: italic;
-	} */
 
 	blockquote {
 		font-size: 1.5rem;
-		text-align: center;
+		text-align: right;
 		font-style: italic;
-		grid-column: 1 / -1;
+		margin-inline: 0;
+		/* grid-column: 1 / -1; */
 	}
 </style>

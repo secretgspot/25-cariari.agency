@@ -135,14 +135,6 @@
 <style>
 	.preview-content {
 		z-index: 3;
-		/* position: fixed;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0; */
-		/* height: 100vh; */
-		/* background: hsl(var(--p) / 0.9); */
-		/* backdrop-filter: blur(18px); */
 		background: var(--primary);
 		color: var(--primary-content);
 		display: grid;
@@ -155,7 +147,6 @@
 	figure {
 		margin: 0;
 		position: relative;
-		/* background: aquamarine; */
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -169,12 +160,10 @@
 	}
 
 	.content {
-		/* margin: 1rem; */
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		flex: 1;
-		/* background: aliceblue; */
 		overflow-y: auto;
 	}
 
@@ -183,8 +172,6 @@
 		display: flex;
 		justify-content: space-evenly;
 		width: 100%;
-		/* box-shadow: inset 0px 1px 0px hsl(0, 0%, 100%),
-								inset 0px 2px 0px #00000045; */
 	}
 
 	.preview-group {
@@ -232,6 +219,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		margin-block: var(--padding-large);
 	}
 
 	/* @media (orientation: landscape) {

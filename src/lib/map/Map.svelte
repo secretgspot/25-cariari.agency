@@ -24,7 +24,7 @@
 			if (mapInstance && e.target?.getLatLng) {
 				const latLng = e.target.getLatLng();
 				if (latLng) {
-					mapInstance.setView(latLng, 17, {
+					mapInstance.setView(latLng, 18, {
 						animate: true,
 						pan: {
 							duration: 0.3,
