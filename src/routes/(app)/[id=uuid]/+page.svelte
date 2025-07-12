@@ -260,9 +260,14 @@
 
 	header,
 	main {
-		width: 80vw;
+		width: 90vw;
 		margin: 0 auto;
 		text-align: center;
+
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			width: 80vw;
+		}
 	}
 
 	header {
@@ -357,9 +362,13 @@
 	}
 
 	aside {
-		width: 60vw;
+		width: 80vw;
 		margin: 0 auto;
 		text-align: left;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			width: 60vw;
+		}
 
 		p {
 			margin-bottom: 1em;

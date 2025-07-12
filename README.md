@@ -39,6 +39,10 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 ## TODO
 
 - [ ] Check if user flow is proper with new signup
+- [ ] in property view should phone badge be clickable like realtor badge?
+- [ ] on mobile devices should main map show my current position marker? but only if I am within.
+- [ ] should map have boundary indicator of serviceable area?
+- [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
 
 ## Tech Stack
 

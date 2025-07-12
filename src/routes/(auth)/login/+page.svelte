@@ -1,7 +1,8 @@
 <script>
 	import Notify from '$lib/Notify.svelte';
-	import { page } from '$app/state';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { navigating, page } from '$app/state';
+	import Logo from '$lib/Logo.svelte';
 	// import Text from '$lib/Text.svelte'; // Keeping commented out as per your original
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/helpers.js';
@@ -99,6 +100,14 @@
 		isLoading = false;
 	}
 </script>
+
+<svelte:head>
+	<title>Sign-in Cariari Agency</title>
+</svelte:head>
+
+{#if !navigating.complete}
+	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
+{/if}
 
 <aside class="login">
 	{#if currentView === 'magic'}
