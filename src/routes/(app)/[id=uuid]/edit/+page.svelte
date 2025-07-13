@@ -121,7 +121,7 @@
 
 		// prevent default callback from resetting the form
 		return async ({ result, update }) => {
-			console.log('RESULT:', result);
+			console.log('/[id=uuid]/edit/+page.svelte result: ', result);
 			if (result.type === 'success') {
 				if (result.data.delisted) {
 					propertyData.is_active = false;
@@ -379,23 +379,27 @@
 		</div>
 
 		<div class="inputs">
-			<fieldset>
-				<legend>Price $</legend>
-				<input
-					type="number"
-					name="price"
-					placeholder="ex: 630000"
-					bind:value={propertyData.price} />
-			</fieldset>
+			{#if propertyData.property_for.includes('Sale')}
+				<fieldset>
+					<legend>Price $</legend>
+					<input
+						type="number"
+						name="price"
+						placeholder="ex: 630000"
+						bind:value={propertyData.price} />
+				</fieldset>
+			{/if}
 
-			<fieldset>
-				<legend>Rent ($/month)</legend>
-				<input
-					type="number"
-					name="rent"
-					placeholder="ex: 1800"
-					bind:value={propertyData.rent} />
-			</fieldset>
+			{#if propertyData.property_for.includes('Rent')}
+				<fieldset>
+					<legend>Rent ($/month)</legend>
+					<input
+						type="number"
+						name="rent"
+						placeholder="ex: 1800"
+						bind:value={propertyData.rent} />
+				</fieldset>
+			{/if}
 
 			<fieldset>
 				<legend>Taxes ($/year)</legend>
