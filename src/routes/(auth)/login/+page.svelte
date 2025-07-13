@@ -20,9 +20,9 @@
 	// console.log('(auth)/login/+page.svelte page: ', page);
 
 	/**
-	 * Handles the submission of the email for magic link request.
+	 * Handles the submission of the email for login code request.
 	 */
-	async function handleRequestMagicLink() {
+	async function handleRequestCode() {
 		// Reset messages and set loading state
 		errorMessage = '';
 		successMessage = '';
@@ -35,10 +35,12 @@
 			return;
 		}
 
-		// Call Supabase to sign in with OTP (magic link)
+		// Call Supabase to sign in with OTP (sends a code)
 		const { error: otpError } = await data.supabase.auth.signInWithOtp({
 			email,
-			sendOtp: true,
+			options: {
+				shouldCreateUser: true,
+			},
 		});
 
 		if (otpError) {
@@ -47,7 +49,7 @@
 		} else {
 			// Transition to verification view and show success message
 			currentView = 'verify';
-			successMessage = 'Verification token has been sent to your email!';
+			successMessage = 'A login Token has been sent to your email!';
 		}
 
 		// Reset loading state
@@ -55,7 +57,7 @@
 	}
 
 	/**
-	 * Handles the verification of the magic link token.
+	 * Handles the verification of the login code.
 	 */
 	async function handleVerifyToken() {
 		// Reset messages and set loading state
@@ -65,7 +67,7 @@
 
 		// Client-side validation for token (optional, but good practice)
 		if (isEmpty(token)) {
-			errorMessage = 'Verification token cannot be empty.';
+			errorMessage = 'Verification code cannot be empty.';
 			isLoading = false;
 			return;
 		}
@@ -75,7 +77,7 @@
 			await data.supabase.auth.verifyOtp({
 				email,
 				token,
-				type: 'magiclink', // Ensure this type matches what Supabase expects for magic links
+				type: 'email',
 			});
 
 		if (verifyOtpError) {
@@ -123,36 +125,38 @@
 			placeholder="Your email address"
 			aria-label="Your email address"
 			autocomplete="email"
-			required />
+			required
+			onkeydown={(e) => e.key === 'Enter' && handleRequestCode()} />
 		<Button
 			shadow
 			size="block"
 			loading={isLoading}
 			disabled={isLoading}
-			onclick={handleRequestMagicLink}>
-			Request a magic link
+			onclick={handleRequestCode}>
+			Request login code
 		</Button>
 	{/if}
 
 	{#if currentView === 'verify'}
-		<p>Please enter the token you've received by email and press 'Verify'.</p>
+		<p>Please enter the code you've received by email and press 'Verify'.</p>
 
 		<input
 			type="text"
 			name="token"
 			bind:value={token}
 			placeholder="e.g., 123456"
-			aria-label="Verification token"
+			aria-label="Verification code"
 			inputmode="numeric"
 			pattern="[0-9]*"
-			required />
+			required
+			onkeydown={(e) => e.key === 'Enter' && handleVerifyToken()} />
 		<Button
 			shadow
 			size="block"
 			loading={isLoading}
 			disabled={isLoading}
 			onclick={handleVerifyToken}>
-			Verify login token
+			Verify login code
 		</Button>
 	{/if}
 
