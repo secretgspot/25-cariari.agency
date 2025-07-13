@@ -130,7 +130,6 @@ export const getPosition = async (property, gps) => {
 				console.log('📍 High Accuracy:', pos);
 				property.location.lat = pos.coords.latitude;
 				property.location.lng = pos.coords.longitude;
-				gps(pos.coords);
 			},
 			(err) => {
 				console.warn('💩 High Accuracy Error:', err);
