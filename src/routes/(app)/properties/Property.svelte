@@ -151,7 +151,7 @@
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> IMAGE */
-	:global(.property-image) {
+	:global(a.property-image) {
 		grid-area: property-image;
 		display: flex;
 		flex-direction: column;
@@ -166,6 +166,7 @@
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
+			aspect-ratio: 3 / 2;
 		}
 	}
 
