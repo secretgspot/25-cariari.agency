@@ -14,7 +14,7 @@
 	import Select from '$lib/Select.svelte';
 	import Notify from '$lib/Notify.svelte';
 	// import { confetti } from "@neoconfetti/svelte";
-	import { isEmpty, getPosition, addFeature, removeFeature } from '$lib/utils/helpers.js';
+	import { isEmpty, getPosition, addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	let { data } = $props();
@@ -39,18 +39,7 @@
 		isAdmin = data.is_admin || false,
 		gps = $state();
 
-	// Helper function to allow on Enter events for AddFeature
-	function enter(node, callback) {
-		function onkeydown(event) {
-			if (event.which === 13) callback(node);
-		}
-		node.addEventListener('keydown', onkeydown);
-		return {
-			destroy() {
-				node.removeEventListener('keydown', onkeydown);
-			},
-		};
-	}
+	
 
 	/**
 	 * Handles the custom event dispatched from Uploader to delete an existing photo.

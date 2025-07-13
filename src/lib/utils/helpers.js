@@ -169,3 +169,15 @@ export function addFeature(input, form) {
 export function removeFeature(index, form) {
 	form.features = [...form.features.slice(0, index), ...form.features.slice(index + 1)];
 }
+
+export function enter(node, callback) {
+	function onkeydown(event) {
+		if (event.which === 13) callback(node);
+	}
+	node.addEventListener('keydown', onkeydown);
+	return {
+		destroy() {
+			node.removeEventListener('keydown', onkeydown);
+		},
+	};
+}

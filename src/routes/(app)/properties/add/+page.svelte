@@ -15,7 +15,7 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { addToast } from '$lib/toasts/store';
 	import Notify from '$lib/Notify.svelte';
-	import { isEmpty, getPosition, addFeature, removeFeature } from '$lib/utils/helpers.js';
+	import { isEmpty, getPosition, addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any, supabase: any}} */
@@ -45,18 +45,7 @@
 	// $inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
 
-	// Helper function to allow on Enter events for AddFeature
-	function enter(node, callback) {
-		function onkeydown(event) {
-			if (event.which === 13) callback(node);
-		}
-		node.addEventListener('keydown', onkeydown);
-		return {
-			destroy() {
-				node.removeEventListener('keydown', onkeydown);
-			},
-		};
-	}
+	
 
 	const clearStorage = async () => await localStorage.clear();
 </script>
