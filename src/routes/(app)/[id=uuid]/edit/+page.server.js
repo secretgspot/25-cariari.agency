@@ -313,7 +313,7 @@ export const actions = {
 			}
 
 			// Implement your isAdmin logic here (e.g., from user roles in session)
-			const isAdmin = false; // Placeholder for actual admin check
+			const isAdmin = session.user.app_metadata.claims_admin; // Correctly determine admin status
 
 			if (photoData.user_id !== userId && !isAdmin) {
 				return json({ success: false, message: 'You are not authorized to delete this photo.' }, { status: 403 });

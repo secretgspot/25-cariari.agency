@@ -38,8 +38,7 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 ## TODO
 
-- [ ] Check if user flow is proper with new signup
-- [ ] when user first signs up they need to confirm email, how to display a message instead of a token screen until email is validated and then user is logged in. confirmation link came like this for new user: <https://www.cariari.agency/?code=efff036c-2c19-407a-ac6c-8e196950dd7a>
+- [ ] does confetti even fires properly, when, where should it fire?
 - [ ] in property view should phone badge be clickable like realtor badge?
 - [ ] on mobile devices should main map show my current position marker? but only if I am within.
 - [ ] should map have boundary indicator of serviceable area?

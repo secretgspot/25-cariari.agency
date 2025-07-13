@@ -72,7 +72,7 @@
 			// Optimistically update the UI by removing the photo
 			propertyData.photos = propertyData.photos.filter((p) => p.id !== id);
 		} else {
-			message = `Error deleting photo: ${result.message || 'Unknown error'}`;
+			message = `Error deleting photo: ${result.message}`;
 			isError = true;
 		}
 	}
