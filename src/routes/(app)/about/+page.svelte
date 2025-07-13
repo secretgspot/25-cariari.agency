@@ -149,7 +149,7 @@
 	blockquote {
 		font-size: 1.5rem;
 		text-align: right;
-		font-style: italic;
+		font-family: cursive;
 		margin-inline: 0;
 		/* grid-column: 1 / -1; */
 	}

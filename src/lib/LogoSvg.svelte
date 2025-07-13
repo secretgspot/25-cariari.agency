@@ -25,14 +25,11 @@
 	<defs>
 		<!-- Da gradient -->
 		<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0">
-			<stop offset="0%" style="stop-color:#8d755d;" />
-			<stop offset="12%" style="stop-color:#b1872d;" />
-			<stop offset="36%" style="stop-color:#faf394;" />
-			<stop offset="50%" style="stop-color:#8d755d;" />
-			<stop offset="64%" style="stop-color:#ceaa41;" />
-			<stop offset="76%" style="stop-color:#faf394;" />
-			<stop offset="88%" style="stop-color:#b1872d;" />
-			<stop offset="100%" style="stop-color:#8d755d;" />
+			<stop offset="0%" style="stop-color:#f8e9a1;" />
+			<stop offset="25%" style="stop-color:#e0c063;" />
+			<stop offset="50%" style="stop-color:#f1d166;" />
+			<stop offset="75%" style="stop-color:#d4af37;" />
+			<stop offset="100%" style="stop-color:#f8e9a1;" />
 		</linearGradient>
 
 		<pattern
