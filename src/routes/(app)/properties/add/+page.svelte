@@ -189,7 +189,7 @@
 					type="text"
 					placeholder="ex: -84.163443"
 					bind:value={property.location.lng} />
-				<Button type="button" size="block" onclick={getPosition}>Get current GPS</Button>
+				<Button type="button" size="block" onclick={() => getPosition(property, gps)}>Get current GPS</Button>
 
 				<MapPicker bind:updategps={gps} bind:position={property.location} />
 			</fieldset>

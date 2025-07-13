@@ -111,7 +111,7 @@ export function pad(n, width, z) {
 // pad(10, 4, '-'); // --10
 
 // Get GPS
-export const getPosition = async () => {
+export const getPosition = async (property, gps) => {
 	if (navigator.geolocation) {
 		const optionsHighAccuracy = {
 			enableHighAccuracy: true,
@@ -128,8 +128,8 @@ export const getPosition = async () => {
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
 				console.log('📍 High Accuracy:', pos);
-				data.property.location.lat = pos.coords.latitude;
-				data.property.location.lng = pos.coords.longitude;
+				property.location.lat = pos.coords.latitude;
+				property.location.lng = pos.coords.longitude;
 				gps(pos.coords);
 			},
 			(err) => {
@@ -140,8 +140,8 @@ export const getPosition = async () => {
 					navigator.geolocation.getCurrentPosition(
 						(pos) => {
 							console.log('📍 Low Accuracy:', pos);
-							data.property.location.lat = pos.coords.latitude;
-							data.property.location.lng = pos.coords.longitude;
+							property.location.lat = pos.coords.latitude;
+							property.location.lng = pos.coords.longitude;
 							gps(pos.coords);
 						},
 						(errLow) => console.warn('💩 Low Accuracy Error:', errLow),
