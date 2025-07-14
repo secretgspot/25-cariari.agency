@@ -21,7 +21,6 @@
 		class="tgl {kind}"
 		{...rest}
 		id={name}
-		value={label}
 		{name}
 		{disabled} />
 	<label for={name} data-label={label} data-tg-off={off} data-tg-on={on}></label>
