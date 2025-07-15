@@ -47,10 +47,10 @@ export const actions = {
 				await new Promise((resolve, reject) => {
 					transporter.sendMail(message, (error, info) => {
 						if (error) {
-							console.error("Error sending email:", error);
+							console.error("📬 Error sending email:", error);
 							reject(error);
 						} else {
-							console.log("Email sent:", info.response);
+							console.log("📬 Email sent:", info.response);
 							resolve(info);
 						}
 					});

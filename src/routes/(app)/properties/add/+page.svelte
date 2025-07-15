@@ -190,7 +190,7 @@
 				// update({ reset: true }); // resets form, not needed in add since page redirects to print
 				goto(`/${result.data.property_id}/print`);
 			} else {
-				console.log('❌ TRIGGED DUE TO: ', result.status);
+				console.log('➕🏠❌ TRIGGED DUE TO: ', result.status);
 				addToast({
 					message: `Something went wrong, server returned status: ${result.status}`,
 					type: 'error',

@@ -199,7 +199,7 @@
 
 		// prevent default callback from resetting the form
 		return async ({ result, update }) => {
-			console.log('/[id=uuid]/edit/+page.svelte result: ', result);
+			// console.log('/[id=uuid]/edit/+page.svelte result: ', result);
 			if (result.type === 'success') {
 				if (result.data.delisted) {
 					propertyData.is_active = false;

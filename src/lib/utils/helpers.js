@@ -148,7 +148,7 @@ export const getPosition = async (property, gps) => {
 					);
 				} else {
 					// Handle other errors like PERMISSION_DENIED
-					console.log('Geolocation Error:', err.message);
+					console.log('📍 Geolocation Error:', err.message);
 				}
 			},
 			optionsHighAccuracy,

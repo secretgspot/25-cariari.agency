@@ -62,7 +62,8 @@ export const actions = {
 			// is_active: formData.get('is_active') ?? true,
 			// is_active: Boolean(formData.get('is_active')),
 			// is_active: true,
-			is_active: ['on', 'true'].includes(formData.get('is_active')),
+			is_active: !['off', 'false'].includes((formData.get('is_active') || '').toLowerCase()),
+			// is_active: ['on', 'true'].includes(formData.get('is_active')),
 			// is_active: (formData.get('is_active') == 'on' ? true : false),
 			// is_active: (formData.get('is_active') == 'Listed' ? true : false),
 			description: formData.get('description'),
@@ -101,7 +102,7 @@ export const actions = {
 
 		try {
 			// 1. Insert new property into 'properties' table
-			console.log('/properties/add/+page.server.js action -> add: ', property);
+			// console.log('/properties/add/+page.server.js action -> add: ', property);
 			const { data: resData, error: resErr } = await supabaseClient
 				.from('properties')
 				.insert(property)

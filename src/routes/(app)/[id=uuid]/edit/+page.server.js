@@ -116,7 +116,7 @@ export const actions = {
 
 		try {
 			// 1. Update property details
-			console.log(`Updating property ${propertyId}:`, propertyUpdates);
+			// console.log(`Updating property ${propertyId}:`, propertyUpdates);
 			const { data: resData, error: resErr } = await supabaseClient
 				.from('properties')
 				.update(propertyUpdates)

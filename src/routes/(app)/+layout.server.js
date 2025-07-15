@@ -14,7 +14,7 @@ export async function load(event) {
 	// session contains user and session data plus flags for is_logged_in and is_admin
 	if (session.session) {
 		console.log('(app)/+layout.server: session detected 👍');
-		console.log(`${session.is_admin ? '🌟' : '👻'}👤: ${session.user.id} 🌐${event.url.pathname}`);
+		console.log(`${session.is_admin ? '🔥' : '👻'}👤: ${session.user.id} 🌐${event.url.pathname}`);
 	}
 
 	return {};
