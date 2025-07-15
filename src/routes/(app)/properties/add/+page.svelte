@@ -49,6 +49,7 @@
 	});
 
 	let newPropertyFiles = $state([]);
+	let featureInput;
 
 	// $effect(() => {
 	// $inspect('🐍 ADD PROPERTY temp data:', property);
@@ -514,13 +515,24 @@
 		<div class="inputs">
 			<fieldset>
 				<legend>Features</legend>
-				<input
-					type="text"
-					placeholder="ex: BBQ"
-					onkeydown={(evt) => {
-						if (evt.key == 'Enter') evt.preventDefault();
-					}}
-					use:enter={(input) => addFeature(input, property)} />
+				<div class="features-flow">
+					<input
+						bind:this={featureInput}
+						type="text"
+						placeholder="ex: BBQ"
+						onkeydown={(evt) => {
+							if (evt.key == 'Enter') evt.preventDefault();
+						}}
+						use:enter={(input) => addFeature(input, property)} />
+					<Button
+						type="button"
+						size="icon"
+						onclick={() => addFeature(featureInput, property)}>
+						{#snippet icon()}
+							➕
+						{/snippet}
+					</Button>
+				</div>
 				<div class="feature-list">
 					{#each property.features || [] as feature, i}
 						<span class="feature">
@@ -730,29 +742,45 @@
 		border-radius: var(--border-radius);
 	} */
 
-	.section_features .feature-list {
-		/* margin: 1rem 0; */
-		gap: var(--gap-extra-small);
-		display: flex;
-		flex-wrap: wrap;
-	}
-	.section_features .feature {
-		display: inline-flex;
-		align-items: center;
-		border: var(--border);
-		border-radius: var(--border-radius);
-		padding: var(--padding-extra-small);
-		/* margin: var(--padding-extra-small); */
-		cursor: default;
-	}
-	.section_features .feature .close {
-		width: 18px;
-		color: var(--error);
-		border: var(--border);
-		border-radius: var(--border-radius);
-		margin-right: var(--padding-extra-small);
-		cursor: pointer;
-		text-align: center;
+	.section_features {
+		.features-flow {
+			display: flex;
+			gap: var(--padding-small);
+			:global(.btn-icon) {
+				background: var(--primary);
+				/* Small tablets and larger mobile devices (481px - 768px) */
+				@media (min-width: 481px) {
+					display: none;
+				}
+			}
+		}
+
+		.feature-list {
+			/* margin: 1rem 0; */
+			gap: var(--gap-extra-small);
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.feature {
+			display: inline-flex;
+			align-items: center;
+			border: var(--border);
+			border-radius: var(--border-radius);
+			padding: var(--padding-extra-small);
+			/* margin: var(--padding-extra-small); */
+			cursor: default;
+
+			.close {
+				width: 18px;
+				color: var(--error);
+				border: var(--border);
+				border-radius: var(--border-radius);
+				margin-right: var(--padding-extra-small);
+				cursor: pointer;
+				text-align: center;
+			}
+		}
 	}
 
 	.section_features .description,

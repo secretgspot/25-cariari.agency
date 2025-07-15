@@ -38,6 +38,7 @@
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte session:', data.session);
 
 	let newPhotosToUpload = $state([]); // Bindable for Uploader
+	let featureInput;
 
 	let loading = $state(false),
 		isError = $state(false),
@@ -513,13 +514,24 @@
 		<div class="inputs">
 			<fieldset>
 				<legend>Features</legend>
-				<input
-					type="text"
-					placeholder="ex: BBQ"
-					onkeydown={(evt) => {
-						if (evt.key == 'Enter') evt.preventDefault();
-					}}
-					use:enter={(input) => addFeature(input, propertyData)} />
+				<div class="features-flow">
+					<input
+						bind:this={featureInput}
+						type="text"
+						placeholder="ex: BBQ"
+						onkeydown={(evt) => {
+							if (evt.key == 'Enter') evt.preventDefault();
+						}}
+						use:enter={(input) => addFeature(input, propertyData)} />
+					<Button
+						type="button"
+						size="icon"
+						onclick={() => addFeature(featureInput, propertyData)}>
+						{#snippet icon()}
+							➕
+						{/snippet}
+					</Button>
+				</div>
 				<div class="feature-list">
 					{#each propertyData.features || [] as feature, i}
 						<span class="feature">
@@ -751,6 +763,20 @@
 		margin: 1rem 0;
 		border-radius: var(--border-radius);
 	} */
+
+	.section_features {
+		.features-flow {
+			display: flex;
+			gap: var(--padding-small);
+			:global(.btn-icon) {
+				background: var(--primary);
+				/* Small tablets and larger mobile devices (481px - 768px) */
+				@media (min-width: 481px) {
+					display: none;
+				}
+			}
+		}
+	}
 
 	.section_features .feature-list {
 		/* margin: 1rem 0; */

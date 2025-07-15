@@ -44,9 +44,6 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 - [ ] should map have boundary indicator of serviceable area?
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
 - [ ] sometimes after user creates property it shows them print page and takes them back to add page to create new property. why?
-- [ ] on mobile adding features is impossible since enter doesn't exist, it skips to next field.
-- [ ] can toaster be persistent so errors, success maintains even via page refresh/redirect?
-- [ ] what's the deal with checkbox on add sometimes responds true/false other time on/off?
 
 ## Tech Stack
 
