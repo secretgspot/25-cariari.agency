@@ -14,7 +14,14 @@
 	import Select from '$lib/Select.svelte';
 	import Notify from '$lib/Notify.svelte';
 	// import { confetti } from "@neoconfetti/svelte";
-	import { isEmpty, getPosition, addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
+	import {
+		isEmpty,
+		getPosition,
+		addFeature,
+		removeFeature,
+		enter,
+	} from '$lib/utils/helpers.js';
+	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	let { data } = $props();
@@ -37,9 +44,73 @@
 		error = $state(''),
 		message = $state(''),
 		isAdmin = data.is_admin || false,
+		uploadingPhotos = $state(false),
+		uploadedPhotoDetails = $state([]),
 		gps = $state();
 
-	
+	// Function to handle photo uploads to Supabase Storage directly from client
+	async function uploadPhotos() {
+		if (newPhotosToUpload.length === 0) {
+			return { success: true, details: [] };
+		}
+
+		uploadingPhotos = true;
+		const uploadPromises = newPhotosToUpload.map(async (file) => {
+			const fileName = `${uuidv4()}-${file.name.replace(/\s/g, '_')}`; // Use crypto.randomUUID() for client-side UUID
+			const filePath = `${propertyData.msl}/${fileName}`; // Path in storage bucket
+
+			try {
+				const { data: uploadData, error: uploadError } = await data.supabase.storage
+					.from('photos') // Your Supabase Storage bucket name
+					.upload(filePath, file, {
+						cacheControl: '3600',
+						upsert: false, // Do not overwrite if file exists with same path
+					});
+
+				if (uploadError) {
+					console.error('Error uploading photo:', uploadError);
+					throw new Error(
+						`Failed to upload photo: ${file.name}. Error: ${uploadError.message}`,
+					);
+				}
+
+				const { data: publicUrlData } = data.supabase.storage
+					.from('photos')
+					.getPublicUrl(filePath);
+
+				if (!publicUrlData || !publicUrlData.publicUrl) {
+					throw new Error(`Could not get public URL for photo: ${filePath}`);
+				}
+
+				return {
+					publicUrl: publicUrlData.publicUrl,
+					filePath: filePath,
+					originalName: file.name,
+				};
+			} catch (err) {
+				console.error(`Upload failed for ${file.name}:`, err);
+				addToast({
+					message: `Failed to upload photo ${file.name}: ${err.message}`,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+				return null; // Return null for failed uploads
+			}
+		});
+
+		const results = await Promise.all(uploadPromises);
+		uploadedPhotoDetails = results.filter((detail) => detail !== null); // Filter out failed uploads
+		uploadingPhotos = false;
+
+		if (uploadedPhotoDetails.length !== newPhotosToUpload.length) {
+			// Some uploads failed
+			error = `Not all photos were uploaded. Successfully uploaded ${uploadedPhotoDetails.length} out of ${newPhotosToUpload.length}. Check console for details.`;
+			return { success: false, details: uploadedPhotoDetails };
+		}
+
+		return { success: true, details: uploadedPhotoDetails };
+	}
 
 	/**
 	 * Handles the custom event dispatched from Uploader to delete an existing photo.
@@ -91,7 +162,7 @@
 	class="edit-property"
 	method="POST"
 	enctype="multipart/form-data"
-	use:enhance={({ form: htmlFormElement, data: formData, action, cancel }) => {
+	use:enhance={async ({ form: htmlFormElement, formData, action, cancel }) => {
 		// 'htmlFormElement' is the '<form>' element
 		// 'formData' is it's 'FormData' object
 		// 'action' is the URL to which the form is posted
@@ -106,7 +177,25 @@
 			cancel();
 			error = 'Must select at least one for PROPERTY FOR in Property Type section';
 			loading = false;
+			return; // Stop execution if validation fails
 		}
+
+		// Client-side photo upload
+		const uploadResult = await uploadPhotos();
+
+		if (!uploadResult.success) {
+			cancel(); // Stop form submission if uploads fail
+			loading = false;
+			// The error message is already set inside uploadPhotos
+			return;
+		}
+
+		// Append uploaded photo details to the form data
+		// The server action expects 'photo_urls_and_paths'
+		formData.delete('photo_urls_and_paths'); // Clear any existing values
+		uploadResult.details.forEach((detail) => {
+			formData.append('photo_urls_and_paths', JSON.stringify(detail));
+		});
 
 		// prevent default callback from resetting the form
 		return async ({ result, update }) => {
@@ -203,7 +292,8 @@
 					type="text"
 					placeholder="ex: -84.163443"
 					bind:value={propertyData.location.lng} />
-				<Button type="button" size="block" onclick={() => getPosition(propertyData, gps)}>Get current GPS</Button>
+				<Button type="button" size="block" onclick={() => getPosition(propertyData, gps)}
+					>Get current GPS</Button>
 
 				<MapPicker bind:updategps={gps} bind:position={propertyData.location} />
 			</fieldset>

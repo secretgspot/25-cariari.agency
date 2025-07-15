@@ -106,10 +106,13 @@ export const actions = {
 			contact_realtor: formData.get('contact_realtor'),
 		};
 
-		// console.log('/[uuid]/+layout.server.js action -> edit: ', property);
-
-		// Extract new files from formData
-		const newPhotos = formData.getAll('photos'); // This will be an array of File objects
+		// 1. Get the uploaded photo URLs/paths from the formData
+		// This will be an array of strings (JSON stringified URLs/paths)
+		const photoDataStrings = formData.getAll('photo_urls_and_paths');
+		let uploadedPhotoDetails = [];
+		if (photoDataStrings.length > 0) {
+			uploadedPhotoDetails = photoDataStrings.map(str => JSON.parse(str));
+		}
 
 		try {
 			// 1. Update property details
@@ -139,61 +142,28 @@ export const actions = {
 
 			const photoRecords = [];
 
-			// 2. Upload each new photo to Supabase Storage
-			for (const photo of newPhotos) {
-				// Ensure it's a File object and not empty
-				if (!(photo instanceof File) || photo.size === 0) {
-					continue;
-				}
-
-				const fileName = `${uuidv4()}-${photo.name.replace(/\s/g, '_')}`; // Unique filename
-				const filePath = `${formData.get('msl')}/${fileName}`; // Path in storage bucket
-
-				const { data: uploadData, error: uploadError } = await supabaseClient.storage
-					.from('photos') // Your Supabase Storage bucket name
-					.upload(filePath, photo, {
-						cacheControl: '3600', // Cache for 1 hour
-						upsert: false // Do not overwrite if file exists with same path
-					});
-
-				if (uploadError) {
-					console.error('Error uploading new photo:', uploadError);
-					// Decide how to handle this: fail the whole operation, or log and continue
-					// For now, we'll fail the operation if any photo upload fails.
-					return fail(500, { message: `Failed to upload new photo: ${photo.name}. Error: ${uploadError.message}` });
-				}
-
-				// Get public URL of the uploaded photo
-				const { data: publicUrlData } = supabaseClient.storage
-					.from('photos')
-					.getPublicUrl(filePath);
-
-				if (!publicUrlData || !publicUrlData.publicUrl) {
-					console.error('Could not get public URL for new photo:', filePath);
-					return fail(500, { message: `Failed to get public URL for new photo: ${photo.name}` });
-				}
-
+			// 2. Prepare photo records using the already uploaded details from the client
+			for (const photoDetail of uploadedPhotoDetails) {
 				photoRecords.push({
 					property_id: propertyId,
-					msl: formData.get('msl'),
-					file_url: publicUrlData.publicUrl,
-					file_path: filePath,
-					name: photo.name, // Store original name
-					user_id: userId, // Associate with the uploader
+					msl: propertyUpdates.msl, // Using MSL from the newly created property
+					file_url: photoDetail.publicUrl,
+					file_path: photoDetail.filePath,
+					name: photoDetail.originalName,
+					user_id: userId,
 				});
 			}
 
-			// 3. Insert new photo records into 'photos' table
+			// 3. Insert photo records into 'photos' table
 			if (photoRecords.length > 0) {
 				const { error: photosInsertError } = await supabaseClient
 					.from('photos')
 					.insert(photoRecords);
 
 				if (photosInsertError) {
-					console.error('Error inserting new photo records:', photosInsertError);
-					// This is a critical error, consider rolling back storage uploads
-					// or marking the property for review.
-					return fail(500, { message: 'Failed to save new photo references in the database.' });
+					console.error('Error inserting photo records:', photosInsertError);
+					// Consider cleanup here if property was created but photo records failed
+					return fail(500, { message: 'Failed to save photo references in the database.' });
 				}
 			}
 
