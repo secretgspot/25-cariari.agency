@@ -53,7 +53,7 @@ export const actions = {
 
 		const formData = await request.formData();
 
-		console.log("(app)/properties/add/+page.server.js formData is_active: ", formData.get('is_active'));
+		// console.log("(app)/properties/add/+page.server.js formData is_active: ", formData.get('is_active'));
 
 		// Extract property details
 		const property = {
@@ -62,7 +62,8 @@ export const actions = {
 			// is_active: formData.get('is_active') ?? true,
 			// is_active: Boolean(formData.get('is_active')),
 			// is_active: true,
-			is_active: (formData.get('is_active') == 'on' ? true : false),
+			is_active: ['on', 'true'].includes(formData.get('is_active')),
+			// is_active: (formData.get('is_active') == 'on' ? true : false),
 			// is_active: (formData.get('is_active') == 'Listed' ? true : false),
 			description: formData.get('description'),
 			address: formData.get('address'),
