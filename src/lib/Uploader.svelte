@@ -1,9 +1,7 @@
 <!-- src/lib/components/Uploader.svelte -->
 <script>
-	import { Button } from '$lib/buttons'; // Assuming $lib/buttons provides a Button component
+	import { Button } from '$lib/buttons';
 	import { slide } from 'svelte/transition';
-	// import { createEventDispatcher } from 'svelte'; // Deprecated
-	// const { dispatch } = $event(); // Deprecated in favor of props for events
 
 	/**
 	 * @typedef {Object} ExistingAttachment
@@ -21,7 +19,7 @@
 	 * @type {{
 	 * existingAttachments?: ExistingAttachment[];
 	 * newFiles?: File[];
-	 * propertyId?: string;
+	 * loading?: boolean;
 	 * currentUserId?: string; // Pass the current user's ID for showing delete button
 	 * isAdmin?: boolean; // Pass isAdmin flag for showing delete button
 	 * onDeleteExistingPhoto?: (photo: ExistingAttachment) => void; // Event handler for deleting existing photos
@@ -30,14 +28,14 @@
 	let {
 		existingAttachments = $bindable([]), // Existing photos from DB
 		newFiles = $bindable([]), // Newly selected files for upload
-		propertyId,
+		loading,
 		currentUserId,
 		isAdmin = false,
 		onDeleteExistingPhoto = () => {}, // New prop for event handling
 	} = $props();
 
 	let isDragOver = $state(false);
-	let loading = $state(false); // Local loading state for UI feedback
+	// let loading = $state(false); // Local loading state for UI feedback
 
 	// Local state to hold previews for newly selected files
 	let newFilePreviews = $state([]);
@@ -282,12 +280,16 @@
 	}
 
 	.file-action {
-		display: none;
+		display: flex;
 		justify-content: space-between;
 		position: absolute;
 		right: calc(var(--padding-extra-small) * -1);
 		top: calc(var(--padding-extra-small) * -1);
 		width: 27px;
 		height: 27px;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			display: none;
+		}
 	}
 </style>

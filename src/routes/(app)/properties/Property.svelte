@@ -204,10 +204,14 @@
 		display: block;
 	}
 	.property-footer .buttons {
-		display: none;
+		display: block;
 		position: absolute;
 		top: 0;
 		right: 0;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			display: none;
+		}
 	}
 	.property-footer .buttons :global(button) {
 		border-radius: 0;

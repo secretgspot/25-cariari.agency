@@ -563,7 +563,7 @@
 
 			<fieldset class="photos">
 				<legend>Photos</legend>
-				<Uploader bind:newFiles={newPropertyFiles} />
+				<Uploader {loading} bind:newFiles={newPropertyFiles} />
 			</fieldset>
 		</div>
 	</section>

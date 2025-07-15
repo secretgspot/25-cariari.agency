@@ -563,6 +563,7 @@
 			<fieldset class="photos">
 				<legend>Photos</legend>
 				<Uploader
+					{loading}
 					bind:existingAttachments={propertyData.photos}
 					bind:newFiles={newPhotosToUpload}
 					propertyId={data.property.id}
