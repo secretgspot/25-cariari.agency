@@ -15,7 +15,14 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { addToast } from '$lib/toasts/store';
 	import Notify from '$lib/Notify.svelte';
-	import { isEmpty, getPosition, addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
+	import {
+		isEmpty,
+		getPosition,
+		addFeature,
+		removeFeature,
+		enter,
+	} from '$lib/utils/helpers.js';
+	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any, supabase: any}} */
@@ -28,6 +35,8 @@
 		message = $state(''),
 		isAdmin = data.is_admin,
 		won = $state(false),
+		uploadingPhotos = $state(false),
+		uploadedPhotoDetails = $state([]),
 		gps = $state();
 
 	const property = $state({
@@ -45,7 +54,69 @@
 	// $inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
 
-	
+	// Function to handle photo uploads to Supabase Storage directly from client
+	async function uploadPhotos() {
+		if (newPropertyFiles.length === 0) {
+			return { success: true, details: [] };
+		}
+
+		uploadingPhotos = true;
+		const uploadPromises = newPropertyFiles.map(async (file) => {
+			const fileName = `${uuidv4()}-${file.name.replace(/\s/g, '_')}`; // Use crypto.randomUUID() for client-side UUID
+			const filePath = `${property.msl}/${fileName}`; // Path in storage bucket
+
+			try {
+				const { data: uploadData, error: uploadError } = await data.supabase.storage
+					.from('photos') // Your Supabase Storage bucket name
+					.upload(filePath, file, {
+						cacheControl: '3600',
+						upsert: false, // Do not overwrite if file exists with same path
+					});
+
+				if (uploadError) {
+					console.error('Error uploading photo:', uploadError);
+					throw new Error(
+						`Failed to upload photo: ${file.name}. Error: ${uploadError.message}`,
+					);
+				}
+
+				const { data: publicUrlData } = data.supabase.storage
+					.from('photos')
+					.getPublicUrl(filePath);
+
+				if (!publicUrlData || !publicUrlData.publicUrl) {
+					throw new Error(`Could not get public URL for photo: ${filePath}`);
+				}
+
+				return {
+					publicUrl: publicUrlData.publicUrl,
+					filePath: filePath,
+					originalName: file.name,
+				};
+			} catch (err) {
+				console.error(`Upload failed for ${file.name}:`, err);
+				addToast({
+					message: `Failed to upload photo ${file.name}: ${err.message}`,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+				return null; // Return null for failed uploads
+			}
+		});
+
+		const results = await Promise.all(uploadPromises);
+		uploadedPhotoDetails = results.filter((detail) => detail !== null); // Filter out failed uploads
+		uploadingPhotos = false;
+
+		if (uploadedPhotoDetails.length !== newPropertyFiles.length) {
+			// Some uploads failed
+			error = `Not all photos were uploaded. Successfully uploaded ${uploadedPhotoDetails.length} out of ${newPropertyFiles.length}. Check console for details.`;
+			return { success: false, details: uploadedPhotoDetails };
+		}
+
+		return { success: true, details: uploadedPhotoDetails };
+	}
 
 	const clearStorage = async () => await localStorage.clear();
 </script>
@@ -64,11 +135,12 @@
 	method="POST"
 	action="?/add"
 	enctype="multipart/form-data"
-	use:enhance={({ form, data, action, cancel }) => {
-		// 'form' is the '<form>' element
-		// 'data' is it's 'FormData' object
-		// 'action' is the URL to which the form is posted
-		// 'cancel()' will prevent the submission
+	use:enhance={async ({ formElement, formData, action, cancel }) => {
+		// `formElement` is this `<form>` element
+		// `formData` is its `FormData` object that's about to be submitted
+		// `action` is the URL to which the form is posted
+		// calling `cancel()` will prevent the submission
+		// `submitter` is the `HTMLElement` that caused the form to be submitted
 
 		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
 		won = false;
@@ -81,7 +153,25 @@
 			error =
 				'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
 			loading = false;
+			return;
 		}
+
+		// Client-side photo upload
+		const uploadResult = await uploadPhotos();
+
+		if (!uploadResult.success) {
+			cancel(); // Stop form submission if uploads fail
+			loading = false;
+			// The error message is already set inside uploadPhotos
+			return;
+		}
+
+		// Append uploaded photo details to the form data
+		// The server action expects 'photo_urls_and_paths'
+		formData.delete('photo_urls_and_paths');
+		uploadResult.details.forEach((detail) => {
+			formData.append('photo_urls_and_paths', JSON.stringify(detail));
+		});
 
 		// prevent default callback from resetting the form
 		return async ({ result, update }) => {
@@ -189,7 +279,8 @@
 					type="text"
 					placeholder="ex: -84.163443"
 					bind:value={property.location.lng} />
-				<Button type="button" size="block" onclick={() => getPosition(property, gps)}>Get current GPS</Button>
+				<Button type="button" size="block" onclick={() => getPosition(property, gps)}
+					>Get current GPS</Button>
 
 				<MapPicker bind:updategps={gps} bind:position={property.location} />
 			</fieldset>
@@ -496,6 +587,7 @@
 			hidden
 			name="features"
 			value={JSON.stringify(property.features)} />
+
 		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->

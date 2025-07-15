@@ -2,8 +2,7 @@
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
 import { isEmpty, pad } from '$lib/utils/helpers.js';
-import { v4 as uuidv4 } from 'uuid'; // For unique file names
-
+// import { v4 as uuidv4 } from 'uuid'; // For unique file names
 // You'll need to install uuid: npm install uuid
 
 export async function load(event) {
@@ -87,8 +86,13 @@ export const actions = {
 			contact_realtor: formData.get('contact_realtor'),
 		};
 
-		// Extract files from formData
-		const photos = formData.getAll('photos'); // This will be an array of File objects
+		// 1. Get the uploaded photo URLs/paths from the formData
+		// This will be an array of strings (JSON stringified URLs/paths)
+		const photoDataStrings = formData.getAll('photo_urls_and_paths');
+		let uploadedPhotoDetails = [];
+		if (photoDataStrings.length > 0) {
+			uploadedPhotoDetails = photoDataStrings.map(str => JSON.parse(str));
+		}
 
 		let newPropertyId = null;
 
@@ -120,47 +124,15 @@ export const actions = {
 			newPropertyId = resData.id; // Get the ID of the newly created property
 			const photoRecords = [];
 
-			// 2. Upload each photo to Supabase Storage
-			for (const photo of photos) {
-				// Ensure it's a File object and not empty
-				if (!(photo instanceof File) || photo.size === 0) {
-					continue;
-				}
-
-				const fileName = `${uuidv4()}-${photo.name.replace(/\s/g, '_')}`; // Unique filename
-				const filePath = `${formData.get('msl')}/${fileName}`; // Path in storage bucket
-
-				const { data: uploadData, error: uploadError } = await supabaseClient.storage
-					.from('photos') // Your Supabase Storage bucket name
-					.upload(filePath, photo, {
-						cacheControl: '3600', // Cache for 1 hour
-						upsert: false // Do not overwrite if file exists with same path
-					});
-
-				if (uploadError) {
-					console.error('Error uploading photo:', uploadError);
-					// Decide how to handle this: fail the whole operation, or log and continue
-					// For now, we'll fail the operation if any photo upload fails.
-					return fail(500, { message: `Failed to upload photo: ${photo.name}. Error: ${uploadError.message}` });
-				}
-
-				// Get public URL of the uploaded photo
-				const { data: publicUrlData } = supabaseClient.storage
-					.from('photos')
-					.getPublicUrl(filePath);
-
-				if (!publicUrlData || !publicUrlData.publicUrl) {
-					console.error('Could not get public URL for photo:', filePath);
-					return fail(500, { message: `Failed to get public URL for photo: ${photo.name}` });
-				}
-
+			// 2. Prepare photo records using the already uploaded details from the client
+			for (const photoDetail of uploadedPhotoDetails) {
 				photoRecords.push({
 					property_id: newPropertyId,
-					msl: property.msl,
-					file_url: publicUrlData.publicUrl,
-					file_path: filePath,
-					name: photo.name, // Store original name
-					user_id: userId, // Associate with the uploader
+					msl: property.msl, // Using MSL from the newly created property
+					file_url: photoDetail.publicUrl,
+					file_path: photoDetail.filePath,
+					name: photoDetail.originalName,
+					user_id: userId,
 				});
 			}
 
@@ -172,8 +144,7 @@ export const actions = {
 
 				if (photosInsertError) {
 					console.error('Error inserting photo records:', photosInsertError);
-					// This is a critical error, consider rolling back storage uploads
-					// or marking the property for review.
+					// Consider cleanup here if property was created but photo records failed
 					return fail(500, { message: 'Failed to save photo references in the database.' });
 				}
 			}
