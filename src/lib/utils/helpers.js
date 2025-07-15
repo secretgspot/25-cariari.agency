@@ -83,7 +83,7 @@ export let formatter = new Intl.NumberFormat('en-US', {
 
 
 export function ago(val) {
-	val = 0 | (Date.now() - val) / 1000;
+	val = 0 | (new Date() - new Date(val + 'Z')) / 1000;
 	var unit, length = {
 		sec: 60, min: 60, h: 24, d: 7, w: 4.35,
 		m: 12, y: 10000

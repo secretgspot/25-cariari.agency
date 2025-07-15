@@ -56,8 +56,8 @@
 
 	<footer class="property-footer">
 		<div class="dates wrap">
-			<small>added {ago(new Date(property.created_at))} ago</small>
-			<small>updated {ago(new Date(property.updated_at))} ago</small>
+			<small>added {ago(property.created_at)} ago</small>
+			<small>updated {ago(property.updated_at)} ago</small>
 		</div>
 
 		<div class="details wrap">
