@@ -59,7 +59,7 @@
 		</div>
 
 		<div class="features">
-			<Badge label="features" direction="row" value={data.property.features} />
+			<Badge label="features" direction="row" value={data.property.features.join(', ')} />
 		</div>
 
 		<div class="description">
@@ -186,6 +186,9 @@
 	.header {
 		grid-area: header;
 		padding: 2rem;
+		li :global(a) {
+			white-space: break-spaces;
+		}
 	}
 	.features {
 		grid-area: features;

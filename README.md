@@ -44,7 +44,6 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 - [ ] should map have boundary indicator of serviceable area?
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
 - [ ] sometimes after user creates property it shows them print page and takes them back to add page to create new property. why?
-- [ ] check mobile view for Print page
 - [ ] on mobile button should be visible for delete photos and edit property
 
 ## Tech Stack
