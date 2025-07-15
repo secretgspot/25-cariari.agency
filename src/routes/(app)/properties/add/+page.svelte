@@ -51,7 +51,7 @@
 	let newPropertyFiles = $state([]);
 
 	// $effect(() => {
-	// $inspect('🐍 ADD PROPERTY temp data:', property);
+	$inspect('🐍 ADD PROPERTY temp data:', property);
 	// });
 
 	// Function to handle photo uploads to Supabase Storage directly from client

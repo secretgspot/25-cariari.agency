@@ -53,6 +53,8 @@ export const actions = {
 
 		const formData = await request.formData();
 
+		console.log("(app)/properties/add/+page.server.js formData is_active: ", formData.get('is_active'));
+
 		// Extract property details
 		const property = {
 			user_id: userId, // Ensure user_id is from the authenticated session
