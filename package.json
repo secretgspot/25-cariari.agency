@@ -24,6 +24,7 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.2.0",
+		"compressorjs": "^1.2.1",
 		"qr.js": "^0.0.0",
 		"uuid": "^11.1.0"
 	}

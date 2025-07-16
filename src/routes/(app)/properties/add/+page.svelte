@@ -12,7 +12,7 @@
 	import Uploader from '$lib/Uploader.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Select from '$lib/Select.svelte';
-	import { confetti } from '@neoconfetti/svelte';
+
 	import { addToast } from '$lib/toasts/store';
 	import Notify from '$lib/Notify.svelte';
 	import {
@@ -24,6 +24,7 @@
 	} from '$lib/utils/helpers.js';
 	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import JsonDump from '$lib/JSONDump.svelte';
+	import Compressor from 'compressorjs';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
@@ -63,13 +64,29 @@
 
 		uploadingPhotos = true;
 		const uploadPromises = newPropertyFiles.map(async (file) => {
-			const fileName = `${uuidv4()}-${file.name.replace(/\s/g, '_')}`; // Use crypto.randomUUID() for client-side UUID
+			// Compress the image before uploading
+			const compressedFile = await new Promise((resolve, reject) => {
+				new Compressor(file, {
+					quality: 0.6, // 60% quality
+					maxWidth: 1920, // Max width of 1280px
+					maxHeight: 1080,
+					convertSize: 1000000, // files larger than 1mb converted to jpg
+					success(result) {
+						resolve(result);
+					},
+					error(err) {
+						reject(err);
+					},
+				});
+			});
+
+			const fileName = `${uuidv4()}-${compressedFile.name.replace(/\s/g, '_')}`; // Use crypto.randomUUID() for client-side UUID
 			const filePath = `${property.msl}/${fileName}`; // Path in storage bucket
 
 			try {
 				const { data: uploadData, error: uploadError } = await data.supabase.storage
 					.from('photos') // Your Supabase Storage bucket name
-					.upload(filePath, file, {
+					.upload(filePath, compressedFile, {
 						cacheControl: '3600',
 						upsert: false, // Do not overwrite if file exists with same path
 					});
@@ -619,36 +636,6 @@
 		<Notify type="danger">{error}</Notify>
 	{/if}
 </form>
-
-<!-- CONFETTI -->
-{#if won}
-	<div
-		style="position: fixed; left: 50%; top: 0; z-index:10"
-		use:confetti={{
-			force: 0.6,
-			stageWidth: window.innerWidth,
-			stageHeight: window.innerHeight,
-			colors: ['#FFF8DC', '#FFFACD', '#F0E68C', '#FFD700'],
-		}}>
-	</div>
-{/if}
-
-<!-- CONFIRMATION MODAL -->
-
-<!-- <Modal title="Delete listing?" bind:showModal>
-	<div slot="content">
-		Are you sure you want to delete this listing? By doing this, all data will
-		be permenantly deleted.
-	</div>
-	<Button mode="clean" onclick={() => (showModal = false)}>Cancel</Button>
-	<Button
-		mode="danger"
-		onclick={() => {
-			showModal = false;
-			remove();
-		}}>Confirm</Button
-	>
-</Modal> -->
 
 <!-- <JsonDump name="page" data={page} /> -->
 <style>
