@@ -120,27 +120,26 @@
 				<Badge type="text" label="taxes" value={formatter.format(data.property.taxes)} />
 			{/if}
 			{#if data.property.fees > 0}
-				<Badge
-					type="text"
-					label="condo fees"
-					value={formatter.format(data.property.fees)} />
+				<Badge type="text" label="fees" value={formatter.format(data.property.fees)} />
 			{/if}
 
-			{#if data.property.rooms > 0}
-				<Badge type="icon" label="rooms" value={data.property.rooms} />
-			{/if}
-			{#if data.property.beds > 0}
-				<Badge type="icon" label="beds" value={data.property.beds} />
-			{/if}
-			{#if data.property.baths > 0}
-				<Badge type="icon" label="baths" value={data.property.baths} />
-			{/if}
-			{#if data.property.half_baths > 0}
-				<Badge type="icon" label="half baths" value={data.property.half_baths} />
-			{/if}
-			{#if data.property.parking_spaces > 0}
-				<Badge type="icon" label="parkings" value={data.property.parking_spaces} />
-			{/if}
+			<div class="grouped">
+				{#if data.property.rooms > 0}
+					<Badge type="icon" label="rooms" value={data.property.rooms} />
+				{/if}
+				{#if data.property.beds > 0}
+					<Badge type="icon" label="beds" value={data.property.beds} />
+				{/if}
+				{#if data.property.baths > 0}
+					<Badge type="icon" label="baths" value={data.property.baths} />
+				{/if}
+				{#if data.property.half_baths > 0}
+					<Badge type="icon" label="half baths" value={data.property.half_baths} />
+				{/if}
+				{#if data.property.parking_spaces > 0}
+					<Badge type="icon" label="parkings" value={data.property.parking_spaces} />
+				{/if}
+			</div>
 		</div>
 
 		<p class="description" class:nodescription={!data.property.description}>
@@ -370,6 +369,11 @@
 
 		p {
 			margin-bottom: 1em;
+		}
+
+		.grouped {
+			display: flex;
+			gap: var(--padding-medium);
 		}
 
 		p.description {
