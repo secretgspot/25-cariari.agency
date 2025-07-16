@@ -79,7 +79,7 @@
 		</div>
 
 		<div class="parcel flexit">
-			<Badge label="built" value={new Date(data.property.year_built).getFullYear()} />
+			<Badge label="built" value={data.property} />
 			<Badge label="style" value={data.property.building_style} />
 			<Badge label="lot" value={data.property.lot_size} />
 			<Badge label="building" value={data.property.building_size} />

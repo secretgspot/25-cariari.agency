@@ -104,9 +104,7 @@
 				<Badge
 					type="text"
 					label="built"
-					value="{new Date(data.property.year_built).getFullYear()} &bull; {ago(
-						new Date(data.property.year_built),
-					)}" />
+					value="{data.property.year_built} &bull; {ago(data.property.year_built)}" />
 			{/if}
 			{#if data.property.building_style}
 				<Badge type="text" label="style" value={data.property.building_style} />

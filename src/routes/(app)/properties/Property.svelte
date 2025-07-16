@@ -38,8 +38,7 @@
 		<div class="type_age">
 			{#if property.land_use}<span>{property.land_use}</span>{/if}
 			{#if property.building_style}<span>&bull; {property.building_style}</span>{/if}
-			{#if property.year_built}<span>&bull; {ago(new Date(property.year_built))} old</span
-				>{/if}
+			{#if property.year_built}<span>&bull; {ago(property.year_built)} old</span>{/if}
 		</div>
 
 		<div class="price_rent">
