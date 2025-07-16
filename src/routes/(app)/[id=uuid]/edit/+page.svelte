@@ -783,10 +783,9 @@
 	.section_features {
 		.features-flow {
 			display: flex;
+			align-items: center;
 			gap: var(--padding-small);
 			:global(.btn-icon) {
-				background: var(--primary);
-				border-radius: var(--border-radius);
 				/* Small tablets and larger mobile devices (481px - 768px) */
 				@media (min-width: 481px) {
 					display: none;

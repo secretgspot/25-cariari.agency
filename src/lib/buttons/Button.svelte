@@ -3,16 +3,15 @@
 	import { computeClasses, getDomAttributes } from './utils.js';
 	import { Spinner } from '$lib/loaders';
 
-	/** @type {{size?: string, disabled?: boolean, outline?: any, right?: any, loading?: boolean, shadow?: boolean, isLink?: boolean, href?: any, external?: boolean, icon?: import('svelte').Snippet, children?: import('svelte').Snippet, [key: string]: any}} */
 	let {
 		size = 'medium',
 		disabled = false,
-		outline = null,
-		right = null,
+		outline = false,
+		right = false,
 		loading = false,
 		shadow = false,
 		isLink = false,
-		href = null,
+		href = false,
 		external = false,
 		icon,
 		children,
@@ -27,34 +26,63 @@
 			right,
 		})}`,
 	);
+
+	const isDisabled = $derived(disabled || navigating.complete);
+	const isLinkType = $derived(isLink || href);
+	const linkHref = $derived(href ?? 'javascript:void(0);');
+	const linkTarget = $derived(external ? '_blank' : null);
+
+	// Spinner sizes based on button size
+	const getSpinnerSize = $derived.by(() => {
+		if (size === 'icon') return '21';
+		if (size === 'block') return '15';
+		if (size === 'small') return '12';
+		return '18';
+	});
+
+	// Spinner sizes for icon state specifically
+	const getIconSpinnerSize = $derived.by(() => {
+		if (size === 'icon') return '21';
+		if (size === 'small') return '27';
+		return '36';
+	});
 </script>
 
-{#if isLink || href}
+{#if isLinkType}
 	<a
-		class:disabled={disabled || navigating.complete}
+		class:disabled={isDisabled}
 		class={classes}
 		data-sveltekit-prefetch
 		role="button"
-		href={href ?? 'javascript:void(0);'}
-		target={external ? '_blank' : null}
+		href={linkHref}
+		target={linkTarget}
 		{...rest}>
-		{#if size == 'icon'}
+		{#if size === 'icon'}
 			<div class="icon_wrap">
-				{#if loading}<Spinner size="21" />{:else if icon}{@render icon()}{:else}🧵{/if}
+				{#if loading}
+					<Spinner size={getSpinnerSize} />
+				{:else if icon}
+					{@render icon()}
+				{:else}
+					🧵
+				{/if}
 			</div>
-		{:else if size == 'block'}
+		{:else if size === 'block'}
 			<div class="content_wrap">
 				<span class="title">
-					{#if loading}<Spinner size="15" />{/if}
+					{#if loading}<Spinner size={getSpinnerSize} />{/if}
 					{@render children?.()}
 				</span>
 			</div>
 		{:else}
 			<div class="icon_wrap">
-				{#if size == 'small'}
-					{#if loading}<Spinner size="27" />{:else if icon}{@render icon()}{:else}🧵{/if}
-				{:else if loading}<Spinner
-						size="36" />{:else if icon}{@render icon()}{:else}🧵{/if}
+				{#if loading}
+					<Spinner size={getIconSpinnerSize} />
+				{:else if icon}
+					{@render icon()}
+				{:else}
+					🧵
+				{/if}
 			</div>
 			<div class="content_wrap">
 				<b class="title">{@render children?.()}</b>
@@ -62,28 +90,33 @@
 		{/if}
 	</a>
 {:else}
-	<button
-		{...rest}
-		class:disabled={disabled || navigating.complete}
-		class={classes}
-		disabled={disabled || navigating.complete}>
-		{#if size == 'icon'}
+	<button {...rest} class:disabled={isDisabled} class={classes} disabled={isDisabled}>
+		{#if size === 'icon'}
 			<div class="icon_wrap">
-				{#if loading}<Spinner size="21" />{:else if icon}{@render icon()}{:else}🧵{/if}
+				{#if loading}
+					<Spinner size={getSpinnerSize} />
+				{:else if icon}
+					{@render icon()}
+				{:else}
+					🧵
+				{/if}
 			</div>
-		{:else if size == 'block'}
+		{:else if size === 'block'}
 			<div class="content_wrap">
 				<span class="title">
-					{#if loading}<Spinner size="15" />{/if}
+					{#if loading}<Spinner size={getSpinnerSize} />{/if}
 					{@render children?.()}
 				</span>
 			</div>
 		{:else}
 			<div class="icon_wrap">
-				{#if size == 'small'}
-					{#if loading}<Spinner size="12" />{:else if icon}{@render icon()}{:else}🧵{/if}
-				{:else if loading}<Spinner
-						size="18" />{:else if icon}{@render icon()}{:else}🧵{/if}
+				{#if loading}
+					<Spinner size={getIconSpinnerSize} />
+				{:else if icon}
+					{@render icon()}
+				{:else}
+					🧵
+				{/if}
 			</div>
 			<div class="content_wrap">
 				<b class="title">{@render children?.()}</b>
@@ -135,18 +168,18 @@
 	.btn-icon {
 		display: inline-flex;
 		align-items: center;
-		border-radius: var(--border-radius-full);
-		box-shadow: none;
+		border-radius: var(--border-radius);
+		/* box-shadow: inherit; */
 		justify-content: center;
 		/* background: transparent; */
 		width: inherit;
 		height: inherit;
 		/* border-color: transparent; */
-		background: var(--primary-content);
+		background: transparent;
 		color: var(--primary);
 	}
 	.btn-icon:hover {
-		background: var(--primary);
+		background: transparent;
 		color: var(--primary-content);
 		outline: solid 6px hsl(var(--a) / var(--bg-opacity, 0.1));
 	}

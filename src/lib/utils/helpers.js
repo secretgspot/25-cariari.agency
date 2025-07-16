@@ -130,6 +130,9 @@ export const getPosition = async (property, gps) => {
 				console.log('📍 High Accuracy:', pos);
 				property.location.lat = pos.coords.latitude;
 				property.location.lng = pos.coords.longitude;
+				if (typeof gps === 'function') {
+					gps(pos.coords);
+				}
 			},
 			(err) => {
 				console.warn('💩 High Accuracy Error:', err);
@@ -141,7 +144,9 @@ export const getPosition = async (property, gps) => {
 							console.log('📍 Low Accuracy:', pos);
 							property.location.lat = pos.coords.latitude;
 							property.location.lng = pos.coords.longitude;
-							gps(pos.coords);
+							if (typeof gps === 'function') {
+								gps(pos.coords);
+							}
 						},
 						(errLow) => console.warn('💩 Low Accuracy Error:', errLow),
 						optionsLowAccuracy,

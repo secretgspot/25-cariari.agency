@@ -1,7 +1,8 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { isEmpty } from '$lib/utils/helpers.js';
+	import { isEmpty, getPosition } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
+	import { Button } from '$lib/buttons';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
@@ -13,6 +14,58 @@
 	let resizeObserver;
 	let isMapReady = $state(false);
 	let icons = {}; // Object to hold pre-loaded icons
+
+	const findMe = async () => {
+		if (!browser) return;
+
+		const dummyProperty = { location: { lat: null, lng: null } };
+
+		const gpsCallback = (coords) => {
+			// console.log('gpsCallback received coords:', coords);
+			if (!mapInstance) {
+				console.error('mapInstance is null in gpsCallback');
+				return;
+			}
+			if (!leafletInstance) {
+				console.error('leafletInstance is null in gpsCallback');
+				return;
+			}
+			if (!markersLayer) {
+				console.error('markersLayer is null in gpsCallback');
+				return;
+			}
+
+			try {
+				const userLatLng = new leafletInstance.LatLng(coords.latitude, coords.longitude);
+				// console.log('User LatLng:', userLatLng);
+
+				mapInstance.setView(userLatLng, 16);
+				// console.log('Map view set to user location.');
+
+				const userIcon = leafletInstance.icon({
+					iconUrl: '/map/default.svg',
+					iconSize: [21, 21],
+					iconAnchor: [10, 10],
+					tooltipAnchor: [0, -10],
+				});
+				// console.log('User icon created.');
+
+				const userMarker = leafletInstance
+					.marker(userLatLng, { icon: userIcon })
+					.addTo(markersLayer);
+				// console.log('User marker added to markersLayer.');
+
+				userMarker
+					.bindTooltip('Your Location', { permanent: false, direction: 'top' })
+					.openTooltip();
+				// console.log('Tooltip bound and opened.');
+			} catch (error) {
+				console.error('Error in gpsCallback:', error);
+			}
+		};
+
+		await getPosition(dummyProperty, gpsCallback);
+	};
 
 	// Define onMarkerClick outside, so it's accessible by updateMarkers and keeps its reference stable
 	const handleMarkerClick = (e) => {
@@ -147,7 +200,7 @@
 				iconUrl: url,
 				iconSize: [21, 21],
 				iconAnchor: [10, 10],
-				tooltipAnchor: [0, -10],
+				tooltipAnchor: [0, 0], // changed it from 0, -10
 			});
 		};
 
@@ -204,7 +257,7 @@
 			preferCanvas: true,
 		});
 
-		leafletInstance.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
+		// leafletInstance.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
 		leafletInstance.control.scale({ position: 'bottomright' }).addTo(mapInstance);
 
 		cartoDbLight.on('tileerror', (error) => {
@@ -270,7 +323,21 @@
 	});
 </script>
 
-<div id="map-canvas" class="map" bind:this={mapElement}></div>
+<div id="map-canvas" class="map" bind:this={mapElement}>
+	<Button type="button" size="icon" onclick={findMe}>
+		{#snippet icon()}
+			🎯
+		{/snippet}
+	</Button>
+
+	<!-- <a
+		href="#"
+		class="find-me-button"
+		onclick={(e) => {
+			e.preventDefault();
+			findMe();
+		}}>Find Me</a> -->
+</div>
 
 <style>
 	.map {
@@ -280,6 +347,15 @@
 		/* Ensure the map container has a minimum size */
 		min-height: 200px;
 		min-width: 200px;
+
+		:global(button) {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+			z-index: 999;
+			width: min-content;
+			height: min-content;
+		}
 	}
 
 	/* Use CSS custom properties for better dark mode control */
