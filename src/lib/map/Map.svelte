@@ -14,6 +14,7 @@
 	let resizeObserver;
 	let isMapReady = $state(false);
 	let icons = {}; // Object to hold pre-loaded icons
+	let userLocationMarker = $state(null); // State to hold the user's location marker
 
 	const findMe = async () => {
 		if (!browser) return;
@@ -36,6 +37,11 @@
 			}
 
 			try {
+				// Remove existing user location marker if it exists
+				if (userLocationMarker) {
+					markersLayer.removeLayer(userLocationMarker);
+				}
+
 				const userLatLng = new leafletInstance.LatLng(coords.latitude, coords.longitude);
 				// console.log('User LatLng:', userLatLng);
 
@@ -50,12 +56,12 @@
 				});
 				// console.log('User icon created.');
 
-				const userMarker = leafletInstance
+				userLocationMarker = leafletInstance
 					.marker(userLatLng, { icon: userIcon })
 					.addTo(markersLayer);
 				// console.log('User marker added to markersLayer.');
 
-				userMarker
+				userLocationMarker
 					.bindTooltip('Your Location', { permanent: false, direction: 'top' })
 					.openTooltip();
 				// console.log('Tooltip bound and opened.');
