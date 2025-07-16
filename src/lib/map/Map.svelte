@@ -45,7 +45,7 @@
 				const userLatLng = new leafletInstance.LatLng(coords.latitude, coords.longitude);
 				// console.log('User LatLng:', userLatLng);
 
-				mapInstance.setView(userLatLng, 16);
+				mapInstance.setView(userLatLng, 18);
 				// console.log('Map view set to user location.');
 
 				const userIcon = leafletInstance.icon({
