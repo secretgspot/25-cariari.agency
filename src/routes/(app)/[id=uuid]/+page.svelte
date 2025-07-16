@@ -374,6 +374,8 @@
 		.grouped {
 			display: flex;
 			gap: var(--padding-medium);
+			flex: 0 1 100%;
+			justify-content: center;
 		}
 
 		p.description {
