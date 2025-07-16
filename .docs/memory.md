@@ -8,13 +8,13 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 To set up the Supabase database for local development or a new environment, you can use the SQL backup files located in the `.docs/` directory. These files contain the database schema and sample data.
 
-1.  **Navigate to the Supabase SQL Editor:**
+1. **Navigate to the Supabase SQL Editor:**
     Go to your Supabase project's dashboard and open the "SQL Editor".
 
-2.  **Restore the Schema:**
+2. **Restore the Schema:**
     Open the `july_2025_schema_backup.sql` file from the `.docs/` directory, copy its contents, and paste them into the Supabase SQL Editor. Run the query to create the database tables and relationships.
 
-3.  **Populate the Database:**
+3. **Populate the Database:**
     Open the `july_2025_data_backup.sql` file from the `.docs/` directory, copy its contents, and paste them into the Supabase SQL Editor. Run the query to populate the tables with sample data.
 
 ## Supabase Type Generation
@@ -59,7 +59,7 @@ To ensure the project has up-to-date TypeScript definitions for the Supabase dat
 - **Frontend:** SvelteKit 2 (Svelte 5), Vite
 - **Backend/DB:** Supabase (PostgreSQL, Auth)
 - **Hosting:** Vercel
-- **Other:** Leaflet and MapLibre (maps), QR.js (QR codes), @neoconfetti/svelte (confetti)
+- **Other:** Leaflet and MapLibre (maps), QR.js (QR codes)
 
 ## Main Features
 

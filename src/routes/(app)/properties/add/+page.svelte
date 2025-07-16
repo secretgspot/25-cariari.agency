@@ -4,17 +4,18 @@
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
+	import { v4 as uuidv4 } from 'uuid'; // For unique file names
+	import Compressor from 'compressorjs';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
 	import { Button } from '$lib/buttons';
+	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Toggle from '$lib/Toggle.svelte';
+	import Select from '$lib/Select.svelte';
 	import MapPicker from '$lib/map/MapPicker.svelte';
 	import Uploader from '$lib/Uploader.svelte';
-	import Checkboxes from '$lib/Checkboxes.svelte';
-	import Select from '$lib/Select.svelte';
-
-	import { addToast } from '$lib/toasts/store';
 	import Notify from '$lib/Notify.svelte';
+	import { addToast } from '$lib/toasts/store';
 	import {
 		isEmpty,
 		getPosition,
@@ -22,9 +23,7 @@
 		removeFeature,
 		enter,
 	} from '$lib/utils/helpers.js';
-	import { v4 as uuidv4 } from 'uuid'; // For unique file names
-	import JsonDump from '$lib/JSONDump.svelte';
-	import Compressor from 'compressorjs';
+	// import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
