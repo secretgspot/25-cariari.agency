@@ -10,7 +10,7 @@ Agent ignore this file
   - `vite`
   - `nodemailer`
   - `leaflet`
-- [ ] **Legacy Packages:** `qr.js` appears to be an old and potentially unmaintained package. It would be best to replace it with a more modern and actively maintained alternative for generating QR codes.
+- [x] **Legacy Packages:** `qr.js` appears to be an old and potentially unmaintained package. It would be best to replace it with a more modern and actively maintained alternative for generating QR codes.
 
 ### SEO and Accessibility
 
