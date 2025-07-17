@@ -8,7 +8,7 @@
 	import { Spinner } from '$lib/loaders';
 
 	/** @type {{data: any}} */
-	let { property_id, supabase } = $props();
+	let { property_id, supabase, is_admin } = $props();
 
 	// console.log('Preview.svelte property_id:', property_id);
 	// console.log('Preview.svelte supabase:', supabase);
@@ -43,6 +43,19 @@
 {/if}
 
 <section class="preview-content" class:loading>
+	{#if is_admin}
+		<Button
+			class="admin-edit"
+			size="icon"
+			{loading}
+			disabled={loading}
+			onclick={() => goto(property.id + '/edit')}>
+			{#snippet icon()}
+				📝
+			{/snippet}
+			Show Details
+		</Button>
+	{/if}
 	<figure>
 		<!-- {JSON.stringify(property.photos, null, 2)} -->
 		{#if property?.photo?.length > 0}
@@ -132,6 +145,7 @@
 
 <style>
 	.preview-content {
+		position: relative;
 		z-index: 3;
 		background: var(--primary);
 		color: var(--primary-content);
@@ -140,6 +154,14 @@
 				min-content,
 				90px
 			);
+
+		:global(.admin-edit) {
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: min-content;
+			width: min-content;
+		}
 	}
 
 	figure {

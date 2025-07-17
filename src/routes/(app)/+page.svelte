@@ -67,7 +67,10 @@
 
 	{#if selectedProperty}
 		<aside class="preview-wrapper">
-			<Preview property_id={selectedProperty} supabase={data.supabase} />
+			<Preview
+				property_id={selectedProperty}
+				supabase={data.supabase}
+				is_admin={data.is_admin} />
 		</aside>
 	{/if}
 </main>
