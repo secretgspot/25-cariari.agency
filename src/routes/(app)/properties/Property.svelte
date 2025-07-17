@@ -16,13 +16,13 @@
 		{#if property.photo}
 			<img
 				src={property.photo}
-				alt="{property.id} photo"
+				alt="{property.msl} - {property.land_use}"
 				loading="lazy"
 				intrinsicsize="281x222" />
 		{:else}
 			<img
 				src="/placeholder/450x360.png"
-				alt="placeholder"
+				alt="Placeholder image for {property.msl}"
 				loading="lazy"
 				intrinsicsize="281x222" />
 		{/if}

@@ -72,7 +72,7 @@
 								class="slide-image"
 								src="/placeholder/1080x810.png"
 								srcset="/placeholder/1080x810.png"
-								alt="property"
+								alt="Placeholder image for {data.property.msl}"
 								loading="eager" />
 						</figure>
 					</div>

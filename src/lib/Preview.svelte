@@ -62,7 +62,7 @@
 			<img
 				class="image"
 				src={property.photo}
-				alt={property.msl}
+				alt="{property.msl} - {property.land_use}"
 				loading="eager"
 				intrinsicsize="450x360" />
 		{:else}

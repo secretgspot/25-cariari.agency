@@ -8,7 +8,7 @@
 	class="logo {color}"
 	src="/logo/logo_{type}_{color}.svg"
 	width={size}
-	alt="CR logo"
+	alt="Cariari Agency Logo"
 	{...rest} />
 
 <style lang="scss">
