@@ -2,9 +2,23 @@ Agent ignore this file
 
 ## Todo (will be implemented at user specified request)
 
-- [ ] figure out proper policies for photos table
-- [ ] present sign-up with magic link only when the user completes the form
-- [ ] nav glitches and presents itself when shouldn't
-- [ ] uploader works and uploads and adds rows to photo table, but if I submit changes then photos: is set to empty array and row of the photos for the property dissapear.
-- [ ] when photos row is removed so should asscociated files in bucket
-- [ ] when adding photo with /add property_id is not inserted into photos table (check Uploader) and redirect to print page failed (got stuck on splash)
+### Dependency Management
+
+- [ ] **Outdated Packages:** Several npm packages are outdated. Updating them can provide access to new features, security patches, and performance enhancements. Key packages to update include:
+  - `@supabase/supabase-js`
+  - `@sveltejs/kit`
+  - `vite`
+  - `nodemailer`
+  - `leaflet`
+- [ ] **Legacy Packages:** `qr.js` appears to be an old and potentially unmaintained package. It would be best to replace it with a more modern and actively maintained alternative for generating QR codes.
+
+### SEO and Accessibility
+
+- [ ] **Meta Tags & Structured Data:** As outlined in `improvements.md`, adding dynamic meta titles, descriptions, and implementing structured data (Schema.org) for properties would significantly improve SEO.
+- [ ] **Sitemap:** Generating a `sitemap.xml` file will help search engines better crawl and index the site.
+- [ ] **Image Optimization:** Compressing images and ensuring all images have descriptive `alt` text will improve both performance and accessibility.
+- [ ] **Accessibility Audit:** Performing an accessibility audit using tools like Lighthouse or axe would help identify and fix issues related to color contrast, keyboard navigation, and more.
+
+### User Experience
+
+- [ ] **Performance:** Optimizing images and ensuring efficient code-splitting will lead to faster page load times and a better user experience.
