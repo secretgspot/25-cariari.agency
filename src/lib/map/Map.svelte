@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { isEmpty, getPosition } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
-	import { Button } from '$lib/buttons';
+	import Toggle from '$lib/Toggle.svelte';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
@@ -15,62 +15,69 @@
 	let isMapReady = $state(false);
 	let icons = {}; // Object to hold pre-loaded icons
 	let userLocationMarker = $state(null); // State to hold the user's location marker
+	let watchId = $state(null);
+	let isLocating = $state(false);
 
 	const findMe = async () => {
 		if (!browser) return;
 
-		const dummyProperty = { location: { lat: null, lng: null } };
-
-		const gpsCallback = (coords) => {
-			// console.log('gpsCallback received coords:', coords);
-			if (!mapInstance) {
-				console.error('mapInstance is null in gpsCallback');
-				return;
+		if (watchId) {
+			navigator.geolocation.clearWatch(watchId);
+			watchId = null;
+			isLocating = false;
+			if (userLocationMarker) {
+				markersLayer.removeLayer(userLocationMarker);
+				userLocationMarker = null;
 			}
-			if (!leafletInstance) {
-				console.error('leafletInstance is null in gpsCallback');
-				return;
-			}
-			if (!markersLayer) {
-				console.error('markersLayer is null in gpsCallback');
-				return;
-			}
+			return;
+		}
 
-			try {
-				// Remove existing user location marker if it exists
-				if (userLocationMarker) {
-					markersLayer.removeLayer(userLocationMarker);
-				}
+		isLocating = true;
 
-				const userLatLng = new leafletInstance.LatLng(coords.latitude, coords.longitude);
-				// console.log('User LatLng:', userLatLng);
+		// console.log('GPS TOGGLE: ', isLocating);
 
-				mapInstance.setView(userLatLng, 18);
-				// console.log('Map view set to user location.');
+		const gpsCallback = (position) => {
+			const { latitude, longitude } = position.coords;
+			if (!mapInstance || !leafletInstance || !markersLayer) return;
 
+			const userLatLng = new leafletInstance.LatLng(latitude, longitude);
+
+			if (userLocationMarker) {
+				userLocationMarker.setLatLng(userLatLng);
+			} else {
 				const userIcon = leafletInstance.icon({
 					iconUrl: '/map/default.svg',
 					iconSize: [21, 21],
 					iconAnchor: [10, 10],
 					tooltipAnchor: [0, -10],
 				});
-				// console.log('User icon created.');
-
 				userLocationMarker = leafletInstance
 					.marker(userLatLng, { icon: userIcon })
 					.addTo(markersLayer);
-				// console.log('User marker added to markersLayer.');
+				// userLocationMarker
+				// 	.bindTooltip('Your Location', { permanent: false, direction: 'top' })
+				// 	.openTooltip();
+			}
+			mapInstance.setView(userLatLng, 18);
+		};
 
-				userLocationMarker
-					.bindTooltip('Your Location', { permanent: false, direction: 'top' })
-					.openTooltip();
-				// console.log('Tooltip bound and opened.');
-			} catch (error) {
-				console.error('Error in gpsCallback:', error);
+		const errorCallback = (error) => {
+			// Ignore POSITION_UNAVAILABLE errors, which can be frequent with simulators.
+			if (error.code === 2) {
+				return;
+			}
+			console.error('Error getting user location:', error);
+			// PERMISSION_DENIED
+			if (error.code === 1) {
+				isLocating = false;
 			}
 		};
 
-		await getPosition(dummyProperty, gpsCallback);
+		watchId = navigator.geolocation.watchPosition(gpsCallback, errorCallback, {
+			enableHighAccuracy: true,
+			timeout: 5000,
+			maximumAge: 0,
+		});
 	};
 
 	// Define onMarkerClick outside, so it's accessible by updateMarkers and keeps its reference stable
@@ -308,6 +315,10 @@
 
 	onDestroy(() => {
 		try {
+			if (watchId) {
+				navigator.geolocation.clearWatch(watchId);
+			}
+
 			if (resizeTimeout) clearTimeout(resizeTimeout);
 
 			if (resizeObserver) {
@@ -330,19 +341,13 @@
 </script>
 
 <div id="map-canvas" class="map" bind:this={mapElement}>
-	<Button type="button" size="icon" onclick={findMe}>
-		{#snippet icon()}
-			🎯
-		{/snippet}
-	</Button>
-
-	<!-- <a
-		href="#"
-		class="find-me-button"
-		onclick={(e) => {
-			e.preventDefault();
-			findMe();
-		}}>Find Me</a> -->
+	<Toggle
+		kind="flip"
+		on="📍"
+		off="🌎"
+		name="findMeToggle"
+		onchange={findMe}
+		bind:checked={isLocating} />
 </div>
 
 <style>
@@ -354,13 +359,14 @@
 		min-height: 200px;
 		min-width: 200px;
 
-		:global(button) {
+		:global(.toggle) {
 			position: absolute;
 			bottom: 10px;
 			left: 10px;
 			z-index: 999;
-			width: min-content;
-			height: min-content;
+			:global(.flip + label) {
+				min-width: min-content;
+			}
 		}
 	}
 

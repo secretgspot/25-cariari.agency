@@ -44,8 +44,8 @@
 			+ label {
 				outline: 0;
 				display: block;
-				width: 4em;
-				height: 2em;
+				width: min-content;
+				height: min-content;
 				position: relative;
 				cursor: pointer;
 				user-select: none;
@@ -95,16 +95,19 @@
 				backface-visibility: hidden;
 				transition: all 0.2s ease;
 				border: 1px solid var(--accent);
-				min-width: 100px;
+				width: 4em;
+				height: 2em;
+				min-width: min-content;
 				&:after,
 				&:before {
 					transform: skew(10deg);
-					display: inline-block;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					text-align: center;
 					transition: all 0.2s ease;
 					width: 100%;
-					text-align: center;
 					position: absolute;
-					line-height: 2em;
 					font-weight: bold;
 					color: var(--primary-content);
 					text-shadow: var(--shadow-small);
@@ -156,18 +159,18 @@
 
 		.flip {
 			+ label {
-				padding: 2px;
+				padding: var(--padding-small);
 				transition: all 0.2s ease;
 				perspective: 100px;
 				min-width: 90px;
 				&:after,
 				&:before {
-					display: inline-block;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					text-align: center;
 					transition: all 0.3s ease;
 					width: 100%;
-					text-align: center;
-					position: absolute;
-					line-height: 2em;
 					color: var(--primary-content);
 					position: absolute;
 					top: 0;
