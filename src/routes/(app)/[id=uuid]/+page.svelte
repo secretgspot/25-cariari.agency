@@ -208,7 +208,7 @@
 				target="_blank"
 				rel="noreferrer"
 				title="Cariari House Painting Services">
-				<img src="/ads/pintarcariari-300x100.jpg" alt="Cariari Pintor" />
+				<img src="/ads/pintarcariari-300x100.webp" alt="Cariari Pintor" />
 			</a>
 		</Ad>
 	</div>
