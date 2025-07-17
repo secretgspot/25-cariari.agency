@@ -96,6 +96,7 @@ Properties are the core data entity. Main fields:
 - **POST /properties/[id]/remove**: Delist property (set is_active=false)
 - **GET /properties/[id]**: Get property details
 - **GET /properties/[id]/print**: Print-friendly property page with QR code
+- **GET /sitemap.xml**: Get dynamically generated sitemap for SEO
 
 ## Main User Flows
 

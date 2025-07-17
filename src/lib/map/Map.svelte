@@ -344,7 +344,7 @@
 	<Toggle
 		kind="flip"
 		on="📍"
-		off="🌎"
+		off="🎯"
 		name="findMeToggle"
 		onchange={findMe}
 		bind:checked={isLocating} />
