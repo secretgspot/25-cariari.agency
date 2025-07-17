@@ -127,7 +127,11 @@
 
 	<div class="commercial-wrapper">
 		<Ad width="320" height="100">
-			<a href="//25-cariaripintor.vercel.app" target="_blank" rel="noreferrer">
+			<a
+				href="//25-cariaripintor.vercel.app"
+				target="_blank"
+				rel="noreferrer"
+				title="Cariari House Painting Services">
 				<img src="/ads/pintarcariari-300x100.jpg" alt="Pintar Cariari" />
 			</a>
 		</Ad>
