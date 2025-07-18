@@ -171,7 +171,6 @@
 		border-radius: var(--border-radius);
 		/* box-shadow: inherit; */
 		justify-content: center;
-		/* background: transparent; */
 		width: inherit;
 		height: inherit;
 		/* border-color: transparent; */

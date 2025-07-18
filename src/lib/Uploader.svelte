@@ -291,5 +291,13 @@
 		@media (min-width: 481px) {
 			display: none;
 		}
+		:global(.btn-icon) {
+			background: var(--secondary);
+			color: var(--secondary-content);
+			&:hover {
+				background: var(--error);
+				color: var(--error-content);
+			}
+		}
 	}
 </style>
