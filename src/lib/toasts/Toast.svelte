@@ -26,7 +26,7 @@
 	{/if}
 </i>
 
-<style lang="postcss">
+<style>
 	i {
 		display: flex;
 		border-radius: var(--border-radius);
@@ -36,17 +36,17 @@
 		gap: var(--gap-small);
 	}
 	.error {
-		/* background: var(--error); */
+		background: var(--error);
 		border-color: var(--error);
 		color: var(--error-content);
 	}
 	.success {
-		/* background: var(--success); */
+		background: var(--success);
 		border-color: var(--success);
 		color: var(--success-content);
 	}
 	.info {
-		/* background: var(--info); */
+		background: var(--info);
 		border-color: var(--info);
 		color: var(--primary);
 	}

@@ -9,9 +9,10 @@
 	src="/logo/logo_{type}_{color}.svg"
 	width={size}
 	alt="Cariari Agency Logo"
+	loading="eager"
 	{...rest} />
 
-<style lang="scss">
+<style>
 	.logo {
 		z-index: 10;
 		cursor: pointer;

@@ -12,7 +12,7 @@
 
 <div class="badge {direction}">
 	{#if type === "icon"}
-		<!-- <img class="icon" src="images/icons/icon_{label}.svg" alt="{label}"> -->
+		<!-- <img class="icon" src="images/icons/icon_{label}.svg" alt="{label}" loading="eager"> -->
 		<Icon type={label} size="30" />
 		<div class="value">{value}</div>
 	{:else if type === "text"}

@@ -157,7 +157,7 @@
 		<!-- Display existing attachments -->
 		{#each existingAttachments || [] as file (file.id)}
 			<div class="card" transition:slide={{ duration: 93 }}>
-				<img src={file.file_url} alt={file.name} />
+				<img src={file.file_url} alt={file.name} loading="lazy" />
 				<!-- Show delete button for existing files if user is authorized -->
 				{#if currentUserId === file.user_id || isAdmin}
 					<div class="file-action">
@@ -187,7 +187,7 @@
 		<!-- Display newly selected files for preview -->
 		{#each newFilePreviews || [] as preview (preview.file)}
 			<div class="card" transition:slide={{ duration: 93 }}>
-				<img src={preview.previewUrl} alt={preview.file.name} />
+				<img src={preview.previewUrl} alt={preview.file.name} loading="lazy" />
 				<!-- Show remove button for newly selected files -->
 				<div class="file-action">
 					<Button
