@@ -26,7 +26,8 @@
 </script>
 
 <svelte:head>
-	<title>Properties listing - Cariari Agency</title>
+	<title>Properties for Sale and Rent in Cariari, Costa Rica - Cariari Agency</title>
+	<meta name="description" content="Browse properties for sale and rent in Cariari, Costa Rica. Find houses, apartments, and land with Cariari Agency." />
 </svelte:head>
 
 {#if !navigating.complete}

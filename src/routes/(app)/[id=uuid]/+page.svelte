@@ -18,6 +18,7 @@
 
 <svelte:head>
 	<title>{data.property.msl} - Cariari Agency</title>
+	<meta name="description" content={data.property.description || `View details for property MSL ${data.property.msl} in Cariari, Costa Rica.${data.property.property_for ? ` This property is for ${data.property.property_for.join(', ')}.` : ''}${data.property.beds ? ` It features ${data.property.beds} bedrooms.` : ''}${data.property.baths ? ` ${data.property.baths} bathrooms.` : ''}${data.property.lot_size ? ` ${data.property.lot_size}m² lot size.` : ''}`} />
 </svelte:head>
 
 <!-- <JsonDump name="data" {data} /> -->

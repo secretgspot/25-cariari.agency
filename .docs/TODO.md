@@ -14,7 +14,7 @@ Agent ignore this file
 
 ### SEO and Accessibility
 
-- [ ] **Meta Tags & Structured Data:** As outlined in `improvements.md`, adding dynamic meta titles, descriptions, and implementing structured data (Schema.org) for properties would significantly improve SEO.
+- [x] **Meta Tags & Structured Data:** As outlined in `improvements.md`, adding dynamic meta titles, descriptions, and implementing structured data (Schema.org) for properties would significantly improve SEO.
 - [x] **Sitemap:** Generating a `sitemap.xml` file will help search engines better crawl and index the site.
 - [x] **Image Optimization:** Compressing images and ensuring all images have descriptive `alt` text will improve both performance and accessibility.
 - [ ] **Accessibility Audit:** Performing an accessibility audit using tools like Lighthouse or axe would help identify and fix issues related to color contrast, keyboard navigation, and more.
