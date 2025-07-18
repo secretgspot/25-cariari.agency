@@ -1,20 +1,22 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	const dispatch = createEventDispatcher();
+	/** @type {{type?: string, dismissible?: boolean, children?: import('svelte').Snippet, ondismiss?: () => void}} */
+	let { type = '', dismissible = true, children, ondismiss } = $props();
 
-	/** @type {{type?: string, dismissible?: boolean, children?: import('svelte').Snippet}} */
-	let { type = '', dismissible = true, children } = $props();
+	function handleDismiss() {
+		// console.log('Toast dismiss clicked'); // Debug log
+		ondismiss?.();
+	}
 </script>
 
-<i class={type} role="alert" transition:fade|global>
+<i class="toast {type}" role="alert" transition:fade|global>
 	{#if type === 'success'}
-		😅
+		👍
 	{:else if type === 'error'}
-		👀
+		👎
 	{:else}
-		🤷‍♂️
+		👀
 	{/if}
 
 	<div class="text">
@@ -22,18 +24,19 @@
 	</div>
 
 	{#if dismissible}
-		<button class="close" onclick={() => dispatch('dismiss')}> ❌ </button>
+		<button class="close" onclick={handleDismiss}> ❌ </button>
 	{/if}
 </i>
 
 <style>
-	i {
+	.toast {
 		display: flex;
 		border-radius: var(--border-radius);
 		border: var(--border);
 		align-items: center;
 		padding: var(--padding-extra-small);
 		gap: var(--gap-small);
+		pointer-events: auto; /* Ensure toasts are clickable */
 	}
 	.error {
 		background: var(--error);
@@ -54,11 +57,14 @@
 		margin-right: 1rem;
 		font-size: 0.81rem;
 	}
-	button {
+	.close {
 		background: transparent;
 		border: 0 none;
 		padding: 0;
-		/* font-size: 0.63rem; */
 		cursor: pointer;
+		pointer-events: auto; /* Ensure button is clickable */
+	}
+	.close:hover {
+		opacity: 0.7;
 	}
 </style>

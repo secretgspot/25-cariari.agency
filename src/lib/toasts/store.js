@@ -1,28 +1,68 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 
+// Create the writable store for toasts
 export const toasts = writable([]);
 
-export const addToast = (toast) => {
-	// Create a unique ID so we can easily find/remove it
-	// if it is dismissible/has a timeout.
-	// console.log('triggerd toast')
-	const id = Math.floor(Math.random() * 10000);
+// Counter for unique IDs
+let idCounter = 0;
 
-	// Setup some sensible defaults for a toast.
+/**
+ * Add a new toast notification
+ * @param {Object} toast - Toast configuration object
+ * @param {string} toast.message - The message to display
+ * @param {string} [toast.type='info'] - Toast type: 'success', 'error', 'info'
+ * @param {boolean} [toast.dismissible=false] - Whether to show dismiss button
+ * @param {number} [toast.timeout=1200] - Auto-dismiss timeout in ms (0 = no auto-dismiss)
+ */
+export const addToast = (toast) => {
+	const id = `toast_${Date.now()}_${++idCounter}`;
+
 	const defaults = {
 		id,
-		type: "info",
+		type: 'info',
 		dismissible: false,
 		timeout: 1200,
 	};
 
-	// Push the toast to the top of the list of toasts
-	toasts.update((all) => [{ ...defaults, ...toast }, ...all]);
+	const newToast = { ...defaults, ...toast };
 
-	// If toast is dismissible, dismiss it after "timeout" amount of time.
-	if (toast.timeout) setTimeout(() => dismissToast(id), toast.timeout);
+	// Add toast to the store
+	toasts.update(currentToasts => [newToast, ...currentToasts]);
+
+	// Auto-dismiss after timeout
+	if (newToast.timeout) {
+		setTimeout(() => dismissToast(id), newToast.timeout);
+	}
+
+	return id; // Return ID in case caller needs it
 };
 
+/**
+ * Dismiss a specific toast by ID
+ * @param {string} id - The toast ID to dismiss
+ */
 export const dismissToast = (id) => {
-	toasts.update((all) => all.filter((t) => t.id !== id));
+	toasts.update(currentToasts => currentToasts.filter(t => t.id !== id));
+};
+
+/**
+ * Clear all active toasts
+ */
+export const clearAllToasts = () => {
+	toasts.set([]);
+};
+
+/**
+ * Convenience methods for common toast types
+ */
+export const showSuccess = (message, options = {}) => {
+	return addToast({ message, type: 'success', ...options });
+};
+
+export const showError = (message, options = {}) => {
+	return addToast({ message, type: 'error', ...options });
+};
+
+export const showInfo = (message, options = {}) => {
+	return addToast({ message, type: 'info', ...options });
 };

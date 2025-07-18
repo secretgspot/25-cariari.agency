@@ -15,7 +15,7 @@
 	import MapPicker from '$lib/map/MapPicker.svelte';
 	import Uploader from '$lib/Uploader.svelte';
 	import Notify from '$lib/Notify.svelte';
-	import { addToast } from '$lib/toasts/store';
+	import { addToast } from '$lib/toasts';
 	import {
 		isEmpty,
 		getPosition,
@@ -34,7 +34,6 @@
 		error = $state(''),
 		message = $state(''),
 		isAdmin = data.is_admin,
-		won = $state(false),
 		uploadingPhotos = $state(false),
 		uploadedPhotoDetails = $state([]),
 		gps = $state();
@@ -160,7 +159,6 @@
 		// `submitter` is the `HTMLElement` that caused the form to be submitted
 
 		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
-		won = false;
 		loading = true;
 		message = '';
 		error = '';
@@ -196,12 +194,10 @@
 			if (result.status === 200 && result.data.success) {
 				// reset form
 				clearStorage();
-				won = true;
 				// console.log("RESULT:", result.data);
 				addToast({
 					message: result.data.message,
 					type: 'success',
-					dismissible: true,
 					timeout: 1200,
 				});
 				// update({ reset: true }); // resets form, not needed in add since page redirects to print

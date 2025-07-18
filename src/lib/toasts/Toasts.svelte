@@ -1,15 +1,15 @@
 <script>
+	import { toasts, dismissToast } from './store.js';
 	import Toast from './Toast.svelte';
-	import { dismissToast, toasts } from './store.js';
 </script>
 
-{#if $toasts}
+{#if $toasts.length > 0}
 	<section>
 		{#each $toasts as toast (toast.id)}
 			<Toast
 				type={toast.type}
 				dismissible={toast.dismissible}
-				on:dismiss={() => dismissToast(toast.id)}>{toast.message}</Toast>
+				ondismiss={() => dismissToast(toast.id)}>{toast.message}</Toast>
 		{/each}
 	</section>
 {/if}
@@ -18,9 +18,8 @@
 	section {
 		position: fixed;
 		top: 0;
-		left: 0;
-		right: 0;
-		width: 100%;
+		left: 50%;
+		transform: translateX(-50%);
 		display: flex;
 		gap: var(--gap-extra-small);
 		justify-content: center;

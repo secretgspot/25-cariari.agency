@@ -15,6 +15,7 @@
 	import MapPicker from '$lib/map/MapPicker.svelte'; // MapPickerLibre
 	import Uploader from '$lib/Uploader.svelte';
 	import Notify from '$lib/Notify.svelte';
+	import { addToast } from '$lib/toasts';
 	import {
 		isEmpty,
 		getPosition,
@@ -137,8 +138,14 @@
 	async function handleDeleteExistingPhoto(photo) {
 		const { id, file_path } = photo; // Access id and file_path directly from the passed photo object
 		loading = true;
-		message = 'Deleting photo...';
-		isError = false;
+		// message = 'Deleting photo...';
+		// isError = false;
+
+		addToast({
+			message: 'Deleting photo...',
+			type: 'info',
+			timeout: 1200,
+		});
 
 		// Use a separate form action for deletion
 		const deleteFormData = new FormData();
@@ -155,13 +162,24 @@
 
 		loading = false;
 		if (response.ok) {
-			message = 'Photo deleted successfully!';
-			isError = false;
+			// message = 'Photo deleted successfully!';
+			// isError = false;
+			addToast({
+				message: 'Photo deleted successfully!',
+				type: 'success',
+				timeout: 1200,
+			});
 			// Optimistically update the UI by removing the photo
 			propertyData.photos = propertyData.photos.filter((p) => p.id !== id);
 		} else {
-			message = `Error deleting photo: ${result.message}`;
-			isError = true;
+			// message = `Error deleting photo: ${result.message}`;
+			// isError = true;
+			addToast({
+				message: `Error deleting photo: ${result.message}`,
+				type: 'error',
+				dismissible: true,
+				timeout: 0,
+			});
 		}
 	}
 </script>
@@ -671,23 +689,6 @@
 		<Notify type="danger">{error}</Notify>
 	{/if}
 </form>
-
-<!-- CONFIRMATION MODAL -->
-
-<!-- <Modal title="Delete listing?" bind:showModal>
-	<div slot="content">
-		Are you sure you want to delete this listing? By doing this, all data will
-		be permenantly deleted.
-	</div>
-	<Button mode="clean" onclick={() => (showModal = false)}>Cancel</Button>
-	<Button
-		mode="danger"
-		onclick={() => {
-			showModal = false;
-			remove();
-		}}>Confirm</Button
-	>
-</Modal> -->
 
 <!-- <JsonDump name="data" {data} /> -->
 <style>
