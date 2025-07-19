@@ -1,3 +1,22 @@
+// --- Wake Lock Helpers ---
+export async function enableWakeLock() {
+	try {
+		if ('wakeLock' in navigator) {
+			// Store the wakeLock instance on window to allow release from anywhere
+			window._wakeLock = await navigator.wakeLock.request('screen');
+		}
+	} catch { }
+}
+
+export async function disableWakeLock() {
+	try {
+		if (window._wakeLock) await window._wakeLock.release();
+	} catch {
+	} finally {
+		window._wakeLock = null;
+	}
+}
+
 export function isEmpty(val) {
 	if (val === null || typeof val === 'undefined') {
 		return true; // null or undefined are considered empty
