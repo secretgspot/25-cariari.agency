@@ -40,7 +40,6 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 - [ ] in property view should phone badge be clickable like realtor badge?
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
-- [ ] sometimes after user creates property it shows them print page and takes them back to add page to create new property. why?
 
 ## Tech Stack
 

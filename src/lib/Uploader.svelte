@@ -1,4 +1,3 @@
-<!-- src/lib/components/Uploader.svelte -->
 <script>
 	import { Button } from '$lib/buttons';
 	import { slide } from 'svelte/transition';
@@ -15,30 +14,67 @@
 	 */
 
 	/**
+	 * @typedef {Object} NewFilePreview
+	 * @property {File} file - The actual File object.
+	 * @property {string} previewUrl - The data URL for local preview.
+	 */
+
+	/**
+	 * @typedef {ExistingAttachment | (NewFilePreview & {name: string})} DisplayItem
+	 */
+
+	/**
 	 * Props for the Uploader component.
 	 * @type {{
 	 * existingAttachments?: ExistingAttachment[];
 	 * newFiles?: File[];
 	 * loading?: boolean;
-	 * currentUserId?: string; // Pass the current user's ID for showing delete button
-	 * isAdmin?: boolean; // Pass isAdmin flag for showing delete button
-	 * onDeleteExistingPhoto?: (photo: ExistingAttachment) => void; // Event handler for deleting existing photos
+	 * currentUserId?: string;
+	 * isAdmin?: boolean;
+	 * onDeleteExisting?: (photo: ExistingAttachment) => void;
 	 * }}
 	 */
 	let {
-		existingAttachments = $bindable([]), // Existing photos from DB
-		newFiles = $bindable([]), // Newly selected files for upload
-		loading,
+		existingAttachments = $bindable([]),
+		newFiles = $bindable([]),
+		loading = false,
 		currentUserId,
 		isAdmin = false,
-		onDeleteExistingPhoto = () => {}, // New prop for event handling
+		onDeleteExisting = (photo) => {},
 	} = $props();
 
 	let isDragOver = $state(false);
-	// let loading = $state(false); // Local loading state for UI feedback
+	let newFilePreviews = $state([]); // Still needed to store preview URLs for new files
 
-	// Local state to hold previews for newly selected files
-	let newFilePreviews = $state([]);
+	/**
+	 * Combines existing attachments and new file previews into a single list for display.
+	 * This derived state will react to changes in existingAttachments, newFiles, and newFilePreviews.
+	 * @type {DisplayItem[]}
+	 */
+	let displayItems = $derived([
+		...(existingAttachments || []).map((file) => ({
+			// Properties for existing files
+			id: file.id,
+			name: file.name,
+			url: file.file_url,
+			isNew: false, // Flag to identify existing vs. new
+			canDelete: currentUserId === file.user_id || isAdmin,
+			action: () => onDeleteExisting(file),
+		})),
+		...(newFiles || []).map((file) => {
+			// Find the corresponding preview URL for the new file
+			const preview = newFilePreviews.find((p) => p.file === file);
+			return {
+				// Properties for new files
+				id: crypto.randomUUID(), // Provide a unique key for new files
+				name: file.name,
+				url: preview?.previewUrl || '', // Use the preview URL
+				isNew: true, // Flag to identify existing vs. new
+				canDelete: true, // New files can always be removed locally
+				action: () => removeNewFile(file),
+			};
+		}),
+	]);
 
 	/**
 	 * Cleans up a string by normalizing and removing diacritics.
@@ -54,7 +90,7 @@
 	 * @param {DragEvent} event - The drag event.
 	 */
 	function handleDrop(event) {
-		event.preventDefault(); // Prevent default browser behavior
+		event.preventDefault();
 		isDragOver = false;
 		if (event.dataTransfer?.files) {
 			addNewFiles(event.dataTransfer.files);
@@ -105,28 +141,6 @@
 		newFiles = newFiles.filter((file) => file !== fileToRemove);
 		newFilePreviews = newFilePreviews.filter((p) => p.file !== fileToRemove);
 	}
-
-	/**
-	 * Calls the onDeleteExistingPhoto prop function to request deletion of an existing photo.
-	 * The parent component will handle the actual Supabase deletion.
-	 * @param {ExistingAttachment} photo - The existing photo object to delete.
-	 */
-	function requestDeleteExistingPhoto(photo) {
-		loading = true; // Show loading state locally
-		onDeleteExistingPhoto(photo); // Call the prop function
-		// Parent should handle setting loading to false after action completes
-		// For now, we assume parent will update existingAttachments, triggering re-render
-	}
-
-	// Reactive statement to update loading state based on parent's actions
-	// This is a simplified approach. For more robust loading, you'd pass a loading prop.
-	$effect(() => {
-		// If existingAttachments changes, it means an item was likely deleted/added by parent
-		// This could be a trigger to reset local loading, but be careful with this logic
-		// as it might reset loading prematurely if parent has other async ops.
-		// A dedicated `isLoading` prop from parent is generally better.
-		loading = false;
-	});
 </script>
 
 <div class="drop-container">
@@ -154,18 +168,12 @@
 	</div>
 
 	<div class="file-list">
-		<!-- Display existing attachments -->
-		{#each existingAttachments || [] as file (file.id)}
+		{#each displayItems || [] as item (item.id)}
 			<div class="card" transition:slide={{ duration: 93 }}>
-				<img src={file.file_url} alt={file.name} loading="lazy" />
-				<!-- Show delete button for existing files if user is authorized -->
-				{#if currentUserId === file.user_id || isAdmin}
+				<img src={item.url} alt={item.name} loading="lazy" />
+				{#if item.canDelete}
 					<div class="file-action">
-						<Button
-							type="button"
-							size="icon"
-							disabled={loading}
-							onclick={() => requestDeleteExistingPhoto(file)}>
+						<Button type="button" size="icon" disabled={loading} onclick={item.action}>
 							{#snippet icon()}
 								<svg
 									fill="currentColor"
@@ -177,38 +185,10 @@
 										d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z" />
 								</svg>
 							{/snippet}
-							Delete
+							{item.isNew ? 'Remove' : 'Delete'}
 						</Button>
 					</div>
 				{/if}
-			</div>
-		{/each}
-
-		<!-- Display newly selected files for preview -->
-		{#each newFilePreviews || [] as preview (preview.file)}
-			<div class="card" transition:slide={{ duration: 93 }}>
-				<img src={preview.previewUrl} alt={preview.file.name} loading="lazy" />
-				<!-- Show remove button for newly selected files -->
-				<div class="file-action">
-					<Button
-						type="button"
-						size="icon"
-						disabled={loading}
-						onclick={() => removeNewFile(preview.file)}>
-						{#snippet icon()}
-							<svg
-								fill="currentColor"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								width="18px"
-								height="18px">
-								<path
-									d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z" />
-							</svg>
-						{/snippet}
-						Remove
-					</Button>
-				</div>
 			</div>
 		{/each}
 	</div>
@@ -249,7 +229,7 @@
 		right: 0;
 		bottom: 0;
 		opacity: 0;
-		cursor: pointer; /* Indicate it's clickable */
+		cursor: pointer;
 	}
 
 	.file-list {
@@ -264,18 +244,16 @@
 		position: relative;
 		max-width: 150px;
 		max-height: 150px;
-		border-radius: var(--border-radius); /* Ensure rounded corners for cards */
-		/* overflow: hidden; */
+		border-radius: var(--border-radius);
 	}
 	.card img {
 		width: 100%;
 		height: 100%;
-		object-fit: cover; /* Ensure images cover the area without distortion */
+		object-fit: cover;
 		border-radius: var(--border-radius);
 	}
 	.card:hover .file-action,
 	.card:focus-within .file-action {
-		/* Use focus-within for accessibility */
 		display: flex;
 	}
 
@@ -287,7 +265,6 @@
 		top: calc(var(--padding-extra-small) * -1);
 		width: 27px;
 		height: 27px;
-		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
 			display: none;
 		}

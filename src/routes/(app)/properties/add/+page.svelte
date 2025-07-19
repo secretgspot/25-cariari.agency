@@ -68,7 +68,7 @@
 					quality: 0.6, // 60% quality
 					maxWidth: 1920, // Max width of 1280px
 					maxHeight: 1080,
-					convertSize: 1000000, // files larger than 1mb converted to jpg
+					convertSize: 500000, // files larger than 500kb converted to jpg
 					success(result) {
 						resolve(result);
 					},

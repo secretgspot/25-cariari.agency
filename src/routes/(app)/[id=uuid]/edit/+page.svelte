@@ -2,7 +2,8 @@
 	/** @type {import('./$types').PageData} */
 
 	import { navigating, page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { error } from '@sveltejs/kit';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
 	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import Compressor from 'compressorjs';
@@ -26,6 +27,7 @@
 	// import JsonDump from '$lib/JSONDump.svelte';
 
 	let { data } = $props();
+
 	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
 
 	let propertyData = $state({
@@ -35,6 +37,14 @@
 		photos: data.property?.photos || [],
 		location: data.property?.location || { lat: null, lng: null },
 	});
+
+	// This effect will run whenever `data.property` changes
+	$effect(() => {
+		if (data.property) {
+			propertyData = { ...data.property };
+		}
+	});
+
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', propertyData);
 	// $inspect('(app)/[id=uuid]/edit/+page.svelte session:', data.session);
 
@@ -42,8 +52,7 @@
 	let featureInput;
 
 	let loading = $state(false),
-		isError = $state(false),
-		error = $state(''),
+		errorMessage = $state(''),
 		message = $state(''),
 		isAdmin = data.is_admin || false,
 		uploadingPhotos = $state(false),
@@ -64,7 +73,7 @@
 					quality: 0.6, // 60% quality
 					maxWidth: 1920, // Max width of 1280px
 					maxHeight: 1080,
-					convertSize: 1000000, // files larger than 1mb converted to jpg
+					convertSize: 500000, // files larger than 500kb converted to jpg
 					success(result) {
 						resolve(result);
 					},
@@ -87,7 +96,14 @@
 
 				if (uploadError) {
 					console.error('Error uploading photo:', uploadError);
-					throw new Error(
+					addToast({
+						message: `Failed to upload: ${file.name}. Error: ${uploadError.message}`,
+						type: 'error',
+						dismissible: true,
+						timeout: 0,
+					});
+					error(
+						400,
 						`Failed to upload photo: ${file.name}. Error: ${uploadError.message}`,
 					);
 				}
@@ -97,7 +113,13 @@
 					.getPublicUrl(filePath);
 
 				if (!publicUrlData || !publicUrlData.publicUrl) {
-					throw new Error(`Could not get public URL for photo: ${filePath}`);
+					addToast({
+						message: `Could not get public URL for photo: ${filePath}.`,
+						type: 'error',
+						dismissible: true,
+						timeout: 0,
+					});
+					error(400, `Could not get public URL for photo: ${filePath}`);
 				}
 
 				return {
@@ -120,67 +142,22 @@
 		const results = await Promise.all(uploadPromises);
 		uploadedPhotoDetails = results.filter((detail) => detail !== null); // Filter out failed uploads
 		uploadingPhotos = false;
-
-		if (uploadedPhotoDetails.length !== newPhotosToUpload.length) {
-			// Some uploads failed
-			error = `Not all photos were uploaded. Successfully uploaded ${uploadedPhotoDetails.length} out of ${newPhotosToUpload.length}. Check console for details.`;
-			return { success: false, details: uploadedPhotoDetails };
-		}
+		newPhotosToUpload = []; // Clear the new photos from the uploader after they are processed
 
 		return { success: true, details: uploadedPhotoDetails };
 	}
 
-	/**
-	 * Handles the custom event dispatched from Uploader to delete an existing photo.
-	 * This will trigger a separate form action.
-	 * @param {Object} photo - The photo object to delete (from Uploader).
-	 */
-	async function handleDeleteExistingPhoto(photo) {
-		const { id, file_path } = photo; // Access id and file_path directly from the passed photo object
-		loading = true;
-		// message = 'Deleting photo...';
-		// isError = false;
+	let photosToDelete = $state([]);
 
-		addToast({
-			message: 'Deleting photo...',
-			type: 'info',
-			timeout: 1200,
-		});
-
-		// Use a separate form action for deletion
-		const deleteFormData = new FormData();
-		deleteFormData.append('photoId', id);
-		deleteFormData.append('filePath', file_path);
-
-		const response = await fetch('?/deletePhoto', {
-			// Call the new deletePhoto action
-			method: 'POST',
-			body: deleteFormData,
-		});
-
-		const result = await response.json(); // Assuming your action returns JSON
-
-		loading = false;
-		if (response.ok) {
-			// message = 'Photo deleted successfully!';
-			// isError = false;
-			addToast({
-				message: 'Photo deleted successfully!',
-				type: 'success',
-				timeout: 1200,
-			});
-			// Optimistically update the UI by removing the photo
-			propertyData.photos = propertyData.photos.filter((p) => p.id !== id);
-		} else {
-			// message = `Error deleting photo: ${result.message}`;
-			// isError = true;
-			addToast({
-				message: `Error deleting photo: ${result.message}`,
-				type: 'error',
-				dismissible: true,
-				timeout: 0,
-			});
+	// Function to mark a photo for deletion
+	function markPhotoForDeletion(photo) {
+		// Add to deletion list if not already there
+		if (!photosToDelete.find((p) => p.id === photo.id)) {
+			photosToDelete = [...photosToDelete, photo];
 		}
+
+		// Visually remove from the displayed list
+		propertyData.photos = propertyData.photos.filter((p) => p.id !== photo.id);
 	}
 </script>
 
@@ -206,11 +183,11 @@
 		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
 		loading = true;
 		message = '';
-		error = '';
+		errorMessage = '';
 
 		if (isEmpty(propertyData.property_for)) {
 			cancel();
-			error = 'Must select at least one for PROPERTY FOR in Property Type section';
+			errorMessage = 'Must select at least one for PROPERTY FOR in Property Type section';
 			loading = false;
 			return; // Stop execution if validation fails
 		}
@@ -224,6 +201,12 @@
 			// The error message is already set inside uploadPhotos
 			return;
 		}
+
+		// Append photos to delete to the form data
+		formData.delete('photos_to_delete');
+		photosToDelete.forEach((photo) => {
+			formData.append('photos_to_delete', JSON.stringify(photo));
+		});
 
 		// Append uploaded photo details to the form data
 		// The server action expects 'photo_urls_and_paths'
@@ -239,16 +222,28 @@
 				if (result.data.delisted) {
 					propertyData.is_active = false;
 				}
-				message = result.data.message;
+				// Property Updated successfully, display message.
+				addToast({
+					message: `${result.data.message}`,
+					type: 'success',
+					timeout: 3000,
+				});
+				// message = result.data.message;
 				await applyAction(result);
 			}
 
 			if (result.type === 'invalid') {
-				error = result.data.message;
+				addToast({
+					message: `${result.data.message}`,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+				errorMessage = result.data.message;
 				await applyAction(result);
 			}
 			loading = false;
-			update({ reset: false });
+			await update({ reset: false });
 		};
 	}}>
 	<!-- PROPERTY TYPE -->
@@ -609,13 +604,12 @@
 			<fieldset class="photos">
 				<legend>Photos</legend>
 				<Uploader
-					{loading}
-					bind:existingAttachments={propertyData.photos}
 					bind:newFiles={newPhotosToUpload}
-					propertyId={data.property.id}
+					bind:existingAttachments={propertyData.photos}
 					currentUserId={data.session?.user?.id}
-					isAdmin={data.isAdmin}
-					onDeleteExistingPhoto={handleDeleteExistingPhoto} />
+					{isAdmin}
+					onDeleteExisting={markPhotoForDeletion}
+					{loading} />
 			</fieldset>
 		</div>
 	</section>
@@ -642,6 +636,7 @@
 		{#if isAdmin || propertyData.is_active}
 			<Button
 				type="button"
+				{loading}
 				disabled={loading}
 				onclick={() => {
 					goto(`/${propertyData.id}/print`);
@@ -685,12 +680,13 @@
 	{#if message}
 		<Notify type="success">{message}</Notify>
 	{/if}
-	{#if error}
-		<Notify type="danger">{error}</Notify>
+	{#if errorMessage}
+		<Notify type="danger">{errorMessage}</Notify>
 	{/if}
 </form>
 
-<!-- <JsonDump name="data" {data} /> -->
+<!-- <JsonDump name="data" data={propertyData} /> -->
+
 <style>
 	.edit-property {
 		display: grid;

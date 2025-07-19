@@ -122,6 +122,7 @@ export const actions = {
 				.update(propertyUpdates)
 				.eq('id', propertyId) // Use propertyId from params
 				.select('id, msl')
+				// .select(`*, photos(id, file_path, file_url, user_id)`)
 				.maybeSingle();
 
 			if (resErr) {
@@ -136,34 +137,61 @@ export const actions = {
 				return fail(500, {
 					error: true,
 					message: `Unable to update property, ${resErr.message}`,
-					property: propertyUpdates,
+					property,
 				});
 			}
 
-			const photoRecords = [];
+			// 2. Handle photo deletions
+			const photosToDeleteStrings = formData.getAll('photos_to_delete');
+			let photosToDelete = [];
+			if (photosToDeleteStrings.length > 0) {
+				photosToDelete = photosToDeleteStrings.map(str => JSON.parse(str));
+			}
 
-			// 2. Prepare photo records using the already uploaded details from the client
-			for (const photoDetail of uploadedPhotoDetails) {
-				photoRecords.push({
+			if (photosToDelete.length > 0) {
+				const filePathsToDelete = photosToDelete.map(p => p.file_path);
+				const photoIdsToDelete = photosToDelete.map(p => p.id);
+
+				// Delete from Supabase Storage
+				const { error: storageError } = await supabaseClient.storage
+					.from('photos')
+					.remove(filePathsToDelete);
+
+				if (storageError) {
+					console.error('Error deleting photos from storage:', storageError);
+					// Decide if you want to fail the whole update or just log the error
+				}
+
+				// Delete from 'photos' table
+				const { error: dbError } = await supabaseClient
+					.from('photos')
+					.delete()
+					.in('id', photoIdsToDelete);
+
+				if (dbError) {
+					console.error('Error deleting photos from database:', dbError);
+					// Decide if you want to fail the whole update or just log the error
+				}
+			}
+
+			// 3. Handle new photo uploads
+			if (uploadedPhotoDetails.length > 0) {
+				const photoRecords = uploadedPhotoDetails.map(detail => ({
 					property_id: propertyId,
-					msl: propertyUpdates.msl, // Using MSL from the newly created property
-					file_url: photoDetail.publicUrl,
-					file_path: photoDetail.filePath,
-					name: photoDetail.originalName,
+					msl: propertyUpdates.msl,
+					file_url: detail.publicUrl,
+					file_path: detail.filePath,
+					name: detail.originalName,
 					user_id: userId,
-				});
-			}
+				}));
 
-			// 3. Insert photo records into 'photos' table
-			if (photoRecords.length > 0) {
 				const { error: photosInsertError } = await supabaseClient
 					.from('photos')
 					.insert(photoRecords);
 
 				if (photosInsertError) {
 					console.error('Error inserting photo records:', photosInsertError);
-					// Consider cleanup here if property was created but photo records failed
-					return fail(500, { message: 'Failed to save photo references in the database.' });
+					return fail(500, { message: 'Failed to save new photo references.' });
 				}
 			}
 
@@ -250,78 +278,6 @@ export const actions = {
 			delisted: true
 		}
 	},
-
-	// NEW ACTION: Delete a single photo
-	deletePhoto: async ({ request, locals }) => {
-		const supabaseClient = locals.supabase;
-
-		const { data: { session } } = await locals.supabase.auth.getSession();
-		if (!session) {
-			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
-		}
-		const userId = session.user.id;
-
-		const formData = await request.formData();
-		const photoId = formData.get('photoId');
-		const filePath = formData.get('filePath');
-
-		if (!photoId || !filePath) {
-			return json({ success: false, message: 'Photo ID and file path are required.' }, { status: 400 });
-		}
-
-		try {
-			// First, verify authorization: check if the user owns the photo or is an admin
-			const { data: photoData, error: fetchPhotoError } = await supabaseClient
-				.from('photos')
-				.select('user_id')
-				.eq('id', photoId)
-				.single();
-
-			if (fetchPhotoError || !photoData) {
-				console.error('Error fetching photo for deletion check:', fetchPhotoError);
-				return json({ success: false, message: 'Photo not found or access denied.' }, { status: 404 });
-			}
-
-			// Implement your isAdmin logic here (e.g., from user roles in session)
-			const isAdmin = session.user.app_metadata.claims_admin; // Correctly determine admin status
-
-			if (photoData.user_id !== userId && !isAdmin) {
-				return json({ success: false, message: 'You are not authorized to delete this photo.' }, { status: 403 });
-			}
-
-			// 1. Delete from Supabase Storage
-			const { error: storageError } = await supabaseClient.storage
-				.from('photos') // Your Supabase Storage bucket name
-				.remove([filePath]);
-
-			if (storageError) {
-				console.error('Error deleting photo from storage:', storageError);
-				return json({ success: false, message: `Failed to delete photo from storage: ${storageError.message}` }, { status: 500 });
-			}
-
-			// 2. Delete record from 'photos' table
-			const { error: dbError } = await supabaseClient
-				.from('photos')
-				.delete()
-				.eq('id', photoId);
-
-			if (dbError) {
-				console.error('Error deleting photo record from DB:', dbError);
-				return json({ success: false, message: `Failed to delete photo record: ${dbError.message}` }, { status: 500 });
-			}
-
-			return {
-				success: true,
-				message: `Photo deleted successfully.`
-			}
-
-		} catch (error) {
-			console.error('Unhandled error in deletePhoto action:', error);
-			return {
-				success: false,
-				message: error.message || 'An unexpected error occurred during photo deletion.'
-			}
-			// return json({ success: false, message: error.message || 'An unexpected error occurred during photo deletion.' }, { status: 500 });
-		}
-	},
 };
+
+
