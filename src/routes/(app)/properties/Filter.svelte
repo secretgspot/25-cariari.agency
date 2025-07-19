@@ -6,7 +6,7 @@
 	import { formatter } from '$lib/utils/helpers.js';
 
 	/** @type {import('./$types').PageData} */
-	let { loggedIn } = $props();
+	let { loggedIn, isAdmin } = $props();
 
 	// console.log('(app)/properties/+page.svelte filter loggedIn: ', loggedIn);
 </script>
@@ -90,13 +90,15 @@
 		<h3>Other</h3>
 
 		<div class="row">
-			<Toggle
-				name="active"
-				bind:checked={$filterStore.active}
-				label={$filterStore.active ? 'Listed' : 'Delisted'}
-				kind="flip"
-				on="Listed"
-				off="Delisted" />
+			{#if isAdmin}
+				<Toggle
+					name="active"
+					bind:checked={$filterStore.active}
+					label={$filterStore.active ? 'Listed' : 'Delisted'}
+					kind="flip"
+					on="Listed"
+					off="Delisted" />
+			{/if}
 
 			{#if loggedIn}
 				<Toggle
