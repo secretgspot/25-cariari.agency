@@ -12,7 +12,9 @@
 
 	let { children, data } = $props();
 
-	let { session, is_logged_in, is_admin, supabase } = $state(data);
+	// console.log('🍖 page:', data);
+
+	let { is_logged_in, is_admin, supabase } = $state(data);
 	let loading = $state(true); // Add a local loading state
 
 	// $effect(() => {
@@ -20,18 +22,33 @@
 	// 	console.log('🛑 is_admin:', is_admin ? '👍' : '👎');
 	// });
 
-	onMount(() => {
-		// Set loading to false once the component mounts and session data is available
-		if (session) {
-			loading = false;
+	onMount(async () => {
+		const {
+			data: { user },
+			error,
+		} = await data.supabase.auth.getUser();
+		if (!error && user) {
+			is_logged_in = true;
+			is_admin = user?.app_metadata?.claims_admin || false;
 		}
+		loading = false;
+
 		const {
 			data: { subscription },
-		} = data.supabase.auth.onAuthStateChange((event, _session) => {
-			session = _session;
-			is_logged_in = !!_session;
-			is_admin = _session?.user?.app_metadata?.claims_admin || false;
-			loading = false; // Set loading to false after auth state changes
+		} = data.supabase.auth.onAuthStateChange(async (event) => {
+			if (event === 'SIGNED_IN') {
+				const {
+					data: { user },
+					error,
+				} = await data.supabase.auth.getUser();
+				if (!error && user) {
+					is_logged_in = true;
+					is_admin = user?.app_metadata?.claims_admin || false;
+				}
+			} else if (event === 'SIGNED_OUT') {
+				is_logged_in = false;
+				is_admin = false;
+			}
 			invalidate('supabase:auth');
 		});
 

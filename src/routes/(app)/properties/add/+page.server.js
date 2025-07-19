@@ -8,10 +8,10 @@ import { isEmpty, pad } from '$lib/utils/helpers.js';
 export async function load(event) {
 	const { params, route } = event;
 
-	const session = await event.locals.getSession();
 	const supabaseClient = event.locals.supabase;
+	const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
-	if (!session.session) {
+	if (authError || !user) {
 		redirect(307, '/login?redirectTo=/properties/add');
 	}
 
@@ -45,22 +45,22 @@ export async function load(event) {
 
 	return {
 		msl: await getMsl(),
-		session: session.session // Pass the session to the client for currentUserId in Uploader
+		user // Pass the user to the client for currentUserId in Uploader
 	};
 };
 
 export const actions = {
 	// ADD PROPERTY
 	add: async (event) => {
-		const { request, locals } = event; // Destructure locals to get supabaseClient and session
+		const { request, locals } = event; // Destructure locals to get supabaseClient
 		const supabaseClient = locals.supabase;
 
-		const { data: { session } } = await locals.supabase.auth.getSession();
-		if (!session) {
+		const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
+		if (!user || authError) {
 			// The user is not signed in
 			redirect(307, '/login?redirectTo=/properties/add'); // Redirect if not logged in
 		}
-		const userId = session.user.id; // Get the current user's ID
+		const userId = user.id; // Get the current user's ID
 
 		const formData = await request.formData();
 

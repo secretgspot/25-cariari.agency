@@ -29,30 +29,24 @@ export async function handle({ event, resolve }) {
 	 */
 	event.locals.getSession = async () => {
 		const {
-			data: { session },
-		} = await event.locals.supabase.auth.getSession()
-		if (!session) {
-			return { session: null, user: null }
-		}
-		const {
 			data: { user },
 			error,
 		} = await event.locals.supabase.auth.getUser()
-		if (error) {
-			// JWT validation has failed
-			return { session: null, user: null, is_logged_in: false, is_admin: false }
-		} else {
-			// JWT validation has succeeded
-			console.log('hooks.server.js: user details fetched successfully 👍');
+
+		if (error || !user) {
+			console.log('hooks.server.js: user authentication failed 👎');
+			return {
+				user: null,
+				is_logged_in: false,
+				is_admin: false
+			}
 		}
-		const is_logged_in = !!session;
+
+		console.log('hooks.server.js: user details fetched successfully 👍');
+		const is_logged_in = true;
 		const is_admin = user?.app_metadata?.claims_admin || false;
 
-		// console.log('User is_logged_in:', is_logged_in ? '👍' : '👎');
-		// console.log('User is_admin:', is_admin);
-
 		return {
-			session,
 			user,
 			is_admin,
 			is_logged_in,

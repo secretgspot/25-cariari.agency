@@ -17,7 +17,9 @@ declare namespace App {
 	// }
 
 	interface PageData {
-		session: import('@supabase/supabase-js').Session | null;
+		user: import('@supabase/supabase-js').User | null;
+		is_admin: boolean;
+		cookies?: any[];
 	}
 	// interface Error {}
 	// interface Platform {}

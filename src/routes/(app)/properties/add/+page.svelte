@@ -164,7 +164,8 @@
 
 		// Client-side Validation
 		if (isEmpty(property.property_for)) {
-			error = 'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
+			error =
+				'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
 			loading = false;
 			cancel();
 			return;
@@ -588,7 +589,7 @@
 
 	<!-- BUTTONS -->
 	<footer class="buttons-group">
-		<input type="hidden" hidden name="user_id" value={page.data?.session?.user.id} />
+		<input type="hidden" hidden name="user_id" value={page.data?.user?.id} />
 		<input type="hidden" hidden name="msl" value={property.msl} />
 		<input
 			type="hidden"

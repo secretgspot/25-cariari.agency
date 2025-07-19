@@ -3,18 +3,26 @@
 import { redirect, error, fail } from '@sveltejs/kit';
 
 export async function load(event) {
-	const session = await event.locals.getSession();
+	const { data: { user }, error: authError } = await event.locals.supabase.auth.getUser();
 
-	if (!session.session) {
-		// redirect(303, '/login');
-		console.log('(app)/+layout.server:  session detected 👎');
+	if (!user || authError) {
+		console.log('(app)/+layout.server: no authenticated user detected 👎');
+		return {};
 	}
 
+	// Get auth cookies for client
+	const { data: { session } } = await event.locals.supabase.auth.getSession();
+	const cookies = session?.cookies || [];
+
 	/////// SANITY CHECK ////////
-	// session contains user and session data plus flags for is_logged_in and is_admin
-	if (session.session) {
-		console.log('(app)/+layout.server: session detected 👍');
-		console.log(`${session.is_admin ? '🔥' : '👻'}👤: ${session.user.id} 🌐${event.url.pathname}`);
+	const is_admin = user.app_metadata?.claims_admin || false;
+	console.log('(app)/+layout.server: authenticated user detected 👍');
+	console.log(`${is_admin ? '🔥' : '👻'}👤: ${user.id} 🌐${event.url.pathname}`);
+
+	return {
+		user,
+		is_admin,
+		cookies
 	}
 
 	return {};

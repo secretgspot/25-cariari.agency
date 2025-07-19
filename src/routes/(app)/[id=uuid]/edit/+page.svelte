@@ -250,7 +250,7 @@
 		</div>
 
 		<div class="inputs">
-			{#if isAdmin || propertyData.user_id === data.session.user.id}
+			{#if data.is_admin || propertyData.user_id === data.user.id}
 				<fieldset>
 					<legend>Status</legend>
 					<Toggle
@@ -599,7 +599,7 @@
 				<Uploader
 					bind:newFiles={newPhotosToUpload}
 					bind:existingAttachments={propertyData.photos}
-					currentUserId={data.session?.user?.id}
+					currentUserId={data.user?.id}
 					{isAdmin}
 					onDeleteExisting={markPhotoForDeletion}
 					{loading} />

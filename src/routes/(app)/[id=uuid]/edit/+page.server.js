@@ -8,20 +8,18 @@ export async function load(event) {
 	const { params, url, locals } = event; // Destructure to get supabaseClient and session
 	const supabaseClient = locals.supabase;
 
-	const { data: { session } } = await locals.supabase.auth.getSession();
+	const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
 
-	if (!session) {
+	if (authError || !user) {
 		const currentPath = url.pathname;
-		// console.log('🐍 currentPath: ', currentPath);
-		// redirect(307, `/login?redirectTo=${encodeURIComponent(currentPath)}`);
 		redirect(307, `/login?redirectTo=${currentPath}`);
 	}
 
-	// Determine if the current user is an admim
-	const isAdmin = session.user.app_metadata.claims_admin
+	// Determine if the current user is an admin
+	const isAdmin = user.app_metadata.claims_admin
 
-	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> isAdmin:', session.user.app_metadata.claims_admin);
-	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> session:', session);
+	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> isAdmin:', user.app_metadata.claims_admin);
+	// console.log('(app)/[id=uuid]/edit/+page.server.js load -> user:', user);
 
 	// Get the SLUG
 	const { id: property_id } = params;
@@ -41,7 +39,7 @@ export async function load(event) {
 	}
 
 	// Boot user to whom this property doesn't belong to as long as it's not admin
-	if (session.user.id !== property.user_id && !isAdmin) {
+	if (user.id !== property.user_id && !isAdmin) {
 		console.log('⛔ YOU DON"T BELONG HERE!')
 		redirect(307, `/`);
 	}
@@ -50,12 +48,17 @@ export async function load(event) {
 	// This addresses the "each_key_duplicate" error if IDs are missing from DB records.
 	const filteredPhotos = (property.photos || []).filter(photo => photo && photo.id);
 
+	// Get auth cookies for client
+	const { data: { session } } = await supabaseClient.auth.getSession();
+	const cookies = session?.cookies || [];
+
 	return {
 		property,
 		photos: filteredPhotos, // Pass the filtered array
-		currentUserId: session.user.id, // Pass current user ID for Uploader
-		isAdmin: isAdmin, // Pass isAdmin flag for Uploader
-		session: session, // Pass the full session object if needed elsewhere
+		currentUserId: user.id, // Pass current user ID for Uploader
+		isAdmin, // Pass isAdmin flag for Uploader
+		user, // Pass the user object
+		cookies // Pass cookies for client auth
 	};
 }
 
@@ -68,12 +71,12 @@ export const actions = {
 		const supabaseClient = locals.supabase;
 		const { id: propertyId } = params; // Get propertyId from params
 
-		const { data: { session } } = await locals.supabase.auth.getSession();
-		if (!session) {
+		const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
+		if (!user || authError) {
 			// the user is not signed in
 			redirect(307, `/login?redirectTo=${encodeURIComponent(event.url.pathname)}`);
 		}
-		const userId = session.user.id; // Get the current user's ID
+		const userId = user.id; // Get the current user's ID
 
 		const formData = await request.formData();
 
@@ -211,10 +214,10 @@ export const actions = {
 	delete: async (event) => {
 
 		const { request } = event;
-		const session = await event.locals.getSession();
 		const supabaseClient = event.locals.supabase;
+		const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
-		if (!session) {
+		if (!user || authError) {
 			// the user is not signed in
 			error(403, { message: 'You need to log in to delete your listing' });
 		}
@@ -246,8 +249,8 @@ export const actions = {
 		const { request, locals } = event; // Destructure locals
 		const supabaseClient = locals.supabase;
 
-		const { data: { session } } = await locals.supabase.auth.getSession();
-		if (!session) {
+		const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
+		if (!user || authError) {
 			error(403, { message: 'You need to log in to remove your listing' });
 		}
 

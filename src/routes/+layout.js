@@ -14,7 +14,7 @@ export const load = async ({ fetch, data, depends }) => {
 			},
 			cookies: {
 				getAll() {
-					return data.session?.cookies || [];
+					return data.cookies || [];
 				},
 				setAll(cookiesToSet) {
 					cookiesToSet.forEach(({ name, value, options }) => {
@@ -24,8 +24,6 @@ export const load = async ({ fetch, data, depends }) => {
 			},
 		}
 	);
-
-	const { session } = data;
 
 	return { supabase, ...data };
 };
