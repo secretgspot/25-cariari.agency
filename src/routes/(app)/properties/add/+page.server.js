@@ -16,20 +16,31 @@ export async function load(event) {
 	}
 
 	const getMsl = async () => {
-		const { data, error: err } = await supabaseClient
+		const { data: allMsls, error: err } = await supabaseClient
 			.from('properties')
-			.select('msl')
-			.order('msl', { ascending: false })
-			.limit(1)
-			.single();
-		if (err) error(400, `💩 ${err.message}`);
-		if (data) {
-			// console.log('🐍 LAST MSL DIGIT', data.msl);
-			return `CR-${pad(Number(data.msl.substring(3)) + 1, 3)}`;
-		} else {
-			// console.log('🐍 LAST MSL DIGIT NOT FOUND');
-			return 'CR-001';
+			.select('msl'); // Fetch all MSLs
+
+		if (err) {
+			error(400, `Failed to fetch MSLs: ${err.message}`);
 		}
+
+		const existingMslNumbers = new Set();
+		if (allMsls && allMsls.length > 0) {
+			for (const prop of allMsls) {
+				const mslNum = Number(prop.msl.substring(3)); // Extract numeric part
+				if (!isNaN(mslNum)) {
+					existingMslNumbers.add(mslNum);
+				}
+			}
+		}
+
+		let nextMslNumber = 1;
+		// Loop to find the smallest available MSL number
+		while (existingMslNumbers.has(nextMslNumber)) {
+			nextMslNumber++;
+		}
+
+		return `CR-${pad(nextMslNumber, 3)}`;
 	}
 
 	return {
