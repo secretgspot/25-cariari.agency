@@ -1,6 +1,4 @@
 <script>
-	/** @type {import('./$types').PageData} */
-
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
@@ -25,18 +23,18 @@
 	} from '$lib/utils/helpers.js';
 	// import JsonDump from '$lib/JSONDump.svelte';
 
+	// Component Props
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
 
-	// export let form;
-
-	let loading = $state(false),
-		error = $state(''),
-		message = $state(''),
-		isAdmin = data.is_admin,
-		uploadingPhotos = $state(false),
-		uploadedPhotoDetails = $state([]),
-		gps = $state();
+	// Rune-based Reactive State and Computations
+	let loading = $state(false);
+	let error = $state('');
+	let message = $state('');
+	let isAdmin = data.is_admin;
+	let uploadingPhotos = $state(false);
+	let uploadedPhotoDetails = $state([]);
+	let gps = $state();
 
 	const property = $state({
 		is_active: true,
@@ -48,12 +46,11 @@
 	});
 
 	let newPropertyFiles = $state([]);
+
+	// Local State Variables
 	let featureInput;
 
-	// $effect(() => {
-	// $inspect('🐍 ADD PROPERTY temp data:', property);
-	// });
-
+	// Utility/Helper Functions
 	// Function to handle photo uploads to Supabase Storage directly from client
 	async function uploadPhotos() {
 		if (newPropertyFiles.length === 0) {
@@ -135,6 +132,12 @@
 	}
 
 	const clearStorage = async () => await localStorage.clear();
+
+	// Debug/Test Variables and Functions
+	// $effect(() => {
+	// $inspect('🐍 ADD PROPERTY temp data:', property);
+	// });
+	// export let form;
 </script>
 
 <svelte:head>
@@ -152,55 +155,47 @@
 	action="?/add"
 	enctype="multipart/form-data"
 	use:enhance={async ({ formElement, formData, action, cancel }) => {
-		// `formElement` is this `<form>` element
-		// `formData` is its `FormData` object that's about to be submitted
-		// `action` is the URL to which the form is posted
-		// calling `cancel()` will prevent the submission
-		// `submitter` is the `HTMLElement` that caused the form to be submitted
+		// --- Pre-submission Logic ---
 
-		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
+		// Initial State Reset
 		loading = true;
 		message = '';
 		error = '';
 
+		// Client-side Validation
 		if (isEmpty(property.property_for)) {
+			error = 'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
+			loading = false;
 			cancel();
-			error =
-				'Please select at least one option (Sale, Rent, or both) under "PROPERTY FOR" in the Property Type section.';
-			loading = false;
 			return;
 		}
 
-		// Client-side photo upload
+		// Client-side Photo Upload
 		const uploadResult = await uploadPhotos();
-
 		if (!uploadResult.success) {
-			cancel(); // Stop form submission if uploads fail
 			loading = false;
-			// The error message is already set inside uploadPhotos
+			cancel(); // The error message is already set inside uploadPhotos
 			return;
 		}
 
-		// Append uploaded photo details to the form data
-		// The server action expects 'photo_urls_and_paths'
+		// Prepare FormData for Server
 		formData.delete('photo_urls_and_paths');
 		uploadResult.details.forEach((detail) => {
 			formData.append('photo_urls_and_paths', JSON.stringify(detail));
 		});
 
-		// prevent default callback from resetting the form
+		// --- Post-submission Callback Logic ---
 		return async ({ result, update }) => {
-			// console.log('/add/+page.svelte result: ', result);
+			loading = false; // Always reset loading state here
+
 			if (result.status === 200 && result.data.success) {
 				// reset form
 				clearStorage();
-				// console.log("RESULT:", result.data);
 				addToast({
 					message: result.data.message,
 					type: 'success',
 					timeout: 1200,
 				});
-				// update({ reset: true }); // resets form, not needed in add since page redirects to print
 				goto(`/${result.data.property_id}/print`);
 			} else {
 				console.log('➕🏠❌ TRIGGED DUE TO: ', result.status);
@@ -216,7 +211,6 @@
 				error = result.data.message;
 				await applyAction(result);
 			}
-			loading = false;
 		};
 	}}>
 	<!-- PROPERTY TYPE -->

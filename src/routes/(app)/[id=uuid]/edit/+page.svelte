@@ -3,7 +3,7 @@
 
 	import { navigating, page } from '$app/state';
 	import { error } from '@sveltejs/kit';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
 	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import Compressor from 'compressorjs';
@@ -26,10 +26,10 @@
 	} from '$lib/utils/helpers.js';
 	// import JsonDump from '$lib/JSONDump.svelte';
 
+	// Component Props
 	let { data } = $props();
 
-	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
-
+	// Rune-based Reactive State and Computations
 	let propertyData = $state({
 		...data.property,
 		property_for: data.property?.property_for || [],
@@ -45,20 +45,20 @@
 		}
 	});
 
-	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', propertyData);
-	// $inspect('(app)/[id=uuid]/edit/+page.svelte session:', data.session);
-
 	let newPhotosToUpload = $state([]); // Bindable for Uploader
+	let loading = $state(false);
+	let errorMessage = $state('');
+	let message = $state('');
+	let isAdmin = data.is_admin || false;
+	let uploadingPhotos = $state(false);
+	let uploadedPhotoDetails = $state([]);
+	let gps = $state();
+	let photosToDelete = $state([]);
+
+	// Local State Variables
 	let featureInput;
 
-	let loading = $state(false),
-		errorMessage = $state(''),
-		message = $state(''),
-		isAdmin = data.is_admin || false,
-		uploadingPhotos = $state(false),
-		uploadedPhotoDetails = $state([]),
-		gps = $state();
-
+	// Utility/Helper Functions
 	// Function to handle photo uploads to Supabase Storage directly from client
 	async function uploadPhotos() {
 		if (newPhotosToUpload.length === 0) {
@@ -147,8 +147,6 @@
 		return { success: true, details: uploadedPhotoDetails };
 	}
 
-	let photosToDelete = $state([]);
-
 	// Function to mark a photo for deletion
 	function markPhotoForDeletion(photo) {
 		// Add to deletion list if not already there
@@ -159,6 +157,11 @@
 		// Visually remove from the displayed list
 		propertyData.photos = propertyData.photos.filter((p) => p.id !== photo.id);
 	}
+
+	// Debug/Test Variables and Functions
+	// console.log('(app)/[id=uuid]/edit/+page.svelte data:', data);
+	// $inspect('(app)/[id=uuid]/edit/+page.svelte form:', propertyData);
+	// $inspect('(app)/[id=uuid]/edit/+page.svelte session:', data.session);
 </script>
 
 <svelte:head>
@@ -175,64 +178,55 @@
 	method="POST"
 	enctype="multipart/form-data"
 	use:enhance={async ({ form: htmlFormElement, formData, action, cancel }) => {
-		// 'htmlFormElement' is the '<form>' element
-		// 'formData' is it's 'FormData' object
-		// 'action' is the URL to which the form is posted
-		// 'cancel()' will prevent the submission
+		// --- Pre-submission Logic ---
 
-		// ALL THIS RUNS BEFORE SUBMISSION TO SERVER
+		// Initial State Reset
 		loading = true;
 		message = '';
 		errorMessage = '';
 
+		// Client-side Validation
 		if (isEmpty(propertyData.property_for)) {
-			cancel();
 			errorMessage = 'Must select at least one for PROPERTY FOR in Property Type section';
 			loading = false;
-			return; // Stop execution if validation fails
-		}
-
-		// Client-side photo upload
-		const uploadResult = await uploadPhotos();
-
-		if (!uploadResult.success) {
-			cancel(); // Stop form submission if uploads fail
-			loading = false;
-			// The error message is already set inside uploadPhotos
+			cancel();
 			return;
 		}
 
-		// Append photos to delete to the form data
+		// Client-side Photo Upload
+		const uploadResult = await uploadPhotos();
+		if (!uploadResult.success) {
+			loading = false;
+			cancel(); // Error message already set inside uploadPhotos
+			return;
+		}
+
+		// Prepare FormData for Server
 		formData.delete('photos_to_delete');
 		photosToDelete.forEach((photo) => {
 			formData.append('photos_to_delete', JSON.stringify(photo));
 		});
 
-		// Append uploaded photo details to the form data
-		// The server action expects 'photo_urls_and_paths'
-		formData.delete('photo_urls_and_paths'); // Clear any existing values
+		formData.delete('photo_urls_and_paths');
 		uploadResult.details.forEach((detail) => {
 			formData.append('photo_urls_and_paths', JSON.stringify(detail));
 		});
 
-		// prevent default callback from resetting the form
+		// --- Post-submission Callback Logic ---
 		return async ({ result, update }) => {
-			// console.log('/[id=uuid]/edit/+page.svelte result: ', result);
+			loading = false; // Always reset loading state here
+
 			if (result.type === 'success') {
 				if (result.data.delisted) {
 					propertyData.is_active = false;
 				}
-				// Property Updated successfully, display message.
 				addToast({
 					message: `${result.data.message}`,
 					type: 'success',
 					timeout: 3000,
 				});
-				// message = result.data.message;
 				await applyAction(result);
-			}
-
-			if (result.type === 'invalid') {
+			} else if (result.type === 'invalid') {
 				addToast({
 					message: `${result.data.message}`,
 					type: 'error',
@@ -242,7 +236,6 @@
 				errorMessage = result.data.message;
 				await applyAction(result);
 			}
-			loading = false;
 			await update({ reset: false });
 		};
 	}}>
