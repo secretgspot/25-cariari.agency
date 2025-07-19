@@ -36,11 +36,6 @@
 
 Cariari.Agency is a real estate listing platform for Costa Rica, built with SvelteKit, Supabase, and hosted on Vercel. It allows users to browse, add, edit, and print property listings.
 
-## TODO
-
-- [ ] in property view should phone badge be clickable like realtor badge?
-- [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
-
 ## Tech Stack
 
 - **Frontend:** SvelteKit [SvelteLit Docs](https://svelte.dev/docs/kit/introduction)

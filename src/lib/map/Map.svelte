@@ -1,6 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { isEmpty, getPosition } from '$lib/utils/helpers.js';
+	import { isEmpty, getPosition, formatLargeNumber } from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
 	import Toggle from '$lib/Toggle.svelte';
 
@@ -155,7 +155,7 @@
 
 				for (const item of batch) {
 					try {
-						const { id: property_id, msl, property_for, location } = item;
+						const { id: property_id, msl, property_for, location, price } = item;
 						const { lat, lng } = location;
 
 						const iconName = getPropertyIconName(property_for);
@@ -174,7 +174,8 @@
 							Array.isArray(property_for)
 								? property_for.join(', ')
 								: property_for || 'N/A'
-						}`;
+						}${price ? ` $${formatLargeNumber(price)}` : ''}`;
+
 						marker.bindTooltip(tooltipText, {
 							permanent: false,
 							direction: 'top',

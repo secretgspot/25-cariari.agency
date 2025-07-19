@@ -9,13 +9,5 @@
   - `nodemailer`
   - `leaflet`
 
-## SEO and Accessibility
-
-- [x] **Meta Tags & Structured Data:** As outlined in `improvements.md`, adding dynamic meta titles, descriptions, and implementing structured data (Schema.org) for properties would significantly improve SEO.
-- [x] **Sitemap:** Generating a `sitemap.xml` file will help search engines better crawl and index the site.
-- [x] **Image Optimization:** Compressing images and ensuring all images have descriptive `alt` text will improve both performance and accessibility.
-- [x] **Accessibility Audit:** Performing an accessibility audit using tools like Lighthouse or axe would help identify and fix issues related to color contrast, keyboard navigation, and more.
-
-## User Experience
-
-- [x] **Performance:** Optimizing images and ensuring efficient code-splitting will lead to faster page load times and a better user experience.
+- [ ] in property view should phone badge be clickable like realtor badge?
+- [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
