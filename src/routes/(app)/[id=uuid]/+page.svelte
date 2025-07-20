@@ -204,22 +204,14 @@
 		--card-top-offset: 1px;
 	}
 
-	p {
-		font-weight: 300;
-		line-height: 1.3;
-	}
-
 	article {
 		background: var(--primary);
 		color: var(--primary-content);
 		font-size: calc(1em + 0.5vw);
 
-		:global(.close) {
-			top: var(--padding-small);
-			right: var(--padding-small);
-			position: fixed;
-			top: var(--padding-small);
-			right: var(--padding-small);
+		p {
+			font-weight: 300;
+			line-height: 1.3;
 		}
 	}
 
@@ -260,6 +252,24 @@
 
 		p {
 			max-width: 63ch;
+		}
+
+		/* why @media (prefers-reduced-motion: no-preference) not working? */
+		/* @media (prefers-reduced-motion: no-preference) { */
+		@supports (animation-timeline: scroll()) {
+			animation: header--leaveview linear both;
+			/* when the page/root is scrolled */
+			animation-timeline: scroll(root);
+			/* from 0-10vh scroll amount, run the animation */
+			animation-range: 0 30vh;
+		}
+		/* } */
+	}
+
+	@keyframes header--leaveview {
+		to {
+			opacity: 0;
+			translate: 0 30vh;
 		}
 	}
 
