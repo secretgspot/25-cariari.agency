@@ -16,6 +16,7 @@
 	import MapPicker from '$lib/map/MapPicker.svelte'; // MapPickerLibre
 	import Uploader from '$lib/Uploader.svelte';
 	import Notify from '$lib/Notify.svelte';
+	import Dialog from '$lib/Dialog.svelte';
 	import { addToast } from '$lib/toasts';
 	import {
 		isEmpty,
@@ -54,9 +55,14 @@
 	let uploadedPhotoDetails = $state([]);
 	let gps = $state();
 	let photosToDelete = $state([]);
+	let deleteDialogRef;
 
 	// Local State Variables
 	let featureInput;
+
+	const showDeleteConfirm = () => {
+		deleteDialogRef.showModal();
+	};
 
 	// Utility/Helper Functions
 	// Function to handle photo uploads to Supabase Storage directly from client
@@ -618,7 +624,12 @@
 			</Button>
 		{/if}
 		{#if isAdmin}
-			<Button formaction="?/delete" color="danger" {loading} disabled={loading}>
+			<Button
+				type="button"
+				color="danger"
+				{loading}
+				disabled={loading}
+				onclick={showDeleteConfirm}>
 				{#snippet icon()}
 					❌
 				{/snippet}
@@ -677,6 +688,36 @@
 		<Notify type="danger">{errorMessage}</Notify>
 	{/if}
 </form>
+
+<!-- CONFIRMATION DIALOGS -->
+<Dialog
+	bind:this={deleteDialogRef}
+	title="Delete Property"
+	message="Are you sure you want to delete this property? This action cannot be undone."
+	type="confirm"
+	onConfirm={() => {
+		loading = true;
+		const deleteForm = document.createElement('form');
+		deleteForm.method = 'POST';
+		deleteForm.action = `?/delete`;
+		// Add the required hidden fields
+		const idInput = document.createElement('input');
+		idInput.type = 'hidden';
+		idInput.name = 'id';
+		idInput.value = propertyData.id;
+		deleteForm.appendChild(idInput);
+		const mslInput = document.createElement('input');
+		mslInput.type = 'hidden';
+		mslInput.name = 'msl';
+		mslInput.value = propertyData.msl;
+		deleteForm.appendChild(mslInput);
+		document.body.appendChild(deleteForm);
+		deleteForm.submit();
+		document.body.removeChild(deleteForm);
+	}}
+	onCancel={() => {
+		/* Optionally handle cancel here */
+	}} />
 
 <!-- <JsonDump name="data" data={propertyData} /> -->
 

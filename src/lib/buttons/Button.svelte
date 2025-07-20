@@ -281,6 +281,13 @@
 		box-shadow: none;
 		opacity: 0.6;
 	}
+	[green] {
+		border-color: var(--success);
+	}
+	[green]:hover {
+		border-color: var(--info);
+		filter: hue-rotate(111deg);
+	}
 	[red] {
 		border-color: var(--error);
 	}

@@ -53,6 +53,7 @@
 */
 
 	import { onMount, onDestroy } from 'svelte';
+	import { Button } from '$lib/buttons';
 
 	// Define props using Svelte 5 runes
 	const {
@@ -128,12 +129,16 @@
 	<!-- Dialog Header -->
 	<header>
 		<h2 id="dialog-title">{title}</h2>
-		<button
-			onclick={() => closeDialog('closed')}
+		<Button
+			type="button"
+			size="icon"
 			class="btn-close"
-			aria-label="Close dialog">
-			❌
-		</button>
+			aria-label="Close dialog"
+			onclick={() => closeDialog('closed')}>
+			{#snippet icon()}
+				❌
+			{/snippet}
+		</Button>
 	</header>
 
 	<!-- Dialog Content -->
@@ -144,12 +149,20 @@
 	<!-- Dialog Footer -->
 	<footer>
 		{#if type === 'alert'}
-			<button onclick={() => closeDialog('ok')} class="btn-ok"> OKAY </button>
+			<Button type="button" size="block" class="btn-ok" onclick={() => closeDialog('ok')}
+				>OKAY</Button>
 		{:else if type === 'confirm'}
-			<button onclick={() => closeDialog('canceled')} class="btn-cancel"> Cancel </button>
-			<button onclick={() => closeDialog('confirmed')} class="btn-confirm">
-				Confirm
-			</button>
+			<Button
+				type="button"
+				size="block"
+				class="btn-cancel"
+				onclick={() => closeDialog('canceled')}>Cancel</Button>
+			<Button
+				type="button"
+				size="block"
+				class="btn-confirm"
+				red
+				onclick={() => closeDialog('confirmed')}>Confirm</Button>
 		{/if}
 	</footer>
 </dialog>
@@ -161,21 +174,21 @@
 		display: grid;
 		grid-template-rows: min-content 1fr min-content;
 		align-items: center;
-
-		overflow: hidden;
 		min-width: 369px;
-		min-height: 369px;
+		/* min-height: 369px; */
 		width: min-content;
 		height: min-content;
-		border: none;
-		border-radius: 9px;
-		box-sizing: border-box;
-		color: #fff;
-		text-align: center;
+		border: var(--border);
+		border-radius: var(--border-radius);
 		pointer-events: none;
+		z-index: 6;
+		position: fixed;
+		align-self: anchor-center;
+		background: var(--primary);
+		color: var(--primary-content);
 
 		&::backdrop {
-			background-color: rgba(0, 0, 0, 0.5);
+			background-color: hsl(var(--p) / 0.6);
 			backdrop-filter: blur(3px);
 			opacity: 0; /* Start hidden for animation */
 			transition: opacity 0.3s ease-out;
@@ -201,30 +214,12 @@
 		}
 
 		#dialog-description {
-			margin: 2rem;
+			margin: var(--padding-medium);
 		}
 
 		footer {
 			display: flex;
-			gap: 1rem;
-			button {
-				width: 100%;
-			}
+			gap: var(--gap-medium);
 		}
-	}
-
-	button {
-		inline-size: fit-content;
-		margin-inline: auto;
-		padding-block: 15px;
-		border: none;
-		box-shadow: none;
-		border-radius: 9px;
-		outline: none;
-		text-align: center;
-		text-transform: uppercase;
-		cursor: pointer;
-		touch-action: manipulation;
-		user-select: none;
 	}
 </style>
