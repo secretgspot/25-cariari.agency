@@ -31,13 +31,11 @@
 {/if}
 
 <article>
-	{#if !data.property.is_active}
-		<div class="delisted">NOT LISTED</div>
-	{/if}
-
 	<header>
 		<div>
-			<h1>{data.property.msl}</h1>
+			<h1 class:delisted={!data.property.is_active}>
+				{data.property.msl}
+			</h1>
 			<p>
 				For {data.property.property_for}: {data.property
 					.land_use}{#if data.property.building_style}, {data.property
@@ -206,25 +204,6 @@
 		--card-top-offset: 1px;
 	}
 
-	.delisted {
-		background: var(--warning);
-		opacity: 0.6;
-		position: fixed;
-		left: var(--padding-small);
-		top: 100px;
-		width: 300px;
-		transform: rotate(325deg);
-		text-align: center;
-		padding: var(--padding-small);
-		pointer-events: none;
-		z-index: 3;
-	}
-
-	h1 {
-		font-weight: 300;
-		font-size: 3.5em;
-	}
-
 	p {
 		font-weight: 300;
 		line-height: 1.3;
@@ -234,13 +213,14 @@
 		background: var(--primary);
 		color: var(--primary-content);
 		font-size: calc(1em + 0.5vw);
-	}
-	article :global(.close) {
-		top: var(--padding-small);
-		right: var(--padding-small);
-		position: fixed;
-		top: var(--padding-small);
-		right: var(--padding-small);
+
+		:global(.close) {
+			top: var(--padding-small);
+			right: var(--padding-small);
+			position: fixed;
+			top: var(--padding-small);
+			right: var(--padding-small);
+		}
 	}
 
 	header,
@@ -259,6 +239,24 @@
 		height: 80vh;
 		display: grid;
 		place-items: center;
+
+		h1 {
+			position: relative;
+			font-weight: 300;
+			font-size: 3.5em;
+
+			&.delisted::after {
+				content: 'DELISTED';
+				font-size: 1rem;
+				background: var(--warning);
+				color: var(--warning-content);
+				border-radius: var(--border-radius);
+				position: absolute;
+				top: 50%;
+				left: 0;
+				right: 0;
+			}
+		}
 
 		p {
 			max-width: 63ch;
