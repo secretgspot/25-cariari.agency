@@ -200,9 +200,9 @@
 				});
 				goto(`/${result.data.property_id}/print`);
 			} else {
-				console.log('➕🏠❌ TRIGGED DUE TO: ', result.status);
+				console.log('➕🏠❌ TRIGGED DUE TO: ', result);
 				addToast({
-					message: `Something went wrong, server returned status: ${result.status}`,
+					message: `Something went wrong, server returned: ${result}`,
 					type: 'error',
 					dismissible: true,
 					timeout: 0,
