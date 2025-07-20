@@ -180,6 +180,7 @@
 {/if}
 
 <form
+	name="edit-form"
 	class="edit-property"
 	method="POST"
 	enctype="multipart/form-data"
@@ -308,6 +309,7 @@
 					type="text"
 					name="address"
 					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
+					autocomplete="off"
 					bind:value={propertyData.address} />
 			</fieldset>
 
@@ -346,6 +348,7 @@
 					type="tel"
 					name="contact_phone"
 					placeholder="ex: 1234-5678"
+					autocomplete="off"
 					bind:value={propertyData.contact_phone} />
 			</fieldset>
 
@@ -355,6 +358,7 @@
 					type="email"
 					name="contact_email"
 					placeholder="ex: this@that.there"
+					autocomplete="off"
 					bind:value={propertyData.contact_email} />
 			</fieldset>
 
@@ -698,6 +702,7 @@
 	onConfirm={() => {
 		loading = true;
 		const deleteForm = document.createElement('form');
+		deleteForm.name = 'delete-form';
 		deleteForm.method = 'POST';
 		deleteForm.action = `?/delete`;
 		// Add the required hidden fields
