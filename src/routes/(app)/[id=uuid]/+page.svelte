@@ -18,7 +18,10 @@
 
 <svelte:head>
 	<title>{data.property.msl} - Cariari Agency</title>
-	<meta name="description" content={data.property.description || `View details for property MSL ${data.property.msl} in Cariari, Costa Rica.${data.property.property_for ? ` This property is for ${data.property.property_for.join(', ')}.` : ''}${data.property.beds ? ` It features ${data.property.beds} bedrooms.` : ''}${data.property.baths ? ` ${data.property.baths} bathrooms.` : ''}${data.property.lot_size ? ` ${data.property.lot_size}m² lot size.` : ''}`} />
+	<meta
+		name="description"
+		content={data.property.description ||
+			`View details for property MSL ${data.property.msl} in Cariari, Costa Rica.${data.property.property_for ? ` This property is for ${data.property.property_for.join(', ')}.` : ''}${data.property.beds ? ` It features ${data.property.beds} bedrooms.` : ''}${data.property.baths ? ` ${data.property.baths} bathrooms.` : ''}${data.property.lot_size ? ` ${data.property.lot_size}m² lot size.` : ''}`} />
 </svelte:head>
 
 <!-- <JsonDump name="data" {data} /> -->
@@ -163,44 +166,24 @@
 	</aside>
 
 	<footer>
-		{#if data.property.contact_realtor}
-			<div class="realtor-group">
-				<!-- {#if data.property.contact_email}
-					<Gravatar
-						email={data.property.contact_email}
-						type="round"
-						size="90"
-						base="mp"
-					/>
-				{/if} -->
-				<div>
-					<h3>{data.property.contact_realtor}</h3>
-					{#if data.property.contact_email}<span
-							><Icon type="email" size="18" /><a
-								href="mailto:{data.property.contact_email}"
-								rel="nofollow">{data.property.contact_email}</a
-							></span
-						>{/if}
-					{#if data.property.contact_phone}<span
-							><Icon type="phone" size="18" /><a
-								href="tel:{data.property.contact_phone}"
-								rel="nofollow">{data.property.contact_phone}</a
-							></span
-						>{/if}
-				</div>
-			</div>
-		{:else}
-			<div class="badge-group">
-				{#if data.property.contact_email}<Badge
-						type="text"
-						label="email"
-						value={data.property.contact_email} />{/if}
-				{#if data.property.contact_phone}<Badge
-						type="text"
-						label="call"
-						value={data.property.contact_phone} />{/if}
-			</div>
-		{/if}
+		<div class="realtor-group">
+			{#if data.property.contact_realtor}
+				<h3>{data.property.contact_realtor}</h3>
+			{/if}
+			{#if data.property.contact_email}<span
+					><Icon type="email" size="18" /><a
+						href="mailto:{data.property.contact_email}"
+						rel="nofollow">{data.property.contact_email}</a
+					></span
+				>{/if}
+			{#if data.property.contact_phone}
+				<span>
+					<Icon type="phone" size="18" />
+					<a href="tel:{data.property.contact_phone}" rel="nofollow"
+						>{data.property.contact_phone}</a>
+				</span>
+			{/if}
+		</div>
 	</footer>
 	<div class="commercial-wrapper">
 		<Ad width="320" height="100">
@@ -288,12 +271,10 @@
 		place-items: center;
 
 		.realtor-group {
-			div {
-				display: flex;
-				flex-direction: column;
-				/* align-items: center; */
-				gap: var(--padding-extra-small);
-			}
+			display: flex;
+			flex-direction: column;
+			/* align-items: center; */
+			gap: var(--padding-extra-small);
 
 			h3 {
 				margin: 0;

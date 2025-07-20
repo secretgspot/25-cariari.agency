@@ -9,5 +9,4 @@
   - `nodemailer`
   - `leaflet`
 
-- [ ] in property view should phone badge be clickable like realtor badge?
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
