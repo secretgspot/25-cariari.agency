@@ -81,9 +81,11 @@
 					maxHeight: 1080,
 					convertSize: 500000, // files larger than 500kb converted to jpg
 					success(result) {
+						console.log('Compressed file size:', result.size, 'bytes'); // Log for debugging
 						resolve(result);
 					},
 					error(err) {
+						console.error('Compression error:', err); // Log compression errors
 						reject(err);
 					},
 				});
