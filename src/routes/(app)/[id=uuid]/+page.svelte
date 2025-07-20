@@ -254,16 +254,15 @@
 			max-width: 63ch;
 		}
 
-		/* why @media (prefers-reduced-motion: no-preference) not working? */
-		/* @media (prefers-reduced-motion: no-preference) { */
-		@supports (animation-timeline: scroll()) {
-			animation: header--leaveview linear both;
-			/* when the page/root is scrolled */
-			animation-timeline: scroll(root);
-			/* from 0-10vh scroll amount, run the animation */
-			animation-range: 0 30vh;
+		@media (prefers-reduced-motion: no-preference) {
+			@supports (animation-timeline: scroll()) {
+				animation: header--leaveview linear both;
+				/* when the page/root is scrolled */
+				animation-timeline: scroll(root);
+				/* from 0-10vh scroll amount, run the animation */
+				animation-range: 0 30vh;
+			}
 		}
-		/* } */
 	}
 
 	@keyframes header--leaveview {
