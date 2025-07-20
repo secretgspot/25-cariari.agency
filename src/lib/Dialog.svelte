@@ -170,7 +170,7 @@
 <style>
 	/* Basic animation for the dialog itself */
 	dialog {
-		opacity: 0;
+		/* opacity: 0; */
 		display: grid;
 		grid-template-rows: min-content 1fr min-content;
 		align-items: center;
@@ -187,19 +187,38 @@
 		background: var(--primary);
 		color: var(--primary-content);
 
+		&,
 		&::backdrop {
-			background-color: hsl(var(--p) / 0.6);
+			background-image: radial-gradient(hsl(var(--pf) / 0.6), hsl(var(--p) / 0.9));
 			backdrop-filter: blur(3px);
+			transition:
+				display 0.3s allow-discrete,
+				overlay 0.3s allow-discrete,
+				transform 0.3s,
+				opacity 0.3s;
 			opacity: 0; /* Start hidden for animation */
-			transition: opacity 0.3s ease-out;
 		}
 
 		&[open] {
 			opacity: 1;
 			pointer-events: auto;
+			transform: scale(1);
 			&::backdrop {
 				opacity: 1; /* Fade in when open */
 			}
+		}
+
+		/* offstage styles */
+		@starting-style {
+			&[open],
+			&[open]::backdrop {
+				opacity: 0;
+			}
+		}
+
+		/* only scale if okay with user */
+		@media (prefers-reduced-motion: no-preference) {
+			transform: scale(0.93);
 		}
 
 		header {
