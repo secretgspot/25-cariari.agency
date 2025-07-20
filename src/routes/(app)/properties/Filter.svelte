@@ -38,6 +38,7 @@
 						<!-- {formatter.format($filterStore.rent)} -->
 						<input
 							type="range"
+							name="rent-filter"
 							min="100"
 							max="10000"
 							step="100"
@@ -51,6 +52,7 @@
 						<!-- {formatter.format($filterStore.price)} -->
 						<input
 							type="range"
+							name="price-filter"
 							min="10000"
 							max="10000000"
 							step="10000"
@@ -81,7 +83,11 @@
 			</label>
 
 			<label class="number">
-				<input type="number" min="0" bind:value={$filterStore.lot_size} /> min lot size
+				<input
+					type="number"
+					name="lot-filter"
+					min="0"
+					bind:value={$filterStore.lot_size} /> min lot size
 			</label>
 		</div>
 	</div>
@@ -111,7 +117,7 @@
 			{/if}
 
 			<label class="text">
-				<input type="text" bind:value={$filterStore.msl} /> msl
+				<input type="text" name="msl-filter" bind:value={$filterStore.msl} /> msl
 			</label>
 		</div>
 	</div>
