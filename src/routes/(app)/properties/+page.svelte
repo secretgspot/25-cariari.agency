@@ -51,10 +51,6 @@
 		<div class="filter-sticky">
 			<div class="filters-menu">
 				<h3>{filtered.length} / {totalDisplayCount}</h3>
-
-				<!-- {#if isAdmin}
-				<Button href="/property">Add new</Button>
-				{/if} -->
 				<Nav basic />
 			</div>
 
@@ -102,19 +98,13 @@
 		> :global(.property) {
 			grid-template-columns: 1fr;
 			/* grid-template-rows: minmax(auto, 222px) min-content auto min-content; */
-			grid-template-rows: minmax(auto, 222px) min-content min-content;
+			grid-template-rows: minmax(auto, 222px) auto min-content;
 			grid-template-areas:
 				'property-image'
 				'property-header'
 				'property-footer';
-			/* padding: 1rem 0 0; */
 		}
 	}
-	/* @media (min-width: 1024px) {
-		.properties_list.grid {
-			grid-template-columns: repeat(auto-fit, minmax(min-content, 313px));
-		}
-	} */
 
 	/*
 		FILTER SECTION
@@ -132,7 +122,6 @@
 			grid-template-columns: repeat(2, 1fr);
 			align-items: center;
 			justify-items: center;
-			/* margin: 0 var(--padding-small); */
 			padding: var(--padding-small);
 
 			@media (min-width: 720px) {

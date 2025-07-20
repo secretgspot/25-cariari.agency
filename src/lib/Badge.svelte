@@ -1,21 +1,24 @@
 <script>
-	import Icon from "./Icon.svelte";
+	import Icon from './Icon.svelte';
 	/** @type {{type?: string, label: any, value: any, direction?: string, loop?: boolean}} */
 	let {
-		type = "text",
+		type = 'text', // icon | text | tiny
 		label,
 		value,
-		direction = "column",
-		loop = false
+		direction = 'column',
+		loop = false,
 	} = $props();
 </script>
 
-<div class="badge {direction}">
-	{#if type === "icon"}
+<div class="badge {direction}" title="{value} {label}">
+	{#if type === 'icon'}
 		<!-- <img class="icon" src="images/icons/icon_{label}.svg" alt="{label}" loading="eager"> -->
 		<Icon type={label} size="30" />
 		<div class="value">{value}</div>
-	{:else if type === "text"}
+	{:else if type === 'tiny'}
+		<div class="value">{value}</div>
+		<Icon type={label} size="15" />
+	{:else if type === 'text'}
 		{#if loop}
 			<div class="value">
 				{#each value as val}

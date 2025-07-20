@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { formatter, ago } from '$lib/utils/helpers.js';
 	import { Button, LinkButton } from '$lib/buttons';
+	import Badge from '$lib/Badge.svelte';
 
 	/** @type {{property: any}} */
 	let { property } = $props();
@@ -60,9 +61,23 @@
 		</div>
 
 		<div class="details wrap">
-			{#if property.location}<small class="loc"
+			<!-- {#if property.location}<small class="loc"
 					>{property.location.lat} / {property.location.lng}</small
-				>{/if}
+				>{/if} -->
+			<small class="features">
+				{#if property.beds > 0}
+					<Badge type="tiny" label="beds" value={property.beds} />
+				{/if}
+				{#if property.baths > 0}
+					<Badge type="tiny" label="baths" value={property.baths} />
+				{/if}
+				{#if property.half_baths > 0}
+					<Badge type="tiny" label="half baths" value={property.half_baths} />
+				{/if}
+				{#if property.parking_spaces > 0}
+					<Badge type="tiny" label="parkings" value={property.parking_spaces} />
+				{/if}
+			</small>
 			<span>[{property.msl}]</span>
 		</div>
 
@@ -81,8 +96,6 @@
 	.property {
 		display: grid;
 		grid-template-columns: minmax(270px, min-content) auto;
-		/* grid-template-columns: 1fr 1fr; */
-		/* grid-template-rows: auto 1fr auto; */
 		grid-template-rows: 1fr auto;
 		grid-template-areas:
 			'property-header property-header'
@@ -192,10 +205,17 @@
 			justify-content: space-between;
 			/* margin: 0 1rem 1rem; */
 
-			.loc {
+			.features {
 				color: var(--accent-content);
 				font-size: x-small;
+				display: flex;
+				gap: var(--padding-small);
 			}
+
+			/* .loc {
+				color: var(--accent-content);
+				font-size: x-small;
+			} */
 		}
 	}
 
