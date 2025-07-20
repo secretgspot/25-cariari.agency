@@ -150,6 +150,7 @@
 {/if}
 
 <form
+	name="add-form"
 	class="add-property"
 	method="POST"
 	action="?/add"
@@ -277,6 +278,7 @@
 					type="text"
 					name="address"
 					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
+					autocomplete="off"
 					bind:value={property.address} />
 			</fieldset>
 
@@ -312,6 +314,7 @@
 					type="tel"
 					name="contact_phone"
 					placeholder="ex: 1234-5678"
+					autocomplete="off"
 					bind:value={property.contact_phone} />
 			</fieldset>
 
@@ -321,6 +324,7 @@
 					type="email"
 					name="contact_email"
 					placeholder="ex: this@that.there"
+					autocomplete="off"
 					bind:value={property.contact_email} />
 			</fieldset>
 
