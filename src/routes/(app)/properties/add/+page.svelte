@@ -204,7 +204,7 @@
 			} else {
 				console.log('➕🏠❌ TRIGGED DUE TO: ', result);
 				addToast({
-					message: `Something went wrong, server returned: ${result}`,
+					message: `Something went wrong, server returned: ${JSON.stringify(result)}`,
 					type: 'error',
 					dismissible: true,
 					timeout: 0,
