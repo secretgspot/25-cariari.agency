@@ -153,11 +153,12 @@ Retrieves details for a single property by its unique ID.
 
 **Path Parameters:**
 
-- `id` (string, required): The UUID of the property.
+- `id` (string, required): The UUID of the property or MSL (cr-001).
 
 **Example:**
 
-- `GET /api/properties/123e4567-e89b-12d3-a456-426614174000`
+- `GET /api/properties/877ac9dd-0941-4e25-ac8f-70bcedd2377b`
+- `GET /api/properties/cr-003`
 
 ## Main User Flows
 

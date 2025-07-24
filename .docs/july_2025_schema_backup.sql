@@ -3,7 +3,6 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -13,16 +12,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 
-
-
-ALTER SCHEMA "public" OWNER TO "postgres";
-
-
-COMMENT ON SCHEMA "public" IS 'standard public schema';
-
-
-
-CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "public";
+CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
 
 
 
@@ -33,6 +23,15 @@ CREATE EXTENSION IF NOT EXISTS "pgsodium";
 
 
 
+
+
+
+
+
+ALTER SCHEMA "public" OWNER TO "postgres";
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 
 
@@ -282,6 +281,7 @@ ALTER FUNCTION "public"."is_claims_admin"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."jsonb_array_overlaps"("jsonb_array" "jsonb", "text_array" "text"[]) RETURNS boolean
     LANGUAGE "plpgsql"
+    SET "search_path" TO ''
     AS $$
 BEGIN
     RETURN jsonb_array @> to_jsonb(text_array);
@@ -381,38 +381,72 @@ ALTER TABLE "public"."properties" OWNER TO "postgres";
 
 
 CREATE OR REPLACE VIEW "public"."properties_preview" AS
- SELECT DISTINCT ON ("p"."msl") "p"."id",
-    "p"."created_at",
-    "p"."updated_at",
-    "p"."msl",
-    "p"."is_active",
-    "p"."description",
-    "p"."address",
-    "p"."location",
-    "p"."land_use",
-    "p"."lot_size",
-    "p"."year_built",
-    "p"."building_size",
-    "p"."building_style",
-    "p"."rooms",
-    "p"."beds",
-    "p"."baths",
-    "p"."half_baths",
-    "p"."parking_spaces",
-    "p"."features",
-    "p"."price",
-    "p"."rent",
-    "p"."fees",
-    "p"."taxes",
-    "p"."contact_email",
-    "p"."contact_phone",
-    "p"."contact_realtor",
-    "p"."property_for",
-    "p"."user_id",
-    "ph"."file_url" AS "photo"
-   FROM ("public"."properties" "p"
-     LEFT JOIN "public"."photos" "ph" ON (("p"."msl" = "ph"."msl")))
-  ORDER BY "p"."msl", "ph"."file_url";
+ WITH "ranked_properties" AS (
+         SELECT "p"."id",
+            "p"."created_at",
+            "p"."updated_at",
+            "p"."msl",
+            "p"."is_active",
+            "p"."description",
+            "p"."address",
+            "p"."location",
+            "p"."land_use",
+            "p"."lot_size",
+            "p"."year_built",
+            "p"."building_size",
+            "p"."building_style",
+            "p"."rooms",
+            "p"."beds",
+            "p"."baths",
+            "p"."half_baths",
+            "p"."parking_spaces",
+            "p"."features",
+            "p"."price",
+            "p"."rent",
+            "p"."fees",
+            "p"."taxes",
+            "p"."contact_email",
+            "p"."contact_phone",
+            "p"."contact_realtor",
+            "p"."property_for",
+            "p"."user_id",
+            "ph"."file_url" AS "photo",
+            "row_number"() OVER (PARTITION BY "p"."msl" ORDER BY "ph"."file_url") AS "photo_rank"
+           FROM ("public"."properties" "p"
+             LEFT JOIN "public"."photos" "ph" ON (("p"."msl" = "ph"."msl")))
+        )
+ SELECT "ranked_properties"."id",
+    "ranked_properties"."created_at",
+    "ranked_properties"."updated_at",
+    "ranked_properties"."msl",
+    "ranked_properties"."is_active",
+    "ranked_properties"."description",
+    "ranked_properties"."address",
+    "ranked_properties"."location",
+    "ranked_properties"."land_use",
+    "ranked_properties"."lot_size",
+    "ranked_properties"."year_built",
+    "ranked_properties"."building_size",
+    "ranked_properties"."building_style",
+    "ranked_properties"."rooms",
+    "ranked_properties"."beds",
+    "ranked_properties"."baths",
+    "ranked_properties"."half_baths",
+    "ranked_properties"."parking_spaces",
+    "ranked_properties"."features",
+    "ranked_properties"."price",
+    "ranked_properties"."rent",
+    "ranked_properties"."fees",
+    "ranked_properties"."taxes",
+    "ranked_properties"."contact_email",
+    "ranked_properties"."contact_phone",
+    "ranked_properties"."contact_realtor",
+    "ranked_properties"."property_for",
+    "ranked_properties"."user_id",
+    "ranked_properties"."photo"
+   FROM "ranked_properties"
+  WHERE ("ranked_properties"."photo_rank" = 1)
+  ORDER BY "ranked_properties"."msl";
 
 
 ALTER VIEW "public"."properties_preview" OWNER TO "postgres";
@@ -443,7 +477,15 @@ ALTER TABLE ONLY "public"."properties"
 
 
 
+CREATE INDEX "idx_photos_msl" ON "public"."photos" USING "btree" ("msl");
+
+
+
 CREATE INDEX "idx_photos_name" ON "public"."photos" USING "btree" ("name");
+
+
+
+CREATE INDEX "idx_properties_msl" ON "public"."properties" USING "btree" ("msl");
 
 
 
@@ -470,11 +512,15 @@ ALTER TABLE ONLY "public"."properties"
 
 
 
+CREATE POLICY "Enable all for admin" ON "public"."photos" TO "authenticated" USING ((((("auth"."jwt"() ->> 'app_metadata'::"text"))::"jsonb" ->> 'claims_admin'::"text") = 'true'::"text")) WITH CHECK ((((("auth"."jwt"() ->> 'app_metadata'::"text"))::"jsonb" ->> 'claims_admin'::"text") = 'true'::"text"));
+
+
+
 CREATE POLICY "Enable all for admin" ON "public"."properties" USING (COALESCE(("public"."get_my_claim"('claims_admin'::"text"))::boolean, false)) WITH CHECK (COALESCE(("public"."get_my_claim"('claims_admin'::"text"))::boolean, false));
 
 
 
-CREATE POLICY "Enable delete for users based on user_id" ON "public"."photos" FOR DELETE TO "authenticated" USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "Enable delete for record owners" ON "public"."photos" FOR DELETE TO "authenticated" USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -486,7 +532,11 @@ CREATE POLICY "Enable insert for authenticated users only" ON "public"."properti
 
 
 
-CREATE POLICY "Enable insert with user_id" ON "public"."photos" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "Enable insert for record owners" ON "public"."photos" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Enable read access for all users" ON "public"."photos" FOR SELECT USING (true);
 
 
 
@@ -494,7 +544,7 @@ CREATE POLICY "Enable read access for all users" ON "public"."properties" FOR SE
 
 
 
-CREATE POLICY "Enable read access for authenticated users" ON "public"."photos" FOR SELECT TO "authenticated" USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "Enable update for record owners" ON "public"."photos" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
 
 
 
@@ -502,8 +552,7 @@ CREATE POLICY "Enable update for users based on  user_id" ON "public"."propertie
 
 
 
-CREATE POLICY "Enable update for users based on user_id" ON "public"."photos" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
-
+ALTER TABLE "public"."photos" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."properties" ENABLE ROW LEVEL SECURITY;
@@ -514,26 +563,14 @@ ALTER TABLE "public"."properties" ENABLE ROW LEVEL SECURITY;
 ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
+
+
+
 REVOKE USAGE ON SCHEMA "public" FROM PUBLIC;
 GRANT ALL ON SCHEMA "public" TO PUBLIC;
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -816,9 +853,6 @@ GRANT ALL ON FUNCTION "public"."populate_photos_table"() TO "service_role";
 GRANT ALL ON FUNCTION "public"."set_claim"("uid" "uuid", "claim" "text", "value" "jsonb") TO "anon";
 GRANT ALL ON FUNCTION "public"."set_claim"("uid" "uuid", "claim" "text", "value" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."set_claim"("uid" "uuid", "claim" "text", "value" "jsonb") TO "service_role";
-
-
-
 
 
 
