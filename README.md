@@ -92,6 +92,73 @@ Properties are the core data entity. Main fields:
 - **GET /properties/[id]/print**: Print-friendly property page with QR code
 - **GET /sitemap.xml**: Get dynamically generated sitemap for SEO
 
+## API Endpoints
+
+The following API endpoints are available for programmatic access to property data. All responses are in JSON format and follow a consistent `{"status": "success", "data": ...}` or `{"status": "error", "error": {...}}` structure.
+
+### Get All Properties
+
+`GET /api/properties`
+
+Retrieves a list of all properties. Supports filtering and sorting via query parameters.
+
+**Query Parameters:**
+
+- `property_for` (string, optional): Filter by property type (e.g., `Sale`, `Rent`).
+  - **Example:** `?property_for=Sale`
+- `price_max` (number, optional): Maximum price for sale properties.
+  - **Example:** `?price_max=500000`
+- `rent_max` (number, optional): Maximum rent for rental properties.
+  - **Example:** `?rent_max=2000`
+- `beds_min` (number, optional): Minimum number of bedrooms.
+  - **Example:** `?beds_min=3`
+- `baths_min` (number, optional): Minimum number of bathrooms.
+  - **Example:** `?baths_min=2`
+- `lot_size_min` (number, optional): Minimum lot size in square meters.
+  - **Example:** `?lot_size_min=500`
+- `contact_phone` (string, optional): Filter by contact phone (partial, case-insensitive match).
+  - **Example:** `?contact_phone=506`
+- `contact_realtor` (string, optional): Filter by contact realtor (partial, case-insensitive match).
+  - **Example:** `?contact_realtor=John`
+- `contact_email` (string, optional): Filter by contact email (partial, case-insensitive match).
+  - **Example:** `?contact_email=example.com`
+- `year_built_min` (number, optional): Minimum year built.
+  - **Example:** `?year_built_min=2000`
+- `year_built_max` (number, optional): Maximum year built.
+  - **Example:** `?year_built_max=2020`
+- `land_use` (string, optional): Filter by land use (partial, case-insensitive match).
+  - **Example:** `?land_use=residential`
+- `building_size_min` (number, optional): Minimum building size in square meters.
+  - **Example:** `?building_size_min=100`
+- `building_size_max` (number, optional): Maximum building size in square meters.
+  - **Example:** `?building_size_max=500`
+- `msl` (string, optional): Filter by MLS number (partial, case-insensitive match).
+  - **Example:** `?msl=ABC`
+- `sort` (string, optional): Field to sort the results by (e.g., `price`, `created_at`, `updated_at`).
+- `order` (string, optional): Sort order (`asc` for ascending, `desc` for descending). Requires `sort` to be specified.
+  - **Example:** `?sort=price&order=desc`
+
+**Examples:**
+
+- Get all properties for sale under $300,000, sorted by price descending:
+    `GET /api/properties?property_for=Sale&price_max=300000&sort=price&order=desc`
+- Get all properties with at least 2 bedrooms:
+    `GET /api/properties?beds_min=2`
+
+### Get Single Property
+
+`GET /api/properties/:id`
+
+Retrieves details for a single property by its unique ID.
+
+**Path Parameters:**
+
+- `id` (string, required): The UUID of the property.
+
+**Example:**
+
+- `GET /api/properties/123e4567-e89b-12d3-a456-426614174000`
+
 ## Main User Flows
 
 - **Browse Properties:** Map and list view, filter by type, price, beds, etc.
