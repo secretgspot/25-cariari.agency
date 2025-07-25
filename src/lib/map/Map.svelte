@@ -216,17 +216,17 @@
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg
 		 */
 
-		const alidadeSatellite = leafletInstance.tileLayer(
-			'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.{ext}',
-			{
-				subdomains: 'abcd',
-				minZoom: 15,
-				maxZoom: 18,
-				ext: 'jpg',
-				errorTileUrl:
-					'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-			},
-		);
+		// const alidadeSatellite = leafletInstance.tileLayer(
+		// 	'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.{ext}',
+		// 	{
+		// 		subdomains: 'abcd',
+		// 		minZoom: 15,
+		// 		maxZoom: 18,
+		// 		ext: 'jpg',
+		// 		errorTileUrl:
+		// 			'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+		// 	},
+		// );
 
 		const cartoDbLight = leafletInstance.tileLayer(
 			'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
@@ -240,10 +240,10 @@
 			},
 		);
 
-		const baseLayers = {
-			Default: cartoDbLight,
-			Satellite: alidadeSatellite,
-		};
+		// const baseLayers = {
+		// 	Default: cartoDbLight,
+		// 	Satellite: alidadeSatellite,
+		// };
 
 		markersLayer = leafletInstance.layerGroup();
 		mapInstance = leafletInstance.map(mapElement, {
@@ -258,10 +258,8 @@
 			preferCanvas: true,
 		});
 		// leafletInstance.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
-		// leafletInstance.control.scale({ position: 'bottomright' }).addTo(mapInstance);
-		leafletInstance.control
-			.layers(baseLayers, null, { position: 'bottomright' })
-			.addTo(mapInstance);
+		leafletInstance.control.scale({ position: 'bottomright' }).addTo(mapInstance);
+		// leafletInstance.control.layers(baseLayers, null, { position: 'bottomright' }).addTo(mapInstance);
 
 		cartoDbLight.on('tileerror', (error) => {
 			console.warn('Tile load error:', error);

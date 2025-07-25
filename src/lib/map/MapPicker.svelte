@@ -106,7 +106,7 @@
 			 */
 
 			const baseLayer = leafletInstance.tileLayer(
-				'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
+				'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
 				{
 					subdomains: 'abcd',
 					minZoom: 15,
