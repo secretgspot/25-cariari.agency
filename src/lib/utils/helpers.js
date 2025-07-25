@@ -1,3 +1,8 @@
+// Function to check user's system preference
+export function prefersDarkTheme() {
+	return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 // --- Wake Lock Helpers ---
 export async function enableWakeLock() {
 	try {

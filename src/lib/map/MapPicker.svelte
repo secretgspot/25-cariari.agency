@@ -103,10 +103,11 @@
 			 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}@2x.png
 			 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg
 			 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
+			 * https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
 			 */
 
 			const baseLayer = leafletInstance.tileLayer(
-				'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
+				'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 				{
 					subdomains: 'abcd',
 					minZoom: 15,
@@ -213,9 +214,9 @@
 		overflow: hidden;
 	}
 
-	@media (prefers-color-scheme: dark) {
+	/* @media (prefers-color-scheme: dark) {
 		.map {
 			filter: invert(1) brightness(var(--brightness-map)) hue-rotate(180deg);
 		}
-	}
+	} */
 </style>

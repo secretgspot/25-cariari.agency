@@ -7,6 +7,7 @@
 		formatLargeNumber,
 		enableWakeLock,
 		disableWakeLock,
+		prefersDarkTheme,
 	} from '$lib/utils/helpers.js';
 	import { browser } from '$app/environment';
 	import Toggle from '$lib/Toggle.svelte';
@@ -202,6 +203,7 @@
 
 		/*
 		 * https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}
+		 * https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.{ext}
 		 * stadiamaps styles https://docs.stadiamaps.com/themes/
 		 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png
 		 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}@2x.png
@@ -214,22 +216,25 @@
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg
+		 * https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
 		 */
 
-		// const alidadeSatellite = leafletInstance.tileLayer(
-		// 	'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.{ext}',
-		// 	{
-		// 		subdomains: 'abcd',
-		// 		minZoom: 15,
-		// 		maxZoom: 18,
-		// 		ext: 'jpg',
-		// 		errorTileUrl:
-		// 			'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-		// 	},
-		// );
+		// Determine the map URL based on the theme preference
+		const defaultMapUrl = prefersDarkTheme()
+			? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.{ext}'
+			: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}';
 
-		const cartoDbLight = leafletInstance.tileLayer(
-			'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
+		const defaultMap = leafletInstance.tileLayer(defaultMapUrl, {
+			subdomains: 'abcd',
+			minZoom: 15,
+			maxZoom: 18,
+			ext: 'jpg',
+			errorTileUrl:
+				'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+		});
+
+		const satelliteMap = leafletInstance.tileLayer(
+			'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 			{
 				subdomains: 'abcd',
 				minZoom: 15,
@@ -240,10 +245,10 @@
 			},
 		);
 
-		// const baseLayers = {
-		// 	Default: cartoDbLight,
-		// 	Satellite: alidadeSatellite,
-		// };
+		const baseLayers = {
+			Default: defaultMap,
+			Satellite: satelliteMap,
+		};
 
 		markersLayer = leafletInstance.layerGroup();
 		mapInstance = leafletInstance.map(mapElement, {
@@ -254,14 +259,16 @@
 			zoom: 16,
 			attributionControl: false,
 			scrollWheelZoom: true,
-			layers: [cartoDbLight, markersLayer],
+			layers: [defaultMap, markersLayer],
 			preferCanvas: true,
 		});
 		// leafletInstance.control.zoom({ position: 'bottomleft' }).addTo(mapInstance);
-		leafletInstance.control.scale({ position: 'bottomright' }).addTo(mapInstance);
-		// leafletInstance.control.layers(baseLayers, null, { position: 'bottomright' }).addTo(mapInstance);
+		// leafletInstance.control.scale({ position: 'bottomright' }).addTo(mapInstance);
+		leafletInstance.control
+			.layers(baseLayers, null, { position: 'bottomright' })
+			.addTo(mapInstance);
 
-		cartoDbLight.on('tileerror', (error) => {
+		defaultMap.on('tileerror', (error) => {
 			console.warn('Tile load error:', error);
 		});
 		mapInstance.whenReady(() => {
@@ -344,13 +351,13 @@
 		width: 100%;
 		z-index: 1;
 		/* Ensure the map container has a minimum size */
-		min-height: 200px;
-		min-width: 200px;
+		min-height: 369px;
+		min-width: 369px;
 
 		:global(.toggle) {
 			position: absolute;
-			bottom: 10px;
-			left: 10px;
+			bottom: var(--padding-extra-small);
+			left: var(--padding-extra-small);
 			z-index: 999;
 			:global(.flip + label) {
 				min-width: min-content;
@@ -359,10 +366,9 @@
 	}
 
 	/* Use CSS custom properties for better dark mode control */
-	@media (prefers-color-scheme: dark) {
+	/* @media (prefers-color-scheme: dark) {
 		.map {
-			/* Consider using a dark tile layer instead of CSS filters for better performance */
 			filter: invert(1) brightness(1) hue-rotate(180deg);
 		}
-	}
+	} */
 </style>
