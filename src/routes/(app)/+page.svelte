@@ -86,7 +86,7 @@
 		position: relative;
 	}
 	main.preview {
-		grid-template-rows: 30vh 1fr;
+		grid-template-rows: 42vh 1fr;
 	}
 	@media (min-width: 768px) {
 		.preview-wrapper {
