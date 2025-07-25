@@ -199,6 +199,22 @@
 			[9.962, -84.1789],
 			[9.9802, -84.1423],
 		]);
+
+		/*
+		 * https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}
+		 * stadiamaps styles https://docs.stadiamaps.com/themes/
+		 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png
+		 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}@2x.png
+		 * https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png
+		 * https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}@2x.png
+		 * https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png
+		 * https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}@2x.png
+		 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png
+		 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}@2x.png
+		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg
+		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
+		 */
+
 		const cartoDbLight = leafletInstance.tileLayer(
 			'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}',
 			{
