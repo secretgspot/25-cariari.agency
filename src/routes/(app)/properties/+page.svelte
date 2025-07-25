@@ -73,6 +73,13 @@
 			grid-template-rows: 1fr;
 			grid-template-columns: 1fr 369px;
 		}
+
+		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
+			grid-template-areas:
+				'properties-filter'
+				'properties-list';
+			grid-template-columns: unset;
+		}
 	}
 
 	/*

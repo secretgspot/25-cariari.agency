@@ -159,6 +159,10 @@
 				90px
 			);
 
+		@media (min-width: 768px) {
+			height: 100dvh;
+		}
+
 		:global(.admin-edit) {
 			position: absolute;
 			top: 0;
@@ -248,19 +252,12 @@
 		justify-content: center;
 		align-items: center;
 		margin-block: var(--padding-large);
-	}
 
-	/* @media (orientation: landscape) {
-		figure {
-			height: 72vh;
-		}
-	} */
-
-	@media (min-width: 768px) {
-		.preview-content {
-			height: 100vh;
+		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
+			padding-block-end: var(--padding-large);
 		}
 	}
+
 	.loader {
 		position: absolute;
 		top: 0;

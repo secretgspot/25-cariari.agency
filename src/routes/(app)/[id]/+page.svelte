@@ -318,10 +318,14 @@
 	.card {
 		position: sticky;
 		top: calc(var(--padding-large) * 2);
-		/* padding-top: calc(var(--index) * var(--card-top-offset)); */
+		padding-top: calc(var(--index) * var(--card-top-offset));
+
+		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
+			top: calc(var(--padding-large) * 1);
+		}
 
 		.card__content {
-			box-shadow: var(--shadow-large);
+			/* box-shadow: var(--shadow-large); */
 			border-radius: var(--border-radius);
 			overflow: hidden;
 			aspect-ratio: 2 / 1;

@@ -79,32 +79,27 @@
 <style>
 	main {
 		display: grid;
-		height: 100svh;
-		width: 100svw;
+		height: 100dvh;
+		width: 100dvw;
 	}
 	.map-wrapper {
 		position: relative;
 	}
 	main.preview {
-		grid-template-rows: 42vh 1fr;
-	}
-	@media (min-width: 768px) {
-		.preview-wrapper {
-			height: 100vh;
-			display: grid;
-			position: relative;
-		}
-		main.preview {
+		grid-template-rows: 42dvh 1fr;
+		@media (min-width: 768px) {
 			grid-template-rows: 1fr;
 			grid-template-columns: 1fr 369px;
 		}
-		/* main :global(.map) {
-			width: 70vw;
-		} */
 	}
-
-	@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
-		.preview-wrapper {
+	.preview-wrapper {
+		/* preview wrapper */
+		@media (min-width: 768px) {
+			height: 100dvh;
+			display: grid;
+			position: relative;
+		}
+		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
 			overflow-y: scroll;
 		}
 	}
