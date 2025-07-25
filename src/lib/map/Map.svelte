@@ -213,10 +213,11 @@
 		 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}@2x.png
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
+		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg
 		 */
 
 		const alidadeSatellite = leafletInstance.tileLayer(
-			'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}',
+			'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.{ext}',
 			{
 				subdomains: 'abcd',
 				minZoom: 15,
