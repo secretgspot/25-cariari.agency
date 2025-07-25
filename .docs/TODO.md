@@ -25,6 +25,10 @@
 - [ ] **API Key Authentication:** Secure `POST`, `PUT`, `DELETE` endpoints with API keys.
 - [ ] **Rate Limiting:** Implement rate limiting to prevent abuse.
 
+### 5. General Tweaks
+
+- [?] main map on mobile horizontally rotated needs proper styling
+
 ## Dependency Management
 
 - [ ] **Outdated Packages:** Several npm packages are outdated. Updating them can provide access to new features, security patches, and performance enhancements. Key packages to update include:

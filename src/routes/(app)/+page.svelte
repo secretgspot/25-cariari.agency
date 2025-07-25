@@ -103,6 +103,12 @@
 		} */
 	}
 
+	@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
+		.preview-wrapper {
+			overflow-y: scroll;
+		}
+	}
+
 	.filter-controls {
 		display: flex;
 		gap: var(--gap-extra-small);

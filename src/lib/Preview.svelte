@@ -189,46 +189,50 @@
 		align-items: center;
 		flex: 1;
 		overflow-y: auto;
-	}
+		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
+			overflow-y: unset;
+		}
 
-	.badge-group {
-		padding: 2rem 0;
-		display: flex;
-		justify-content: space-evenly;
-		width: 100%;
-	}
+		.badge-group {
+			padding: 2rem 0;
+			display: flex;
+			justify-content: space-evenly;
+			width: 100%;
+		}
 
-	.preview-group {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-evenly;
-		width: 100%;
-		padding: 2rem 3rem 0rem;
-	}
-	.preview-group .land_use {
-		display: flex;
-		justify-content: space-between;
-	}
-	.preview-group .type_age {
-		text-transform: uppercase;
-		color: var(--txt-tertiary);
-	}
-	.preview-group .price_rent {
-		font-size: 1.8em;
-		display: flex;
-		justify-content: space-between;
-		margin: 0.3rem 0;
-	}
-	/* .preview-group .loc_address {
-		font-size: smaller;
-		display: flex;
-		flex-direction: column;
-		color: var(--color-dark);
-	} */
+		.preview-group {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-evenly;
+			width: 100%;
+			padding: 2rem 3rem 0rem;
 
-	.description {
-		padding: 3rem;
-		text-align: justify;
+			.land_use {
+				display: flex;
+				justify-content: space-between;
+			}
+			.type_age {
+				text-transform: uppercase;
+				color: var(--txt-tertiary);
+			}
+			.price_rent {
+				font-size: 1.8em;
+				display: flex;
+				justify-content: space-between;
+				margin: 0.3rem 0;
+			}
+			/* .loc_address {
+				font-size: smaller;
+				display: flex;
+				flex-direction: column;
+				color: var(--color-dark);
+			} */
+		}
+
+		.description {
+			padding: 3rem;
+			text-align: justify;
+		}
 	}
 
 	.commercial-wrapper {
