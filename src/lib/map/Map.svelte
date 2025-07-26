@@ -217,6 +217,8 @@
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
 		 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg
 		 * https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
+		 * http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}
+		 * http://{s}.tile.osm.org/{z}/{x}/{y}.png
 		 */
 
 		// Determine the map URL based on the theme preference

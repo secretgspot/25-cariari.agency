@@ -381,72 +381,41 @@ ALTER TABLE "public"."properties" OWNER TO "postgres";
 
 
 CREATE OR REPLACE VIEW "public"."properties_preview" AS
- WITH "ranked_properties" AS (
-         SELECT "p"."id",
-            "p"."created_at",
-            "p"."updated_at",
-            "p"."msl",
-            "p"."is_active",
-            "p"."description",
-            "p"."address",
-            "p"."location",
-            "p"."land_use",
-            "p"."lot_size",
-            "p"."year_built",
-            "p"."building_size",
-            "p"."building_style",
-            "p"."rooms",
-            "p"."beds",
-            "p"."baths",
-            "p"."half_baths",
-            "p"."parking_spaces",
-            "p"."features",
-            "p"."price",
-            "p"."rent",
-            "p"."fees",
-            "p"."taxes",
-            "p"."contact_email",
-            "p"."contact_phone",
-            "p"."contact_realtor",
-            "p"."property_for",
-            "p"."user_id",
-            "ph"."file_url" AS "photo",
-            "row_number"() OVER (PARTITION BY "p"."msl" ORDER BY "ph"."file_url") AS "photo_rank"
-           FROM ("public"."properties" "p"
-             LEFT JOIN "public"."photos" "ph" ON (("p"."msl" = "ph"."msl")))
-        )
- SELECT "ranked_properties"."id",
-    "ranked_properties"."created_at",
-    "ranked_properties"."updated_at",
-    "ranked_properties"."msl",
-    "ranked_properties"."is_active",
-    "ranked_properties"."description",
-    "ranked_properties"."address",
-    "ranked_properties"."location",
-    "ranked_properties"."land_use",
-    "ranked_properties"."lot_size",
-    "ranked_properties"."year_built",
-    "ranked_properties"."building_size",
-    "ranked_properties"."building_style",
-    "ranked_properties"."rooms",
-    "ranked_properties"."beds",
-    "ranked_properties"."baths",
-    "ranked_properties"."half_baths",
-    "ranked_properties"."parking_spaces",
-    "ranked_properties"."features",
-    "ranked_properties"."price",
-    "ranked_properties"."rent",
-    "ranked_properties"."fees",
-    "ranked_properties"."taxes",
-    "ranked_properties"."contact_email",
-    "ranked_properties"."contact_phone",
-    "ranked_properties"."contact_realtor",
-    "ranked_properties"."property_for",
-    "ranked_properties"."user_id",
-    "ranked_properties"."photo"
-   FROM "ranked_properties"
-  WHERE ("ranked_properties"."photo_rank" = 1)
-  ORDER BY "ranked_properties"."msl";
+ SELECT "p"."id",
+    "p"."created_at",
+    "p"."updated_at",
+    "p"."msl",
+    "p"."is_active",
+    "p"."description",
+    "p"."address",
+    "p"."location",
+    "p"."land_use",
+    "p"."lot_size",
+    "p"."year_built",
+    "p"."building_size",
+    "p"."building_style",
+    "p"."rooms",
+    "p"."beds",
+    "p"."baths",
+    "p"."half_baths",
+    "p"."parking_spaces",
+    "p"."features",
+    "p"."price",
+    "p"."rent",
+    "p"."fees",
+    "p"."taxes",
+    "p"."contact_email",
+    "p"."contact_phone",
+    "p"."contact_realtor",
+    "p"."property_for",
+    "p"."user_id",
+    ( SELECT "ph"."file_url"
+           FROM "public"."photos" "ph"
+          WHERE ("ph"."msl" = "p"."msl")
+          ORDER BY "ph"."created_at"
+         LIMIT 1) AS "photo"
+   FROM "public"."properties" "p"
+  ORDER BY "p"."msl";
 
 
 ALTER VIEW "public"."properties_preview" OWNER TO "postgres";

@@ -27,7 +27,7 @@
 
 ### 5. General Tweaks
 
-- [?] main map on mobile horizontally rotated needs proper styling
+- [x] main map on mobile horizontally rotated needs proper styling
 
 ## Dependency Management
 
