@@ -28,6 +28,8 @@
 ### 5. General Tweaks
 
 - [x] main map on mobile horizontally rotated needs proper styling
+- [x] refactor helpers functions
+- [x] should url be uuid or msl? in case of edit they should remain uuid
 
 ## Dependency Management
 

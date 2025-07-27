@@ -79,14 +79,14 @@
 <style>
 	main {
 		display: grid;
-		height: 100dvh;
-		width: 100dvw;
+		height: 100svh;
+		width: 100svw;
 	}
 	.map-wrapper {
 		position: relative;
 	}
 	main.preview {
-		grid-template-rows: 42dvh 1fr;
+		grid-template-rows: 42svh 1fr;
 		@media (min-width: 768px) {
 			grid-template-rows: 1fr;
 			grid-template-columns: 1fr 369px;
@@ -95,7 +95,7 @@
 	.preview-wrapper {
 		/* preview wrapper */
 		@media (min-width: 768px) {
-			height: 100dvh;
+			height: 100svh;
 			display: grid;
 			position: relative;
 		}

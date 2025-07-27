@@ -14,7 +14,7 @@
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
-	<LinkButton class="property-image" href={`/${property.id}`}>
+	<LinkButton class="property-image" href={`/${property.msl}`}>
 		{#if property.photo}
 			<img
 				src={property.photo}
