@@ -1,14 +1,46 @@
 <script>
 	import { computeClasses, getDomAttributes } from './utils.js';
-	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
+	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
+	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
+
+	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, sound?: boolean, pattern?: string, vibrate?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
 	let {
 		disabled = false,
 		isLink = false,
 		href = null,
 		external = false,
+		sound = true,
+		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
+		buzz = true,
 		children,
 		...rest
 	} = $props();
+
+	function handleClick(event) {
+		if (sound) {
+			const selectedPattern = chimePatterns[sound_pattern];
+			if (selectedPattern) {
+				if (Array.isArray(selectedPattern)) {
+					playChimeSequence(selectedPattern);
+				} else {
+					playChime(
+						selectedPattern.frequency,
+						selectedPattern.duration,
+						selectedPattern.volume,
+						selectedPattern.waveType,
+					);
+				}
+			}
+		}
+
+		if (buzz) {
+			vibrate(vibratePatterns.basic);
+		}
+
+		if (rest.onclick) {
+			rest.onclick(event);
+		}
+	}
 </script>
 
 {#if isLink || href}
@@ -18,12 +50,13 @@
 		{...rest}
 		role="button"
 		href={href ?? 'javascript:void(0);'}
-		target={external ? '_blank' : null}>
+		target={external ? '_blank' : null}
+		onclick={handleClick}>
 		{@render children?.()}
 	</a>
 {:else}
 	<!-- removed onclic={preventDefault()} -->
-	<button {...rest} class:disabled {disabled}>
+	<button {...rest} class:disabled {disabled} onclick={handleClick}>
 		{@render children?.()}
 	</button>
 {/if}

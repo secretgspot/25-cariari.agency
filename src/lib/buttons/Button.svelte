@@ -2,6 +2,8 @@
 	import { navigating } from '$app/state';
 	import { computeClasses, getDomAttributes } from './utils.js';
 	import { Spinner } from '$lib/loaders';
+	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
+	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
 
 	let {
 		size = 'medium',
@@ -13,10 +15,39 @@
 		isLink = false,
 		href = false,
 		external = false,
+		sound = true,
+		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
+		buzz = true,
 		icon,
 		children,
 		...rest
 	} = $props();
+
+	function handleClick(event) {
+		if (sound) {
+			const selectedPattern = chimePatterns[sound_pattern];
+			if (selectedPattern) {
+				if (Array.isArray(selectedPattern)) {
+					playChimeSequence(selectedPattern);
+				} else {
+					playChime(
+						selectedPattern.frequency,
+						selectedPattern.duration,
+						selectedPattern.volume,
+						selectedPattern.waveType,
+					);
+				}
+			}
+		}
+
+		if (vibrate) {
+			vibrate(vibratePatterns.basic);
+		}
+
+		if (rest.onclick) {
+			rest.onclick(event);
+		}
+	}
 
 	const classes = $derived(
 		`button ${rest.class ?? ''} ${computeClasses('btn', {
@@ -56,6 +87,7 @@
 		role="button"
 		href={linkHref}
 		target={linkTarget}
+		onclick={handleClick}
 		{...rest}>
 		{#if size === 'icon'}
 			<div class="icon_wrap">
@@ -90,7 +122,12 @@
 		{/if}
 	</a>
 {:else}
-	<button {...rest} class:disabled={isDisabled} class={classes} disabled={isDisabled}>
+	<button
+		{...rest}
+		class:disabled={isDisabled}
+		class={classes}
+		disabled={isDisabled}
+		onclick={handleClick}>
 		{#if size === 'icon'}
 			<div class="icon_wrap">
 				{#if loading}

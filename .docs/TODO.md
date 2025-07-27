@@ -30,6 +30,8 @@
 - [x] main map on mobile horizontally rotated needs proper styling
 - [x] refactor helpers functions
 - [x] should url be uuid or msl? in case of edit they should remain uuid
+- [x] audio ques for buttons and toaster notifications
+- [x] vibration ques for buttons and toaster notifications
 
 ## Dependency Management
 

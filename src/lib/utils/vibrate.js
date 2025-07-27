@@ -11,7 +11,7 @@
 export function vibrate(pattern) {
 	// Check if the Vibration API is supported by the browser
 	if ("vibrate" in navigator) {
-		console.log("Vibration API is supported on this device.");
+		// console.log("Vibration API is supported on this device.");
 		navigator.vibrate(pattern);
 		return true;
 	} else {

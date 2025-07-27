@@ -27,7 +27,7 @@
 		{#if page.data.is_logged_in}
 			<li>
 				<form action="/logout" method="post">
-					<LinkButton>
+					<LinkButton sound={true} sound_pattern="failA">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 512 512"

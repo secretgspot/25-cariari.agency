@@ -107,35 +107,35 @@
 
 	.success {
 		border-color: var(--success);
-		/* background: hsl(var(--su) / var(--bg-opacity, 0.1)); */
+		background: hsl(var(--su) / var(--bg-opacity, 1));
 		color: var(--success-content);
 	}
 	.success .icon {
-		color: var(--success);
+		color: var(--success-content);
 	}
 	.danger {
 		border-color: var(--error);
-		/* background: hsl(var(--er) / var(--bg-opacity, 0.1)); */
+		background: hsl(var(--er) / var(--bg-opacity, 1));
 		color: var(--error-content);
 	}
 	.danger .icon {
-		color: var(--error);
+		color: var(--error-content);
 	}
 	.warn {
 		border-color: var(--warning);
-		/* background: hsl(var(--wa) / var(--bg-opacity, 0.1)); */
+		background: hsl(var(--wa) / var(--bg-opacity, 1));
 		color: var(--warning-content);
 	}
 	.warn .icon {
-		color: var(--warning);
+		color: var(--warning-content);
 	}
 	.tip {
 		border-color: var(--info);
-		/* background: hsl(var(--in) / var(--bg-opacity, 0.1)); */
+		background: hsl(var(--in) / var(--bg-opacity, 1));
 		color: var(--info-content);
 	}
 	.tip .icon {
-		color: var(--info);
+		color: var(--info-content);
 	}
 
 	@media only screen and (min-width: 541px) {
