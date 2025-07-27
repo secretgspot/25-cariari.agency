@@ -5,7 +5,7 @@
 	import Logo from '$lib/Logo.svelte';
 	// import Text from '$lib/Text.svelte'; // Keeping commented out as per your original
 	import { Button } from '$lib/buttons';
-	import { isEmpty } from '$lib/utils/helpers.js';
+	import { isEmpty } from '$lib/utils/validators.js';
 
 	let { data } = $props();
 

@@ -6,7 +6,7 @@
 				"-y",
 				"@supabase/mcp-server-supabase@latest",
 				"--access-token",
-				"sbp_75839659b29efbb5ccf7f059e5ccb0ae04fffc99"
+				"revoked-generate-new-in-supabase-profile-access-token",
 			]
 		},
 		"cariari-agency": {
@@ -16,6 +16,13 @@
 				"--rm",
 				"-i",
 				"mcp-cariari-agency:latest"
+			]
+		},
+		"svelte-llm": {
+			"command": "npx",
+			"args": [
+				"mcp-remote",
+				"https://svelte-llm.stanislav.garden/mcp/mcp"
 			]
 		}
 	}

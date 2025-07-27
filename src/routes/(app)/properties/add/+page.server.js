@@ -1,7 +1,8 @@
 /** @type {import('./$types').PageServerLoad} */
 import { AuthApiError } from '@supabase/supabase-js';
 import { redirect, error, fail } from '@sveltejs/kit';
-import { isEmpty, pad } from '$lib/utils/helpers.js';
+import { pad } from '$lib/utils/formatters.js';
+// import { isEmpty } from '$lib/utils/validators.js';
 // import { v4 as uuidv4 } from 'uuid'; // For unique file names
 // You'll need to install uuid: npm install uuid
 

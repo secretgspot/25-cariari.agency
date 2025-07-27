@@ -4,7 +4,8 @@
 	import Badge from '$lib/Badge.svelte';
 	import { Button } from '$lib/buttons';
 	import Ad from '$lib/Ad.svelte';
-	import { formatter, ago } from '$lib/utils/helpers.js';
+	import { formatter } from '$lib/utils/formatters.js';
+	import { ago } from '$lib/utils/time.js';
 	import { Spinner } from '$lib/loaders';
 
 	/** @type {{data: any}} */

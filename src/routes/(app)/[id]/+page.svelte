@@ -7,7 +7,8 @@
 	import Icon from '$lib/Icon.svelte';
 	import Ad from '$lib/Ad.svelte';
 	import MapStatic from '$lib/map/MapStatic.svelte'; // MapStaticLibre
-	import { formatter, ago } from '$lib/utils/helpers.js';
+	import { formatter } from '$lib/utils/formatters.js';
+	import { ago } from '$lib/utils/time.js';
 	import Nav from '$lib/Nav.svelte';
 	// import JsonDump from '$lib/JSONDump.svelte';
 

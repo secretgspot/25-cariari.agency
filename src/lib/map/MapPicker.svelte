@@ -1,6 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { isEmpty } from '$lib/utils/helpers.js';
+	import { isEmpty } from '$lib/utils/validators.js';
 	import { browser } from '$app/environment';
 
 	let { position = $bindable({}) } = $props();

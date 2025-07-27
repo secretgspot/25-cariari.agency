@@ -1,7 +1,8 @@
 <script>
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { formatter, ago } from '$lib/utils/helpers.js';
+	import { formatter } from '$lib/utils/formatters.js';
+	import { ago } from '$lib/utils/time.js';
 	import { Button, LinkButton } from '$lib/buttons';
 	import Badge from '$lib/Badge.svelte';
 

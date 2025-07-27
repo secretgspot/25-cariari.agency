@@ -1,3 +1,25 @@
+// should match all non-empty values
+export function isEmpty(val) {
+	if (val === null || typeof val === 'undefined') {
+		return true; // null or undefined are considered empty
+	}
+	if (typeof val === 'object') {
+		return Object.keys(val).length === 0;
+	}
+	if (typeof val === 'string') {
+		return val.trim().length === 0;
+	}
+	if (typeof val === 'number') {
+		if (Number.isNaN(val)) return true;
+		// if (val === 0) return true;
+		return false; // A number is not empty in this context
+	}
+	if (val instanceof Array) {
+		return val.length === 0;
+	}
+	return false; // Default for other types
+}
+
 // should match all numbers or empty
 export function isNumber(val) {
 	// return typeof val === 'number' && val.length !== 0;

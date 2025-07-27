@@ -18,13 +18,9 @@
 	import Notify from '$lib/Notify.svelte';
 	import Dialog from '$lib/Dialog.svelte';
 	import { addToast } from '$lib/toasts';
-	import {
-		isEmpty,
-		getPosition,
-		addFeature,
-		removeFeature,
-		enter,
-	} from '$lib/utils/helpers.js';
+	import { addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
+	import { getPosition } from '$lib/utils/gps.js';
+	import { isEmpty } from '$lib/utils/validators.js';
 	// import JsonDump from '$lib/JSONDump.svelte';
 
 	// Component Props

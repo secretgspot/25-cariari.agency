@@ -2,13 +2,13 @@
 	// --- Imports ---
 	import { onMount, onDestroy } from 'svelte';
 	import {
-		isEmpty,
-		getPosition,
-		formatLargeNumber,
 		enableWakeLock,
 		disableWakeLock,
 		prefersDarkTheme,
 	} from '$lib/utils/helpers.js';
+	// import { getPosition } from '$lib/utils/gps.js';
+	import { isEmpty } from '$lib/utils/validators.js';
+	import { formatLargeNumber } from '$lib/utils/formatters.js';
 	import { browser } from '$app/environment';
 	import Toggle from '$lib/Toggle.svelte';
 
