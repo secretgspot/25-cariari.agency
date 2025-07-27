@@ -1,15 +1,42 @@
 <script>
+	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
+	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
+
 	/** @type {{selected?: any, disabled?: boolean, options?: any, kind?: string}} */
 	let {
 		selected = $bindable(),
 		disabled = false,
 		options = ['Sale', 'Rent'],
 		kind = 'square',
+		sound = true,
+		buzz = true,
 	} = $props();
+
+	function handleClick(event) {
+		if (sound) {
+			const selectedPattern = chimePatterns['tick'];
+			if (selectedPattern) {
+				if (Array.isArray(selectedPattern)) {
+					playChimeSequence(selectedPattern);
+				} else {
+					playChime(
+						selectedPattern.frequency,
+						selectedPattern.duration,
+						selectedPattern.volume,
+						selectedPattern.waveType,
+					);
+				}
+			}
+		}
+
+		if (buzz) {
+			vibrate(vibratePatterns.basic);
+		}
+	}
 </script>
 
 {#each options as option, indx}
-	<div class={kind}>
+	<div class={kind} onclick={handleClick} {...rest}>
 		<input
 			type="checkbox"
 			id={'chk-' + option}
