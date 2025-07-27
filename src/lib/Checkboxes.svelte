@@ -10,6 +10,7 @@
 		kind = 'square',
 		sound = true,
 		buzz = true,
+		...rest
 	} = $props();
 
 	function handleClick(event) {
