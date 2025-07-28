@@ -17,7 +17,7 @@
 		background: #fff;
 		opacity: 0;
 		z-index: -1;
-		transition: opacity 180ms;
+		transition: opacity var(--transition);
 		display: flex;
 		justify-content: center;
 		align-items: center;

@@ -117,15 +117,17 @@ export const chimePatterns = {
 
 	// Success patterns - ascending, positive tones
 	successA: [
-		{ frequency: 523, duration: 120, delay: 0, volume: 0.25 }, // C5
-		{ frequency: 659, duration: 120, delay: 100, volume: 0.25 }, // E5
-		{ frequency: 784, duration: 200, delay: 180, volume: 0.3 }  // G5
+		{ frequency: 220, duration: 600, delay: 0, volume: 0.2, waveType: 'sine' },
+		{ frequency: 330, duration: 500, delay: 150, volume: 0.15, waveType: 'sine' },
+		{ frequency: 440, duration: 400, delay: 300, volume: 0.12, waveType: 'sine' }
 	],
 	successB: [
-		{ frequency: 698, duration: 150, delay: 0, volume: 0.25 }, // F5
-		{ frequency: 880, duration: 250, delay: 120, volume: 0.3 }  // A5
+		{ frequency: 369, duration: 120, delay: 0, volume: 0.25 },
+		{ frequency: 963, duration: 180, delay: 90, volume: 0.3 }
 	],
-	successC: { frequency: 1047, duration: 300, volume: 0.25 }, // C6 - single high note
+	successC: { frequency: 666, duration: 300, volume: 0.25 },
+
+	// infoChord, deepDrone
 
 	// Fail patterns - descending, attention-getting tones
 	failA: [

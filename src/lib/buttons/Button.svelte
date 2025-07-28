@@ -40,7 +40,7 @@
 			}
 		}
 
-		if (vibrate) {
+		if (buzz) {
 			vibrate(vibratePatterns.basic);
 		}
 
@@ -176,7 +176,7 @@
 		padding: 0;
 		cursor: pointer;
 		user-select: none;
-		transition: background 333ms cubic-bezier(0.33, 1, 0.69, 1);
+		transition: background var(--transition) cubic-bezier(0.33, 1, 0.69, 1);
 		touch-action: manipulation;
 		z-index: 2;
 	}

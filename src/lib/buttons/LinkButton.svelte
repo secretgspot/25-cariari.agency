@@ -76,7 +76,7 @@
 		box-shadow: var(--accent) 0 -2px 0 -1px inset;
 		color: var(--primary-content);
 		padding-bottom: 2px;
-		transition: box-shadow 93ms ease-in-out;
+		transition: box-shadow calc(var(--transition) / 2) ease-in-out;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;

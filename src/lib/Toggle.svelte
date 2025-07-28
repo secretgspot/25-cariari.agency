@@ -13,13 +13,14 @@
 		on = '',
 		off = '',
 		sound = true,
+		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
 		buzz = true,
 		...rest
 	} = $props();
 
-	function handleClick(event) {
+	function handleChange(event) {
 		if (sound) {
-			const selectedPattern = chimePatterns['tick'];
+			const selectedPattern = chimePatterns[sound_pattern];
 			if (selectedPattern) {
 				if (Array.isArray(selectedPattern)) {
 					playChimeSequence(selectedPattern);
@@ -37,19 +38,24 @@
 		if (buzz) {
 			vibrate(vibratePatterns.basic);
 		}
+
+		if (rest.onchange) {
+			rest.onchange(event);
+		}
 	}
 </script>
 
-<div class="toggle" onclick={handleClick} {...rest}>
+<div class="toggle">
 	<input
 		type="checkbox"
 		bind:checked
 		class:colored
 		class="tgl {kind}"
-		{...rest}
 		id={name}
 		{name}
-		{disabled} />
+		{disabled}
+		onchange={handleChange}
+		{...rest} />
 	<label for={name} data-label={label} data-tg-off={off} data-tg-on={on}></label>
 </div>
 
@@ -120,7 +126,7 @@
 				overflow: hidden;
 				transform: skew(-10deg);
 				backface-visibility: hidden;
-				transition: all 0.2s ease;
+				transition: all var(--transition) ease;
 				border: 1px solid var(--accent);
 				width: 4em;
 				height: 2em;
@@ -132,7 +138,7 @@
 					align-items: center;
 					justify-content: center;
 					text-align: center;
-					transition: all 0.2s ease;
+					transition: all var(--transition) ease;
 					width: 100%;
 					position: absolute;
 					font-weight: bold;
@@ -187,7 +193,7 @@
 		.flip {
 			+ label {
 				padding: var(--padding-small);
-				transition: all 0.2s ease;
+				transition: all var(--transition) ease;
 				perspective: 100px;
 				min-width: 90px;
 				&:after,
@@ -196,7 +202,7 @@
 					align-items: center;
 					justify-content: center;
 					text-align: center;
-					transition: all 0.3s ease;
+					transition: all var(--transition) ease;
 					width: 100%;
 					color: var(--primary-content);
 					position: absolute;

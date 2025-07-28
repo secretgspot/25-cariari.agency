@@ -9,13 +9,14 @@
 		options = ['Sale', 'Rent'],
 		kind = 'square',
 		sound = true,
+		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
 		buzz = true,
 		...rest
 	} = $props();
 
-	function handleClick(event) {
+	function handleChange(event) {
 		if (sound) {
-			const selectedPattern = chimePatterns['tick'];
+			const selectedPattern = chimePatterns[sound_pattern];
 			if (selectedPattern) {
 				if (Array.isArray(selectedPattern)) {
 					playChimeSequence(selectedPattern);
@@ -33,18 +34,23 @@
 		if (buzz) {
 			vibrate(vibratePatterns.basic);
 		}
+
+		if (rest.onchange) {
+			rest.onchange(event);
+		}
 	}
 </script>
 
 {#each options as option, indx}
-	<div class={kind} onclick={handleClick} {...rest}>
+	<div class={kind} {...rest}>
 		<input
 			type="checkbox"
 			id={'chk-' + option}
 			name={option}
 			value={option}
 			bind:group={selected}
-			{disabled} />
+			{disabled}
+			onchange={handleChange} />
 		<label for={'chk-' + option}>{option}</label>
 	</div>
 {:else}

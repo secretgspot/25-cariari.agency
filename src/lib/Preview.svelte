@@ -77,12 +77,14 @@
 
 	<div class="content scroller">
 		<!-- {JSON.stringify(data, null, 2)} -->
-		<div class="preview-group" transition:fade={{ duration: 600 }}>
+		<div class="preview-group" transition:fade={{ duration: 300 }}>
+			<!--
 			<div class="land_use">
-				<!-- {#each property.property_for as p_for}
+				 {#each property.property_for as p_for}
 					<span>{p_for}</span>
-				{/each} -->
+				{/each}
 			</div>
+			-->
 
 			<div class="price_rent">
 				{#if property.rent}<span>{formatter.format(property.rent)}/m</span>{/if}
@@ -95,10 +97,12 @@
 				{#if property.year_built}<span>&bull; {ago(property.year_built)} old</span>{/if}
 			</div>
 
-			<!-- <div class="loc_address">
+			<!--
+			<div class="loc_address">
 				{#if property.location}<span>{property.location.lat} / {property.location.lng}</span
 					>{/if}
-			</div> -->
+			</div>
+			-->
 		</div>
 
 		<div class="badge-group">

@@ -246,7 +246,7 @@
 			height: 50%;
 			background-image: var(--gradient-gold);
 			animation: animate 6s linear infinite;
-			transition: all 0.3s linear;
+			transition: all var(--transition) linear;
 		}
 
 		&::after {

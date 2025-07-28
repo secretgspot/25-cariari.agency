@@ -87,6 +87,9 @@
 
 	/* BRIGHTNESS */
 	--brightness-map: 2;
+
+	/* TRANSITION */
+	--transition: 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -42,7 +42,7 @@ export const addToast = (toast) => {
 			vibrate(vibratePatterns.failB);
 			break;
 		default:
-			playChimeSequence(chimePatterns.notification);
+			playChimeSequence(chimePatterns.swipe);
 			vibrate(vibratePatterns.basic);
 			break;
 	}

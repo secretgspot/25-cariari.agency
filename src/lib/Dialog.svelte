@@ -192,10 +192,10 @@
 			background-image: radial-gradient(hsl(var(--pf) / 0.6), hsl(var(--p) / 0.9));
 			backdrop-filter: blur(3px);
 			transition:
-				display 0.3s allow-discrete,
-				overlay 0.3s allow-discrete,
-				transform 0.3s,
-				opacity 0.3s;
+				display var(--transition) allow-discrete,
+				overlay var(--transition) allow-discrete,
+				transform var(--transition),
+				opacity var(--transition);
 			opacity: 0; /* Start hidden for animation */
 		}
 
