@@ -1,5 +1,4 @@
 <script>
-	import { computeClasses, getDomAttributes } from './utils.js';
 	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
 	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
 

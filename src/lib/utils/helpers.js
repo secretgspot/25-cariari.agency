@@ -1,12 +1,15 @@
 // Function to check user's system preference
 export function prefersDarkTheme() {
-	return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+	if (typeof window !== 'undefined') {
+		return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+	return false;
 }
 
 // --- Wake Lock Helpers ---
 export async function enableWakeLock() {
 	try {
-		if ('wakeLock' in navigator) {
+		if (typeof navigator !== 'undefined' && 'wakeLock' in navigator) {
 			// Store the wakeLock instance on window to allow release from anywhere
 			window._wakeLock = await navigator.wakeLock.request('screen');
 		}
@@ -15,10 +18,14 @@ export async function enableWakeLock() {
 
 export async function disableWakeLock() {
 	try {
-		if (window._wakeLock) await window._wakeLock.release();
+		if (typeof window !== 'undefined' && window._wakeLock) {
+			await window._wakeLock.release();
+		}
 	} catch {
 	} finally {
-		window._wakeLock = null;
+		if (typeof window !== 'undefined') {
+			window._wakeLock = null;
+		}
 	}
 }
 

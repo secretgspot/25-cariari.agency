@@ -726,7 +726,7 @@
 			display: flex;
 			align-items: center;
 			gap: var(--padding-small);
-			:global(.btn-icon) {
+			:global(.icon) {
 				/* Small tablets and larger mobile devices (481px - 768px) */
 				@media (min-width: 481px) {
 					display: none;

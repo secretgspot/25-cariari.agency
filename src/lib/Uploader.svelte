@@ -268,7 +268,7 @@
 		@media (min-width: 481px) {
 			display: none;
 		}
-		:global(.btn-icon) {
+		:global(.icon) {
 			background: var(--secondary);
 			color: var(--secondary-content);
 			&:hover {

@@ -46,7 +46,7 @@
 <section class="preview-content" class:loading>
 	{#if is_admin}
 		<Button
-			class="admin-edit"
+			class="admin-edit icon"
 			size="icon"
 			{loading}
 			disabled={loading}
@@ -174,6 +174,7 @@
 			right: 0;
 			height: min-content;
 			width: min-content;
+			z-index: 2;
 		}
 	}
 
@@ -216,10 +217,10 @@
 			width: 100%;
 			padding: 2rem 3rem 0rem;
 
-			.land_use {
+			/* .land_use {
 				display: flex;
 				justify-content: space-between;
-			}
+			} */
 			.type_age {
 				text-transform: uppercase;
 				color: var(--txt-tertiary);

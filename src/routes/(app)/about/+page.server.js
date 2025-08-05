@@ -37,7 +37,7 @@ export const actions = {
 
 			const message = {
 				from: VITE_GOOGLE_EMAIL,
-				to: "secretgspot@gmail.com",
+				to: VITE_GOOGLE_EMAIL,
 				subject: `Cariari.Agency message from ${name}, ${email}`,
 				text: body,
 				html: html,

@@ -80,9 +80,9 @@ export async function playChimeSequence(sequence) {
 	const ctx = getAudioContext();
 	if (!ctx) return false;
 
-	let currentTime = ctx.currentTime;
+	const notes = Array.isArray(sequence) ? sequence : [sequence];
 
-	for (const note of sequence) {
+	for (const note of notes) {
 		const {
 			frequency = 800,
 			duration = 200,
@@ -117,9 +117,9 @@ export const chimePatterns = {
 
 	// Success patterns - ascending, positive tones
 	successA: [
-		{ frequency: 220, duration: 600, delay: 0, volume: 0.2, waveType: 'sine' },
-		{ frequency: 330, duration: 500, delay: 150, volume: 0.15, waveType: 'sine' },
-		{ frequency: 440, duration: 400, delay: 300, volume: 0.12, waveType: 'sine' }
+		{ frequency: 220, duration: 300, delay: 0, volume: 0.13, waveType: 'sine' },
+		{ frequency: 330, duration: 200, delay: 90, volume: 0.12, waveType: 'sine' },
+		{ frequency: 440, duration: 100, delay: 120, volume: 0.11, waveType: 'sine' }
 	],
 	successB: [
 		{ frequency: 369, duration: 120, delay: 0, volume: 0.25 },
@@ -132,8 +132,8 @@ export const chimePatterns = {
 	// Fail patterns - descending, attention-getting tones
 	failA: [
 		{ frequency: 120, duration: 150, delay: 0, volume: 0.3 },
-		{ frequency: 60, duration: 150, delay: 120, volume: 0.3 },
-		{ frequency: 30, duration: 200, delay: 240, volume: 0.3 }
+		{ frequency: 60, duration: 150, delay: 90, volume: 0.3 },
+		{ frequency: 30, duration: 200, delay: 120, volume: 0.3 }
 	],
 	failB: [
 		{ frequency: 100, duration: 200, delay: 0, volume: 0.30, waveType: 'square' },

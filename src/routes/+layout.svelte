@@ -1,7 +1,6 @@
 <script>
-	import { navigating, page } from '$app/state';
+	import { navigating } from '$app/state';
 	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { Toasts } from '$lib/toasts';
 	import Splash from '$lib/Splash.svelte';
 	// import 'leaflet/dist/leaflet.css';
@@ -14,48 +13,30 @@
 
 	// console.log('🍖 page:', data);
 
-	let { is_logged_in, is_admin, supabase } = $state(data);
-	let loading = $state(true); // Add a local loading state
-
-	onMount(async () => {
-		const {
-			data: { user },
-			error,
-		} = await data.supabase.auth.getUser();
-		if (!error && user) {
-			is_logged_in = true;
-			is_admin = user?.app_metadata?.claims_admin || false;
-		}
-		loading = false;
+	// Set up auth state listener with proper cleanup
+	$effect(() => {
+		// Guard clause - exit early if supabase isn't available
+		if (!data.supabase) return;
 
 		const {
 			data: { subscription },
-		} = data.supabase.auth.onAuthStateChange(async (event) => {
-			if (event === 'SIGNED_IN') {
-				const {
-					data: { user },
-					error,
-				} = await data.supabase.auth.getUser();
-				if (!error && user) {
-					is_logged_in = true;
-					is_admin = user?.app_metadata?.claims_admin || false;
-				}
-			} else if (event === 'SIGNED_OUT') {
-				is_logged_in = false;
-				is_admin = false;
+		} = data.supabase.auth.onAuthStateChange((event, session) => {
+			// Only invalidate on auth state changes that matter for the app
+			if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+				invalidate('supabase:auth');
 			}
-			invalidate('supabase:auth');
 		});
 
+		// Return cleanup function
 		return () => {
-			subscription.unsubscribe();
+			subscription?.unsubscribe();
 		};
 	});
 </script>
 
 <Toasts />
 
-{#if navigating.complete || loading}
+{#if navigating.complete}
 	<Splash />
 {:else}
 	{@render children?.()}
