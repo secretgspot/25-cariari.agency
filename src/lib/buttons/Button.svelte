@@ -105,8 +105,8 @@
 		target={linkTarget}
 		role="button"
 		data-sveltekit-prefetch
-		onclick={handleClick}
-		{...rest}>
+		{...rest}
+		onclick={handleClick}>
 		{@render buttonContent()}
 	</a>
 {:else}
@@ -117,8 +117,8 @@
 		class:outline
 		class:right
 		disabled={isDisabled}
-		onclick={handleClick}
-		{...rest}>
+		{...rest}
+		onclick={handleClick}>
 		{@render buttonContent()}
 	</button>
 {/if}
