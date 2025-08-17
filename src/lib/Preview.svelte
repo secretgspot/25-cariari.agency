@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import Badge from '$lib/Badge.svelte';
 	import { Button } from '$lib/buttons';
-	import Ad from '$lib/Ad.svelte';
+	import Ads from '$lib/Ads.svelte';
 	import { formatter } from '$lib/utils/formatters.js';
 	import { ago } from '$lib/utils/time.js';
 	import { Spinner } from '$lib/loaders';
@@ -131,15 +131,7 @@
 	</div>
 
 	<div class="commercial-wrapper">
-		<Ad width="320" height="100">
-			<a
-				href="//25-cariaripintor.vercel.app"
-				target="_blank"
-				rel="noreferrer"
-				title="Cariari House Painting Services">
-				<img src="/ads/pintarcariari-300x100.webp" alt="Pintar Cariari" loading="lazy" />
-			</a>
-		</Ad>
+		<Ads />
 	</div>
 
 	<footer>
