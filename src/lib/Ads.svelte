@@ -1,9 +1,10 @@
-<!-- Ads.svelte (Merged and Refactored) -->
+<!-- Ads.svelte (Refactored) -->
 <script>
 	import { onMount } from 'svelte';
 
 	/**
 	 * @typedef {Object} AdConfig
+	 * @property {string} id - Unique ad identifier
 	 * @property {string} file - Image filename
 	 * @property {string} title - Ad title/alt text
 	 * @property {string} href - Click destination URL
@@ -13,82 +14,88 @@
 	 * @property {boolean} [active] - Whether the ad is currently active
 	 */
 
-	/** @type {AdConfig[]} */
-	let ads = $state([]);
 	/** @type {AdConfig | null} */
 	let selectedAd = $state(null);
 	let impressionLogged = $state(false);
-
-	/**
-	 * Filters ads based on current date and other criteria
-	 * @param {AdConfig[]} adList
-	 * @returns {AdConfig[]}
-	 */
-	function getActiveAds(adList) {
-		return adList.filter((ad) => ad.active !== false);
-	}
-
-	/**
-	 * Selects a random ad based on weights
-	 * @param {AdConfig[]} adList
-	 * @returns {AdConfig | null}
-	 */
-	function selectWeightedRandomAd(adList) {
-		if (adList.length === 0) return null;
-
-		const totalWeight = adList.reduce((sum, ad) => sum + (ad.weight || 1), 0);
-		let random = Math.random() * totalWeight;
-
-		for (const ad of adList) {
-			random -= ad.weight || 1;
-			if (random <= 0) return ad;
-		}
-
-		return adList[0]; // Fallback
-	}
 
 	/**
 	 * Logs ad impression for analytics
 	 * @param {AdConfig} ad
 	 */
 	async function logImpression(ad) {
-		if (impressionLogged) return;
+		if (impressionLogged || !ad.id) return;
+
 		impressionLogged = true;
 
-		await fetch(`/api/ads/${ad.id}/impression`, {
-			method: 'POST',
-		});
+		try {
+			const response = await fetch(`/api/ad/${ad.id}/impression`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (!response.ok) {
+				console.error(
+					'Failed to log ad impression:',
+					response.status,
+					response.statusText,
+				);
+			}
+		} catch (error) {
+			console.error('Error logging ad impression:', error);
+		}
 	}
 
 	/**
 	 * Logs ad click for analytics
 	 * @param {AdConfig} ad
-	 * @param {MouseEvent} event
 	 */
-	async function logClick(ad, event) {
-		await fetch(`/api/ads/${ad.id}/click`, {
-			method: 'POST',
-		});
+	async function logClick(ad) {
+		if (!ad.id) return;
+
+		try {
+			const response = await fetch(`/api/ad/${ad.id}/click`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (!response.ok) {
+				console.error('Failed to log ad click:', response.status, response.statusText);
+			}
+		} catch (error) {
+			console.error('Error logging ad click:', error);
+		}
 	}
 
+	// Load a single ad on mount
 	onMount(async () => {
-		const response = await fetch('/api/ads');
-		if (response.ok) {
-			const allAds = await response.json();
-			const activeAds = getActiveAds(allAds);
-			selectedAd = selectWeightedRandomAd(activeAds);
-
-			if (selectedAd) {
-				// Log impression after a short delay to ensure visibility
-				setTimeout(() => logImpression(selectedAd), 1000);
+		try {
+			const response = await fetch('/api/ad');
+			if (!response.ok) {
+				if (response.status === 404) {
+					// No ad available, which is a valid state
+					selectedAd = null;
+				} else {
+					throw new Error(`HTTP ${response.status}`);
+				}
+			} else {
+				selectedAd = await response.json();
 			}
+		} catch (error) {
+			console.error('Error loading ad:', error);
+			selectedAd = null; // Ensure no broken ad is shown
 		}
 	});
 
-	// Use $effect instead of $: for reactive logging
+	// Log impression when ad becomes available and visible
 	$effect(() => {
 		if (selectedAd && !impressionLogged) {
-			logImpression(selectedAd);
+			// Small delay to ensure DOM is rendered and ad is visible
+			const timeoutId = setTimeout(() => logImpression(selectedAd), 1000);
+			return () => clearTimeout(timeoutId);
 		}
 	});
 </script>
