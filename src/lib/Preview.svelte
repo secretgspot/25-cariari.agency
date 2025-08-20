@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import Badge from '$lib/Badge.svelte';
 	import { Button } from '$lib/buttons';
-	import Ads from '$lib/Ads.svelte';
+	import Ad from '$lib/Ad.svelte';
 	import { formatter } from '$lib/utils/formatters.js';
 	import { ago } from '$lib/utils/time.js';
 	import { Spinner } from '$lib/loaders';
@@ -131,7 +131,7 @@
 	</div>
 
 	<div class="commercial-wrapper">
-		<Ads />
+		<Ad />
 	</div>
 
 	<footer>

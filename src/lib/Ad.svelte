@@ -1,4 +1,3 @@
-<!-- Ads.svelte (Refactored) -->
 <script>
 	import { onMount } from 'svelte';
 
@@ -18,22 +17,21 @@
 	let selectedAd = $state(null);
 	let impressionLogged = $state(false);
 
-	/**
-	 * Logs ad impression for analytics
-	 * @param {AdConfig} ad
-	 */
 	async function logImpression(ad) {
 		if (impressionLogged || !ad.id) return;
 
 		impressionLogged = true;
 
 		try {
-			const response = await fetch(`/api/ad/${ad.id}/impression`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
+			const response = await fetch(
+				`https://25-ad-agency.vercel.app/ads/${ad.id}/impression`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
 				},
-			});
+			);
 
 			if (!response.ok) {
 				console.error(
@@ -47,15 +45,11 @@
 		}
 	}
 
-	/**
-	 * Logs ad click for analytics
-	 * @param {AdConfig} ad
-	 */
 	async function logClick(ad) {
 		if (!ad.id) return;
 
 		try {
-			const response = await fetch(`/api/ad/${ad.id}/click`, {
+			const response = await fetch(`https://25-ad-agency.vercel.app/ads/${ad.id}/click`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -70,13 +64,11 @@
 		}
 	}
 
-	// Load a single ad on mount
 	onMount(async () => {
 		try {
-			const response = await fetch('/api/ad');
+			const response = await fetch('https://25-ad-agency.vercel.app/ad');
 			if (!response.ok) {
 				if (response.status === 404) {
-					// No ad available, which is a valid state
 					selectedAd = null;
 				} else {
 					throw new Error(`HTTP ${response.status}`);
@@ -86,14 +78,12 @@
 			}
 		} catch (error) {
 			console.error('Error loading ad:', error);
-			selectedAd = null; // Ensure no broken ad is shown
+			selectedAd = null;
 		}
 	});
 
-	// Log impression when ad becomes available and visible
 	$effect(() => {
 		if (selectedAd && !impressionLogged) {
-			// Small delay to ensure DOM is rendered and ad is visible
 			const timeoutId = setTimeout(() => logImpression(selectedAd), 1000);
 			return () => clearTimeout(timeoutId);
 		}
@@ -109,7 +99,7 @@
 		rel="noopener noreferrer"
 		title={selectedAd.title}
 		aria-label={selectedAd.title}
-		onclick={(event) => logClick(selectedAd, event)}>
+		onclick={() => logClick(selectedAd)}>
 		<img
 			src={selectedAd.file}
 			alt={selectedAd.title}
@@ -119,10 +109,9 @@
 			decoding="async" />
 	</a>
 {:else}
-	<!-- Fallback placeholder -->
 	<div class="advertising-placeholder" aria-label="Advertisement placeholder">
 		<small class="placeholder-text">
-			320×100<br />
+			Space for Ad<br />
 			<span class="ad-text">AD</span>
 		</small>
 	</div>
@@ -174,12 +163,14 @@
 		color: var(--primary-content);
 		border-radius: var(--border-radius);
 		place-self: center;
-		width: 320px;
-		height: 100px;
+		width: min-content;
+		min-width: 320px;
+		height: auto;
+		min-height: 100px;
 		aspect-ratio: 320/100;
 
 		.placeholder-text {
-			font-size: 12px;
+			font-size: small;
 			font-weight: 500;
 			user-select: none;
 
