@@ -13,7 +13,7 @@
 			"type": "image/png"
 		},
 		{
-			"src": "logo/logo_coin_gold.svg",
+			"src": "logo/logo_regular_gold.svg",
 			"sizes": "any",
 			"type": "image/svg+xml"
 		}
