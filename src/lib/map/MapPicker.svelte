@@ -203,7 +203,6 @@
 
 <style>
 	.map {
-		--brightness-map: 1;
 		height: 222px;
 		width: 100%;
 		z-index: 1;

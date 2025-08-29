@@ -1,15 +1,8 @@
 <script>
 	// export let color = 'rgba(0,0,0,0.9)';
 	/** @type {{size?: number, speed?: number, thickness?: number, gap?: number, radius?: number}} */
-	let {
-		size = 25,
-		speed = 720,
-		thickness = 1,
-		gap = 30,
-		radius = 12
-	} = $props();
+	let { size = 25, speed = 720, thickness = 1, gap = 30, radius = 12 } = $props();
 	let dash = $derived((2 * Math.PI * radius * (100 - gap)) / 100);
-	
 </script>
 
 <svg
@@ -17,8 +10,7 @@
 	width={size}
 	style="animation-duration:{speed}ms;"
 	class="svelte-spinner"
-	viewbox="0 0 32 32"
->
+	viewbox="0 0 32 32">
 	<circle
 		role="presentation"
 		cx="16"
@@ -28,8 +20,7 @@
 		fill="none"
 		stroke-width={thickness}
 		stroke-dasharray="{dash},100"
-		stroke-linecap="round"
-	/>
+		stroke-linecap="round" />
 </svg>
 
 <style>

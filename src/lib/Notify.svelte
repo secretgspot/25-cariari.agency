@@ -87,55 +87,51 @@
 			'.  message';
 		grid-template-rows: 0.5fr 1fr;
 		grid-template-columns: 45px 1fr;
-		border: solid 1px var(--border-color);
-		border-left-width: 6px;
-		border-radius: var(--border-radius);
-		/* background: var(--primary); */
-		padding: var(--padding-medium);
-		margin: var(--padding-medium);
-	}
-	.icon {
-		grid-area: icon;
-	}
-	.title {
-		grid-area: title;
-	}
-	.message {
-		grid-area: message;
-		margin-top: 0;
-	}
+		border: var(--border-size-1) solid var(--surface-4);
+		border-left-width: var(--border-size-3);
+		border-radius: var(--radius-2);
+		padding: var(--size-3);
+		margin: var(--size-3);
 
-	.success {
-		border-color: var(--success);
-		background: hsl(var(--su) / var(--bg-opacity, 1));
-		color: var(--success-content);
-	}
-	.success .icon {
-		color: var(--success-content);
-	}
-	.danger {
-		border-color: var(--error);
-		background: hsl(var(--er) / var(--bg-opacity, 1));
-		color: var(--error-content);
-	}
-	.danger .icon {
-		color: var(--error-content);
-	}
-	.warn {
-		border-color: var(--warning);
-		background: hsl(var(--wa) / var(--bg-opacity, 1));
-		color: var(--warning-content);
-	}
-	.warn .icon {
-		color: var(--warning-content);
-	}
-	.tip {
-		border-color: var(--info);
-		background: hsl(var(--in) / var(--bg-opacity, 1));
-		color: var(--info-content);
-	}
-	.tip .icon {
-		color: var(--info-content);
+		.icon {
+			grid-area: icon;
+		}
+		.title {
+			grid-area: title;
+		}
+		.message {
+			grid-area: message;
+			margin-top: 0;
+		}
+
+		&.success {
+			border-color: var(--success);
+			color: var(--success-content);
+			.icon {
+				color: var(--success);
+			}
+		}
+		&.danger {
+			border-color: var(--error);
+			color: var(--error-content);
+			.icon {
+				color: var(--error);
+			}
+		}
+		&.warn {
+			border-color: var(--warning);
+			color: var(--warning-content);
+			.icon {
+				color: var(--warning);
+			}
+		}
+		&.tip {
+			border-color: var(--info);
+			color: var(--info-content);
+			.icon {
+				color: var(--info);
+			}
+		}
 	}
 
 	@media only screen and (min-width: 541px) {

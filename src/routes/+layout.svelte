@@ -3,11 +3,7 @@
 	import { invalidate } from '$app/navigation';
 	import { Toasts } from '$lib/toasts';
 	import Splash from '$lib/Splash.svelte';
-	// import 'leaflet/dist/leaflet.css';
-	import '../styles/normalize.css';
-	import '../styles/styles.css';
-	import '../styles/leaflet.css';
-	import '../styles/print.css';
+	import 'open-props/style';
 
 	let { children, data } = $props();
 

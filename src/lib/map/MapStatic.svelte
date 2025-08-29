@@ -148,7 +148,7 @@
 
 	@media (prefers-color-scheme: dark) {
 		.map {
-			filter: invert(1) brightness(var(--brightness-map)) hue-rotate(180deg);
+			filter: invert(1) brightness(var(--brightness)) hue-rotate(180deg);
 		}
 	}
 </style>

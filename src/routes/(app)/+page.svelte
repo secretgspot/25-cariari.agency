@@ -106,17 +106,14 @@
 
 	.filter-controls {
 		display: flex;
-		gap: var(--gap-extra-small);
-		margin-block: var(--padding-extra-small);
-		border-bottom: 1px solid var(--color-border);
+		gap: var(--size-3);
 		position: absolute;
-		top: calc(var(--padding-small) * 3);
-		right: var(--padding-small);
-		row-gap: var(--gap-extra-small);
+		top: calc(var(--size-3) * 3);
+		right: var(--size-3);
 		user-select: none;
 		z-index: 3;
-		background: var(--primary);
-		padding: var(--padding-extra-small);
-		border-radius: var(--border-radius);
+		background: var(--surface-1);
+		padding: var(--size-1);
+		border-radius: var(--radius-2);
 	}
 </style>

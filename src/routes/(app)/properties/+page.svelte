@@ -92,8 +92,8 @@
 		grid-template-rows: max-content;
 		grid-auto-flow: dense;
 		/* grid-gap: var(--gap-medium); */
-		row-gap: var(--gap-small);
-		padding: var(--padding-large) 0;
+		row-gap: var(--size-2);
+		padding: var(--size-8) 0;
 		position: relative;
 
 		@media (min-width: 768px) {
@@ -129,7 +129,7 @@
 			grid-template-columns: repeat(2, 1fr);
 			align-items: center;
 			justify-items: center;
-			padding: var(--padding-small);
+			padding: var(--size-2);
 
 			@media (min-width: 720px) {
 				grid-template-columns: repeat(2, 1fr);

@@ -43,7 +43,7 @@
 	.logo-group::before,
 	.logo-group::after {
 		position: absolute;
-		color: var(--primary-content);
+		color: var(--text-1);
 		font-size: 2rem;
 		font-weight: lighter;
 		text-transform: uppercase;

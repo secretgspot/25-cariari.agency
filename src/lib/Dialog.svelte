@@ -132,7 +132,7 @@
 		<Button
 			type="button"
 			size="icon"
-			class="btn-close"
+			outline
 			aria-label="Close dialog"
 			onclick={() => closeDialog('closed')}>
 			{#snippet icon()}
@@ -149,20 +149,12 @@
 	<!-- Dialog Footer -->
 	<footer>
 		{#if type === 'alert'}
-			<Button type="button" size="block" class="btn-ok" onclick={() => closeDialog('ok')}
-				>OKAY</Button>
+			<Button type="button" size="block" onclick={() => closeDialog('ok')}>OKAY</Button>
 		{:else if type === 'confirm'}
-			<Button
-				type="button"
-				size="block"
-				class="btn-cancel"
-				onclick={() => closeDialog('canceled')}>Cancel</Button>
-			<Button
-				type="button"
-				size="block"
-				class="btn-confirm"
-				red
-				onclick={() => closeDialog('confirmed')}>Confirm</Button>
+			<Button type="button" size="block" onclick={() => closeDialog('canceled')}
+				>Cancel</Button>
+			<Button type="button" size="block" red onclick={() => closeDialog('confirmed')}
+				>Confirm</Button>
 		{/if}
 	</footer>
 </dialog>
@@ -178,18 +170,21 @@
 		/* min-height: 369px; */
 		width: min-content;
 		height: min-content;
-		border: var(--border);
-		border-radius: var(--border-radius);
+		border: var(--border-size-1) solid var(--surface-2);
+		border-radius: var(--radius-2);
 		pointer-events: none;
 		z-index: 6;
 		position: fixed;
 		align-self: anchor-center;
-		background: var(--primary);
-		color: var(--primary-content);
+		background: var(--surface-1);
+		color: var(--text-1);
 
 		&,
 		&::backdrop {
-			background-image: radial-gradient(hsl(var(--pf) / 0.6), hsl(var(--p) / 0.9));
+			background-image: radial-gradient(
+				hsl(var(--red-3) / 0.6),
+				hsl(var(--blue-3) / 0.9)
+			);
 			backdrop-filter: blur(3px);
 			transition:
 				display var(--transition) allow-discrete,
@@ -233,12 +228,12 @@
 		}
 
 		#dialog-description {
-			margin: var(--padding-medium);
+			margin: var(--size-3);
 		}
 
 		footer {
 			display: flex;
-			gap: var(--gap-medium);
+			gap: var(--size-3);
 		}
 	}
 </style>

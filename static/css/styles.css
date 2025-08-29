@@ -1,0 +1,220 @@
+/* @import "open-props/style"; */
+
+/* THEMING */
+:root {
+	color-scheme: light;
+
+	/* set defaults */
+	--brand: var(--brand-light);
+	--text-1: var(--text-1-light);
+	--text-2: var(--text-2-light);
+	--surface-1: var(--surface-1-light);
+	--surface-2: var(--surface-2-light);
+	--surface-3: var(--surface-3-light);
+	--surface-4: var(--surface-4-light);
+	--accent: var(--blue-7);
+	--accent-content: var(--blue-12);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+
+		--brand: var(--brand-dark);
+		--text-1: var(--text-1-dark);
+		--text-2: var(--text-2-dark);
+		--surface-1: var(--surface-1-dark);
+		--surface-2: var(--surface-2-dark);
+		--surface-3: var(--surface-3-dark);
+		--surface-4: var(--surface-4-dark);
+		--accent: var(--yellow-3);
+		--accent-content: var(--yellow-1);
+	}
+}
+
+[color-scheme="light"] {
+	color-scheme: light;
+
+	--brand: var(--brand-light);
+	--text-1: var(--text-1-light);
+	--text-2: var(--text-2-light);
+	--surface-1: var(--surface-1-light);
+	--surface-2: var(--surface-2-light);
+	--surface-3: var(--surface-3-light);
+	--surface-4: var(--surface-4-light);
+	--accent: var(--blue-7);
+	--accent-content: var(--blue-12);
+}
+
+[color-scheme="dark"] {
+	color-scheme: dark;
+
+	--brand: var(--brand-dark);
+	--text-1: var(--text-1-dark);
+	--text-2: var(--text-2-dark);
+	--surface-1: var(--surface-1-dark);
+	--surface-2: var(--surface-2-dark);
+	--surface-3: var(--surface-3-dark);
+	--surface-4: var(--surface-4-dark);
+	--accent: var(--yellow-3);
+	--accent-content: var(--yellow-1);
+}
+
+/* Additional global styles if needed */
+*,
+::before,
+::after {
+	box-sizing: border-box;
+}
+
+html {
+	/* common */
+	--transition: 180ms;
+	--brightness: 1;
+
+	/* light */
+	--brand-light: var(--stone-12);
+	--text-1-light: var(--gray-8);
+	--text-2-light: var(--gray-7);
+	--surface-1-light: var(--gray-0);
+	--surface-2-light: var(--gray-1);
+	--surface-3-light: var(--gray-2);
+	--surface-4-light: var(--gray-3);
+
+	/* dark */
+	--brand-dark: var(--stone-1);
+	--text-1-dark: var(--gray-3);
+	--text-2-dark: var(--gray-5);
+	--surface-1-dark: var(--gray-12);
+	--surface-2-dark: var(--gray-11);
+	--surface-3-dark: var(--gray-10);
+	--surface-4-dark: var(--gray-9);
+
+	/* general */
+	--success: var(--green-6);
+	--success-content: var(--green-11);
+	--error: var(--red-6);
+	--error-content: var(--red-11);
+	--warning: var(--orange-6);
+	--warning-content: var(--orange-11);
+	--info: var(--blue-6);
+	--info-content: var(--blue-11);
+
+	/* GRADIENTS */
+	--gradient-gold: radial-gradient(ellipse farthest-corner at right bottom, #fedb37 0%, #fdb931 8%, #9f7928 30%, #8a6e2f 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #ffffff 0%, #ffffac 8%, #d1b464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+
+	height: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	font-family: var(--font-rounded-sans);
+	background: var(--surface-1);
+	color: var(--text-1);
+	/* height: 100%; */
+	min-height: 100%;
+}
+
+
+[hide] {
+	display: none;
+}
+
+[disabled] {
+	pointer-events: none;
+	user-select: none;
+	cursor: not-allowed;
+}
+
+[readonly] {
+	background: var(--surface-3);
+	color: var(--text-2);
+	cursor: not-allowed;
+}
+
+/**
+* Style scrollbars (webkit)
+*/
+.scroller {
+	/* For Firefox and other browsers that support the standard */
+	scrollbar-width: thin;
+	/* Can be 'auto', 'thin', or 'none' */
+	scrollbar-color: var(--brand) transparent;
+	/* thumb and track colors */
+}
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+.scroller::-webkit-scrollbar {
+	width: 6px;
+	height: 9px;
+}
+
+.scroller::-webkit-scrollbar-track {
+	border-radius: var(--radius-2);
+	background: transparent;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+	background-color: var(--brand);
+	border-radius: var(--radius-2);
+}
+
+/**
+* INPUTS
+*/
+input[type='text'],
+input[type='email'],
+input[type='number'],
+input[type='tel'],
+select,
+textarea {
+	display: block;
+	padding: var(--size-2);
+	color: var(--text-1);
+	border: var(--border-size-1) solid var(--surface-4);
+	border-radius: var(--radius-2);
+	width: 100%;
+	background: transparent;
+}
+
+input[type=range] {
+	appearance: none;
+	margin: 10px 0;
+	width: 100%;
+
+	&:focus {
+		outline: none;
+	}
+
+	&::-webkit-slider-runnable-track {
+		width: 100%;
+		height: 1px;
+		cursor: pointer;
+		background: var(--accent-content);
+	}
+
+	&::-webkit-slider-thumb {
+		height: 18px;
+		width: 36px;
+		border-radius: var(--radius-2);
+		background: var(--accent);
+		cursor: pointer;
+		appearance: none;
+		margin-top: -9px;
+	}
+
+	&:focus::-webkit-slider-runnable-track {
+		background: var(--accent);
+	}
+}
+
+
+
+
+@media (min-width: 720px) {
+	h1 {
+		font-size: 2.4rem;
+	}
+}

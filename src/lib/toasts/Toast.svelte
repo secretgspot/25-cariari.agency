@@ -5,7 +5,6 @@
 	let { type = '', dismissible = true, children, ondismiss } = $props();
 
 	function handleDismiss() {
-		// console.log('Toast dismiss clicked'); // Debug log
 		ondismiss?.();
 	}
 </script>
@@ -31,40 +30,39 @@
 <style>
 	.toast {
 		display: flex;
-		border-radius: var(--border-radius);
-		border: var(--border);
+		border-radius: var(--radius-2);
+		border: var(--border-size-1) solid var(--surface-3);
 		align-items: center;
-		padding: var(--padding-extra-small);
-		gap: var(--gap-small);
-		pointer-events: auto; /* Ensure toasts are clickable */
+		padding: var(--size-1) var(--size-2);
+		gap: var(--size-2);
+		pointer-events: auto;
 	}
 	.error {
-		background: var(--error);
-		border-color: var(--error);
-		color: var(--error-content);
+		background: var(--red-1);
+		border-color: var(--red-3);
+		color: var(--red-11);
 	}
 	.success {
-		background: var(--success);
-		border-color: var(--success);
-		color: var(--success-content);
+		background: var(--green-1);
+		border-color: var(--green-3);
+		color: var(--green-11);
 	}
 	.info {
-		background: var(--info);
-		border-color: var(--info);
-		color: var(--primary);
+		background: var(--blue-1);
+		border-color: var(--blue-3);
+		color: var(--blue-11);
 	}
 	.text {
-		margin-right: 1rem;
-		font-size: 0.81rem;
+		font-size: smaller;
 	}
 	.close {
 		background: transparent;
 		border: 0 none;
 		padding: 0;
 		cursor: pointer;
-		pointer-events: auto; /* Ensure button is clickable */
-	}
-	.close:hover {
-		opacity: 0.7;
+		pointer-events: auto;
+		&:hover {
+			opacity: 0.7;
+		}
 	}
 </style>

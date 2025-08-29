@@ -24,7 +24,7 @@
 		grid-column: 1 / -1;
 		grid-row: 1 / -1;
 		display: flex;
-		gap: var(--gap-medium);
+		gap: var(--size-3);
 		flex-direction: column;
 		align-items: center;
 		align-self: center;

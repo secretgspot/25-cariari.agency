@@ -1,6 +1,13 @@
 <script>
 	/** @type {{type?: string, color?: string, size?: number, fixed?: boolean}} */
-	let { type = 'regular', color = 'gold', size = 36, fixed = false, ...rest } = $props();
+	let {
+		type = 'regular',
+		color = 'gold',
+		size = 36,
+		fixed = false,
+		invert = false,
+		...rest
+	} = $props();
 </script>
 
 <img
@@ -16,10 +23,13 @@
 	.logo {
 		z-index: 10;
 		cursor: pointer;
-	}
-	.fixed {
-		position: fixed;
-		top: var(--padding-small);
-		left: var(--padding-small);
+		&.fixed {
+			position: fixed;
+			top: var(--size-2);
+			left: var(--size-2);
+		}
+		&.invert {
+			mix-blend-mode: difference;
+		}
 	}
 </style>

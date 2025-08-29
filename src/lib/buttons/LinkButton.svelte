@@ -1,41 +1,36 @@
 <script>
-	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
-	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
+	import { navigating } from '$app/state';
+	import { Spinner } from '$lib/loaders';
+	import { playButtonSound } from '$lib/utils/audio.js';
+	import { vibrateButton } from '$lib/utils/vibrate.js';
 
-	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, sound?: boolean, pattern?: string, vibrate?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
+	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
 	let {
 		disabled = false,
 		isLink = false,
 		href = null,
 		external = false,
+		underline = true,
 		sound = true,
-		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
+		sound_pattern = 'click',
 		buzz = true,
+		buzz_pattern = 'click',
 		children,
 		...rest
 	} = $props();
 
 	function handleClick(event) {
+		// Play sound if enabled locally
 		if (sound) {
-			const selectedPattern = chimePatterns[sound_pattern];
-			if (selectedPattern) {
-				if (Array.isArray(selectedPattern)) {
-					playChimeSequence(selectedPattern);
-				} else {
-					playChime(
-						selectedPattern.frequency,
-						selectedPattern.duration,
-						selectedPattern.volume,
-						selectedPattern.waveType,
-					);
-				}
-			}
+			playButtonSound(sound_pattern);
 		}
 
+		// Trigger vibration if enabled locally
 		if (buzz) {
-			vibrate(vibratePatterns.basic);
+			vibrateButton(buzz_pattern);
 		}
 
+		// Call the original onclick handler
 		if (rest.onclick) {
 			rest.onclick(event);
 		}
@@ -45,6 +40,7 @@
 {#if isLink || href}
 	<a
 		class:disabled
+		class:underline
 		data-sveltekit-prefetch
 		{...rest}
 		role="button"
@@ -54,8 +50,7 @@
 		{@render children?.()}
 	</a>
 {:else}
-	<!-- removed onclic={preventDefault()} -->
-	<button {...rest} class:disabled {disabled} onclick={handleClick}>
+	<button {...rest} class:disabled class:underline {disabled} onclick={handleClick}>
 		{@render children?.()}
 	</button>
 {/if}
@@ -65,30 +60,29 @@
 	a {
 		border: none;
 		background: none;
-
 		cursor: pointer;
 		font-size: inherit;
 		text-decoration: none;
-		/* font-size: 0.875rem;
-    line-height: 1.25rem;
-    color: rgba(62, 207, 142); */
-		box-shadow: var(--accent) 0 -2px 0 -1px inset;
-		color: var(--primary-content);
+
+		color: var(--text-1);
 		padding-bottom: 2px;
-		transition: box-shadow calc(var(--transition) / 2) ease-in-out;
+		transition: box-shadow var(--transition) ease-in-out;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;
 		white-space: nowrap;
-	}
-	button:hover,
-	a:hover {
-		box-shadow: var(--accent) inset 0 -3px 0 -1px;
-		color: var(--accent);
-	}
-	button.active,
-	a.active {
-		box-shadow: var(--accent) inset 0 -5px 0 -1px;
-		color: var(--accent);
+		&:hover {
+			color: var(--accent);
+		}
+		&.active {
+			box-shadow: var(--accent) inset 0 -5px 0 -1px;
+			color: var(--accent);
+		}
+		&.underline {
+			box-shadow: var(--accent) 0 -2px 0 -1px inset;
+			&:hover {
+				box-shadow: var(--accent) inset 0 -3px 0 -1px;
+			}
+		}
 	}
 </style>

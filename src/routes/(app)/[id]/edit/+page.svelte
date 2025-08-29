@@ -321,8 +321,11 @@
 					type="text"
 					placeholder="ex: -84.163443"
 					bind:value={propertyData.location.lng} />
-				<Button type="button" size="block" onclick={() => getPosition(propertyData, gps)}
-					>Get current GPS</Button>
+				<Button
+					type="button"
+					size="block"
+					shadow
+					onclick={() => getPosition(propertyData, gps)}>Get current GPS</Button>
 
 				<MapPicker bind:updategps={gps} bind:position={propertyData.location} />
 			</fieldset>
@@ -628,7 +631,8 @@
 		{#if isAdmin}
 			<Button
 				type="button"
-				color="danger"
+				shadow
+				red
 				{loading}
 				disabled={loading}
 				onclick={showDeleteConfirm}>
@@ -642,6 +646,7 @@
 		{#if isAdmin || propertyData.is_active}
 			<Button
 				type="button"
+				shadow
 				{loading}
 				disabled={loading}
 				onclick={() => {
@@ -674,7 +679,7 @@
 		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes
 			</Button> -->
-		<Button formaction="?/edit" {loading} disabled={loading}>
+		<Button formaction="?/edit" shadow {loading} disabled={loading}>
 			{#snippet icon()}
 				💾
 			{/snippet}
@@ -730,24 +735,10 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
-		margin: calc(var(--padding-large) * 3) 0;
-		gap: var(--gap-small);
+		margin: calc(var(--size-8) * 3) 0;
+		gap: var(--size-2);
 	}
 
-	fieldset input[type='text'],
-	fieldset input[type='email'],
-	fieldset input[type='number'],
-	fieldset input[type='tel'],
-	fieldset :global(select),
-	fieldset textarea {
-		display: block;
-		padding: var(--padding-small);
-		color: var(--primary-content);
-		border: var(--border);
-		border-radius: var(--border-radius);
-		width: 100%;
-		background: transparent;
-	}
 	/* fieldset :global(button) {
 		height: auto;
 		width: 100%;
@@ -757,24 +748,24 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-template-rows: auto 1fr;
-		gap: var(--gap-medium);
-		padding: var(--padding-medium);
-		box-shadow: var(--shadow-small);
+		gap: var(--size-3);
+		padding: var(--size-3);
+		box-shadow: var(--shadow-1);
 	}
 	.section .header p {
-		color: var(--secondary-content);
+		color: var(--text-2);
 	}
 	.section .inputs {
 		display: flex;
 		flex-direction: column;
-		gap: var(--gap-small);
+		gap: var(--size-2);
 	}
 	.section fieldset {
-		/* border: var(--border); */
-		border-radius: var(--border-radius);
+		/* border: var(--border-size-1) solid var(--surface-4); */
+		border-radius: var(--radius-2);
 		border: none;
 		display: grid;
-		gap: var(--gap-small);
+		gap: var(--size-2);
 	}
 	.section fieldset.flow {
 		grid-auto-flow: column;
@@ -782,7 +773,7 @@
 	.section legend {
 		text-transform: uppercase;
 		font-size: 0.81rem;
-		color: var(--secondary-content);
+		color: var(--text-2);
 	}
 
 	@media (min-width: 768px) {
@@ -811,14 +802,14 @@
 	/* .section_location .location :global(img) {
 		width: 100%;
 		margin: 1rem 0;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 	} */
 
 	.section_features {
 		.features-flow {
 			display: flex;
 			align-items: center;
-			gap: var(--padding-small);
+			gap: var(--size-2);
 			:global(.icon) {
 				/* Small tablets and larger mobile devices (481px - 768px) */
 				@media (min-width: 481px) {
@@ -830,25 +821,25 @@
 
 	.section_features .feature-list {
 		/* margin: 1rem 0; */
-		gap: var(--gap-extra-small);
+		gap: var(--size-1);
 		display: flex;
 		flex-wrap: wrap;
 	}
 	.section_features .feature {
 		display: inline-flex;
 		align-items: center;
-		border: var(--border);
-		border-radius: var(--border-radius);
-		padding: var(--padding-extra-small);
-		/* margin: var(--padding-extra-small); */
+		border: var(--border-size-1) solid var(--surface-4);
+		border-radius: var(--radius-2);
+		padding: var(--size-1);
+		/* margin: var(--size-1); */
 		cursor: default;
 	}
 	.section_features .feature .close {
 		width: 18px;
 		color: var(--error);
-		border: var(--border);
-		border-radius: var(--border-radius);
-		margin-right: var(--padding-extra-small);
+		border: var(--border-size-1) solid var(--surface-4);
+		border-radius: var(--radius-2);
+		margin-right: var(--size-1);
 		cursor: pointer;
 		text-align: center;
 	}
@@ -865,8 +856,8 @@
 	footer.buttons-group {
 		display: grid;
 		justify-items: center;
-		gap: var(--gap-small);
-		padding: var(--padding-small);
+		gap: var(--size-2);
+		padding: var(--size-2);
 	}
 	@media (min-width: 768px) {
 		footer.buttons-group {

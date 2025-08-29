@@ -198,8 +198,8 @@
 	}
 
 	article {
-		background: var(--primary);
-		color: var(--primary-content);
+		background: var(--surface-1);
+		color: var(--text-1);
 		font-size: calc(1em + 0.5vw);
 
 		p {
@@ -235,7 +235,7 @@
 				font-size: 1rem;
 				background: var(--warning);
 				color: var(--warning-content);
-				border-radius: var(--border-radius);
+				border-radius: var(--radius-2);
 				position: absolute;
 				top: 50%;
 				left: 0;
@@ -274,20 +274,20 @@
 			display: flex;
 			flex-direction: column;
 			/* align-items: center; */
-			gap: var(--padding-extra-small);
+			gap: var(--size-1);
 
 			h3 {
 				margin: 0;
 			}
 			a {
-				color: var(--accent);
+				color: var(--accent-content);
 				text-decoration: none;
 				white-space: nowrap;
 				vertical-align: top;
 				margin-left: 0.3rem;
 			}
 			:global(svg) {
-				color: var(--secondary-content);
+				color: var(--text-2);
 			}
 		}
 	}
@@ -310,16 +310,16 @@
 
 	.card {
 		position: sticky;
-		top: calc(var(--padding-large) * 2);
+		top: calc(var(--size-8) * 2);
 		padding-top: calc(var(--index) * var(--card-top-offset));
 
 		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
-			top: calc(var(--padding-large) * 1);
+			top: calc(var(--size-8) * 1);
 		}
 
 		.card__content {
 			/* box-shadow: var(--shadow-large); */
-			border-radius: var(--border-radius);
+			border-radius: var(--radius-2);
 			overflow: hidden;
 			aspect-ratio: 2 / 1;
 
@@ -363,7 +363,7 @@
 
 		.grouped {
 			display: flex;
-			gap: var(--padding-medium);
+			gap: var(--size-3);
 			flex: 0 1 100%;
 			justify-content: center;
 		}
@@ -382,8 +382,8 @@
 			justify-content: space-evenly;
 			align-content: center;
 			flex-wrap: wrap;
-			gap: var(--gap-small);
-			margin-block: calc(var(--padding-large) * 2);
+			gap: var(--size-2);
+			margin-block: calc(var(--size-8) * 2);
 		}
 
 		p.amenities {
@@ -391,7 +391,7 @@
 			justify-content: center;
 			align-content: center;
 			flex-wrap: wrap;
-			margin-block: var(--padding-large);
+			margin-block: var(--size-8);
 
 			span:after {
 				content: '•';
@@ -405,14 +405,14 @@
 		}
 
 		.location {
-			margin-block: var(--padding-large) 0;
+			margin-block: var(--size-8) 0;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 		}
 	}
 	.commercial-wrapper {
-		margin: 0 0 var(--padding-medium) 0;
+		margin: 0 0 var(--size-3) 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;

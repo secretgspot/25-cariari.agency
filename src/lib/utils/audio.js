@@ -1,8 +1,5 @@
-/**
- * Audio chime utilities for consistent audio feedback across components
- * Uses Web Audio API to generate synthetic chimes and tones
- * playground: https://svelte.dev/playground/8a6890077f664c05ae4eaa90838f91ef?version=5.36.17
- */
+import { settings } from '$lib/settings/settings.js';
+import { get } from 'svelte/store';
 
 // Global audio context - created lazily to avoid autoplay restrictions
 let audioContext = null;
@@ -100,6 +97,86 @@ export async function playChimeSequence(sequence) {
 }
 
 /**
+ * Plays a sound based on the given pattern.
+ * @param {object|Array<object>} pattern - The audio pattern to play.
+ */
+export function playSound(pattern) {
+	if (!pattern) {
+		console.warn(`Audio pattern not found.`);
+		return;
+	}
+	if (Array.isArray(pattern)) {
+		playChimeSequence(pattern);
+	} else {
+		playChime(pattern.frequency, pattern.duration, pattern.volume, pattern.waveType);
+	}
+}
+
+/**
+ * Plays a button click sound.
+ * @param {string} [patternName] - Optional: The name of the pattern to play. Defaults to settings.button_sound_pattern.
+ */
+export function playButtonSound(patternName) {
+	const currentSettings = get(settings);
+	if (!currentSettings.button_sounds) return;
+	const pattern = patternName ? chimePatterns[patternName] : chimePatterns[currentSettings.button_sound_pattern];
+	playSound(pattern);
+}
+
+/**
+ * Plays a navigation sound.
+ * @param {string} [patternName] - Optional: The name of the pattern to play. Defaults to settings.navigation_sound_pattern.
+ */
+export function playNavigationSound(patternName) {
+	const currentSettings = get(settings);
+	if (!currentSettings.navigation_sound) return;
+	const pattern = patternName ? chimePatterns[patternName] : chimePatterns[currentSettings.navigation_sound_pattern];
+	playSound(pattern);
+}
+
+/**
+ * Plays a notification sound.
+ * @param {'success'|'fail'|'notification'} type - The type of notification.
+ */
+export function playNotificationSound(type = 'notification') {
+	const currentSettings = get(settings);
+	if (!currentSettings.notification_sound) return;
+	let patternName;
+	if (type === 'success') {
+		patternName = currentSettings.notification_success_sound_pattern;
+	} else if (type === 'fail') {
+		patternName = currentSettings.notification_error_sound_pattern;
+	} else {
+		patternName = currentSettings.notification_sound_pattern;
+	}
+	const pattern = chimePatterns[patternName];
+	playSound(pattern);
+}
+
+/**
+ * Attaches a click sound to an element.
+ * @param {HTMLElement} node - The element to attach the sound to.
+ * @param {string} [pattern='click'] - The name of the sound pattern to play from chimePatterns.
+ */
+export function sound(node, pattern = 'click') {
+	const handleClick = () => {
+		playButtonSound(pattern);
+	};
+
+	node.addEventListener('click', handleClick, true);
+
+	return {
+		update(newPattern) {
+			pattern = newPattern;
+		},
+		destroy() {
+			node.removeEventListener('click', handleClick, true);
+		}
+	};
+}
+
+
+/**
  * Check if Web Audio API is supported
  * @returns {boolean} - True if audio API is available
  */
@@ -112,183 +189,472 @@ export function isAudioSupported() {
  * Frequencies chosen to be pleasant and distinguishable
  */
 export const chimePatterns = {
-	// Basic interaction - single pleasant tone
-	basic: { frequency: 900, duration: 100, volume: 0.1 },
+	// Basic interaction - rich harmonic click with deep foundation
+	basic: [{
+		frequency: 130,
+		duration: 300,
+		delay: 0,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 260,
+		duration: 250,
+		delay: 10,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 520,
+		duration: 200,
+		delay: 20,
+		volume: 0.12,
+		waveType: 'sine',
+	}, {
+		frequency: 780,
+		duration: 180,
+		delay: 25,
+		volume: 0.08,
+		waveType: 'sine',
+	}],
 
-	// Success patterns - ascending, positive tones
-	successA: [
-		{ frequency: 220, duration: 300, delay: 0, volume: 0.13, waveType: 'sine' },
-		{ frequency: 330, duration: 200, delay: 90, volume: 0.12, waveType: 'sine' },
-		{ frequency: 440, duration: 100, delay: 120, volume: 0.11, waveType: 'sine' }
-	],
-	successB: [
-		{ frequency: 369, duration: 120, delay: 0, volume: 0.25 },
-		{ frequency: 963, duration: 180, delay: 90, volume: 0.3 }
-	],
-	successC: { frequency: 666, duration: 300, volume: 0.25 },
+	// Subtle tick with deep harmonic overtones
+	tick: [{
+		frequency: 220,
+		duration: 180,
+		delay: 0,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 440,
+		duration: 150,
+		delay: 5,
+		volume: 0.12,
+		waveType: 'sine',
+	}, {
+		frequency: 660,
+		duration: 120,
+		delay: 10,
+		volume: 0.08,
+		waveType: 'sine',
+	}, {
+		frequency: 110,
+		duration: 220,
+		delay: 3,
+		volume: 0.1,
+		waveType: 'sine',
+	}],
 
-	// infoChord, deepDrone
+	// Deep cinematic button click with sub-bass foundation
+	click: [{
+		frequency: 87,
+		duration: 280,
+		delay: 0,
+		volume: 0.2,
+		waveType: 'sine',
+	}, {
+		frequency: 174,
+		duration: 220,
+		delay: 15,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 261,
+		duration: 200,
+		delay: 25,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 392,
+		duration: 180,
+		delay: 35,
+		volume: 0.12,
+		waveType: 'sine',
+	}, {
+		frequency: 523,
+		duration: 160,
+		delay: 40,
+		volume: 0.08,
+		waveType: 'sine',
+	}],
 
-	// Fail patterns - descending, attention-getting tones
-	failA: [
-		{ frequency: 120, duration: 150, delay: 0, volume: 0.3 },
-		{ frequency: 60, duration: 150, delay: 90, volume: 0.3 },
-		{ frequency: 30, duration: 200, delay: 120, volume: 0.3 }
-	],
-	failB: [
-		{ frequency: 100, duration: 200, delay: 0, volume: 0.30, waveType: 'square' },
-		{ frequency: 50, duration: 300, delay: 150, volume: 0.30, waveType: 'square' }
-	],
-	failC: { frequency: 60, duration: 300, volume: 0.3, waveType: 'sawtooth' },
+	// Rich long press with powerful low-end
+	longPress: [{
+		frequency: 65,
+		duration: 500,
+		delay: 0,
+		volume: 0.25,
+		waveType: 'sine',
+	}, {
+		frequency: 130,
+		duration: 480,
+		delay: 20,
+		volume: 0.22,
+		waveType: 'sine',
+	}, {
+		frequency: 195,
+		duration: 450,
+		delay: 40,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 260,
+		duration: 420,
+		delay: 60,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 390,
+		duration: 380,
+		delay: 80,
+		volume: 0.1,
+		waveType: 'sine',
+	}],
 
-	// Additional useful patterns
-	notification: [
-		{ frequency: 300, duration: 100, delay: 0, volume: 0.25 },
-		{ frequency: 600, duration: 100, delay: 150, volume: 0.25 }
-	],
-	warning: [
-		{ frequency: 600, duration: 80, delay: 0, volume: 0.3 },
-		{ frequency: 600, duration: 80, delay: 120, volume: 0.3 },
-		{ frequency: 600, duration: 120, delay: 240, volume: 0.35 }
-	],
-	tick: { frequency: 30, duration: 90, volume: 0.11 },
-	longPress: { frequency: 400, duration: 150, volume: 0.2 },
-	swipe: [
-		{ frequency: 800, duration: 60, delay: 0, volume: 0.2 },
-		{ frequency: 1000, duration: 60, delay: 50, volume: 0.2 }
-	],
-	bell: { frequency: 30, duration: 800, volume: 0.2, waveType: 'triangle' },
-	click: { frequency: 1500, duration: 30, volume: 0.15 }
-};
+	// Deep swipe with rumbling bass
+	swipe: [{
+		frequency: 73,
+		duration: 350,
+		delay: 0,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 146,
+		duration: 320,
+		delay: 25,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 220,
+		duration: 290,
+		delay: 50,
+		volume: 0.13,
+		waveType: 'sine',
+	}, {
+		frequency: 293,
+		duration: 260,
+		delay: 75,
+		volume: 0.1,
+		waveType: 'sine',
+	}, {
+		frequency: 440,
+		duration: 220,
+		delay: 100,
+		volume: 0.08,
+		waveType: 'sine',
+	}],
 
-/**
- * Convenience functions for common chime patterns
- */
-export const chimeBasic = () => playChime(
-	chimePatterns.basic.frequency,
-	chimePatterns.basic.duration,
-	chimePatterns.basic.volume
-);
+	// Deep atmospheric woosh
+	navigate: [{
+		frequency: 80,
+		duration: 600,
+		delay: 0,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 120,
+		duration: 550,
+		delay: 30,
+		volume: 0.12,
+		waveType: 'sine',
+	}, {
+		frequency: 180,
+		duration: 500,
+		delay: 60,
+		volume: 0.10,
+		waveType: 'sine',
+	}, {
+		frequency: 240,
+		duration: 450,
+		delay: 90,
+		volume: 0.08,
+		waveType: 'sine',
+	}, {
+		frequency: 300,
+		duration: 400,
+		delay: 120,
+		volume: 0.06,
+		waveType: 'sine',
+	}, {
+		frequency: 360,
+		duration: 350,
+		delay: 150,
+		volume: 0.04,
+		waveType: 'sine',
+	}],
 
-export const chimeSuccess = () => playChimeSequence(chimePatterns.successA);
-export const chimeFail = () => playChimeSequence(chimePatterns.failA);
-export const chimeNotification = () => playChimeSequence(chimePatterns.notification);
-export const chimeWarning = () => playChimeSequence(chimePatterns.warning);
-export const chimeTick = () => playChime(
-	chimePatterns.tick.frequency,
-	chimePatterns.tick.duration,
-	chimePatterns.tick.volume
-);
-export const chimeBell = () => playChime(
-	chimePatterns.bell.frequency,
-	chimePatterns.bell.duration,
-	chimePatterns.bell.volume,
-	chimePatterns.bell.waveType
-);
+	// Cathedral bell with massive low-end resonance
+	bell: [{
+		frequency: 110,
+		duration: 900,
+		delay: 0,
+		volume: 0.25,
+		waveType: 'sine',
+	}, {
+		frequency: 220,
+		duration: 800,
+		delay: 30,
+		volume: 0.22,
+		waveType: 'sine',
+	}, {
+		frequency: 330,
+		duration: 700,
+		delay: 60,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 440,
+		duration: 600,
+		delay: 90,
+		volume: 0.15,
+		waveType: 'sine',
+	}, {
+		frequency: 660,
+		duration: 300,
+		delay: 120,
+		volume: 0.1,
+		waveType: 'sine',
+	}],
 
-/**
- * Disney-inspired magical convenience functions
- * Using sparkly high frequencies, triangle waves, and fairy-tale progressions
- */
+	// Deep ethereal notification with sub-bass presence
+	success: [{
+		frequency: 110,
+		duration: 350,
+		delay: 0,
+		volume: 0.18,
+		waveType: 'sine',
+	}, {
+		frequency: 220,
+		duration: 320,
+		delay: 80,
+		volume: 0.16,
+		waveType: 'sine',
+	}, {
+		frequency: 330,
+		duration: 280,
+		delay: 160,
+		volume: 0.14,
+		waveType: 'sine',
+	}, {
+		frequency: 440,
+		duration: 250,
+		delay: 240,
+		volume: 0.12,
+		waveType: 'sine',
+	}, {
+		frequency: 165,
+		duration: 400,
+		delay: 40,
+		volume: 0.1,
+		waveType: 'sine',
+	}],
 
-// Magical Basic - Like a fairy wand tap
-export const chimeBasicMagical = () => playChimeSequence([
-	{ frequency: 568, duration: 80, delay: 0, volume: 0.18, waveType: 'triangle' },
-	{ frequency: 93, duration: 120, delay: 60, volume: 0.22, waveType: 'triangle' },
-	{ frequency: 349, duration: 100, delay: 140, volume: 0.15, waveType: 'triangle' }
-]);
+	// "NAH-UH" error sound - two distinct syllables
+	fail: [
+		// First syllable - "NAH" (higher, sharper)
+		{
+			frequency: 220,
+			duration: 200,
+			delay: 0,
+			volume: 0.25,
+			waveType: 'sine'
+		},
+		{
+			frequency: 110,
+			duration: 250,
+			delay: 0,
+			volume: 0.28,
+			waveType: 'sine'
+		},
+		{
+			frequency: 55,
+			duration: 300,
+			delay: 0,
+			volume: 0.22,
+			waveType: 'triangle'
+		},
 
-// Magical Success - Disney princess moment with harp-like arpeggios
-export const chimeSuccessMagical = () => playChimeSequence([
-	{ frequency: 104, duration: 100, delay: 0, volume: 0.16, waveType: 'triangle' },
-	{ frequency: 131, duration: 100, delay: 80, volume: 0.18, waveType: 'triangle' },
-	{ frequency: 156, duration: 100, delay: 160, volume: 0.20, waveType: 'triangle' },
-	{ frequency: 209, duration: 150, delay: 240, volume: 0.22, waveType: 'triangle' },
-	{ frequency: 263, duration: 200, delay: 340, volume: 0.25, waveType: 'triangle' },
-	{ frequency: 313, duration: 250, delay: 480, volume: 0.20, waveType: 'triangle' }
-]);
+		// Brief pause, then second syllable - "UH" (lower, more final)
+		{
+			frequency: 146,
+			duration: 300,
+			delay: 250,
+			volume: 0.22,
+			waveType: 'sine'
+		},
+		{
+			frequency: 73,
+			duration: 350,
+			delay: 250,
+			volume: 0.26,
+			waveType: 'sine'
+		},
+		{
+			frequency: 37,
+			duration: 400,
+			delay: 250,
+			volume: 0.24,
+			waveType: 'triangle'
+		},
 
-// Magical Fail - Disappointed fairy dust (descending sparkles)
-export const chimeFailMagical = () => playChimeSequence([
-	{ frequency: 180, duration: 120, delay: 0, volume: 0.20, waveType: 'triangle' },
-	{ frequency: 120, duration: 120, delay: 100, volume: 0.22, waveType: 'triangle' },
-	{ frequency: 90, duration: 150, delay: 200, volume: 0.24, waveType: 'triangle' },
-	{ frequency: 60, duration: 180, delay: 300, volume: 0.26, waveType: 'triangle' },
-	{ frequency: 30, duration: 250, delay: 420, volume: 0.20, waveType: 'sine' } // (final thud)
-]);
-
-// Extra magical variations
-export const chimeSparkle = () => playChimeSequence([
-	{ frequency: 209, duration: 60, delay: 0, volume: 0.15, waveType: 'triangle' },
-	{ frequency: 234, duration: 60, delay: 40, volume: 0.18, waveType: 'triangle' },
-	{ frequency: 263, duration: 60, delay: 80, volume: 0.20, waveType: 'triangle' },
-	{ frequency: 313, duration: 80, delay: 120, volume: 0.16, waveType: 'triangle' }
-]);
-
-export const chimeEnchanted = () => playChimeSequence([
-	{ frequency: 104, duration: 200, delay: 0, volume: 0.18, waveType: 'triangle' },
-	{ frequency: 117, duration: 150, delay: 120, volume: 0.16, waveType: 'triangle' },
-	{ frequency: 139, duration: 200, delay: 200, volume: 0.20, waveType: 'triangle' },
-	{ frequency: 156, duration: 300, delay: 320, volume: 0.22, waveType: 'triangle' }
-]);
-
-export const chimeWishGranted = () => playChimeSequence([
-	// Opening flourish
-	{ frequency: 60, duration: 100, delay: 0, volume: 0.14, waveType: 'triangle' },
-	{ frequency: 90, duration: 100, delay: 60, volume: 0.16, waveType: 'triangle' },
-	{ frequency: 81, duration: 100, delay: 120, volume: 0.18, waveType: 'triangle' },
-	// Magical climax
-	{ frequency: 300, duration: 150, delay: 200, volume: 0.20, waveType: 'triangle' },
-	{ frequency: 333, duration: 150, delay: 280, volume: 0.22, waveType: 'triangle' },
-	{ frequency: 369, duration: 200, delay: 360, volume: 0.24, waveType: 'triangle' },
-	// Sparkly finale
-	{ frequency: 900, duration: 300, delay: 500, volume: 0.20, waveType: 'triangle' }
-]);
-
-/**
- * Play a musical chord (multiple frequencies simultaneously)
- * @param {number[]} frequencies - Array of frequencies to play together
- * @param {number} duration - Duration in milliseconds
- * @param {number} volume - Volume (0-1)
- * @param {string} waveType - Wave type for all oscillators
- */
-export async function playChord(frequencies, duration = 500, volume = 0.2, waveType = 'sine') {
-	const ctx = getAudioContext();
-	if (!ctx) return false;
-
-	const promises = frequencies.map(freq =>
-		playChime(freq, duration, volume / frequencies.length, waveType)
-	);
-
-	return Promise.all(promises);
-}
-
-/**
- * Common chord patterns
- */
-export const chords = {
-	major: [523, 659, 784], // C major
-	minor: [523, 622, 784], // C minor
-	success: [523, 659, 784, 1047], // C major with octave
-	error: [30, 40, 50], // Dissonant low frequencies
-
-	// Inversions for different textures
-	royal_bass: [130, 329, 392, 523], // C major with low bass - regal and powerful
-	crystal: [523, 659, 784, 1047, 1319], // C major high register - bright and crystalline
-	velour: [110, 220, 277, 330], // A minor low register - deep and plush
-};
-
-/**
- * Play chime with delay
- * @param {Object|Array} pattern - Chime pattern or sequence
- * @param {number} delay - Delay in milliseconds before playing
- */
-export function chimeWithDelay(pattern, delay = 0) {
-	setTimeout(() => {
-		if (Array.isArray(pattern)) {
-			playChimeSequence(pattern);
-		} else {
-			playChime(pattern.frequency, pattern.duration, pattern.volume, pattern.waveType);
+		// Ultra-deep rumble throughout for impact
+		{
+			frequency: 28,
+			duration: 600,
+			delay: 0,
+			volume: 0.2,
+			waveType: 'triangle'
 		}
-	}, delay);
-}
+	],
+
+	// "WIN!" success sound - sharp, punchy single syllable
+	notification: [
+		// Sharp attack for "W"
+		{
+			frequency: 330,
+			duration: 80,
+			delay: 0,
+			volume: 0.25,
+			waveType: 'sine'
+		},
+		{
+			frequency: 165,
+			duration: 100,
+			delay: 0,
+			volume: 0.28,
+			waveType: 'sine'
+		},
+		{
+			frequency: 82,
+			duration: 120,
+			delay: 0,
+			volume: 0.24,
+			waveType: 'triangle'
+		},
+
+		// Rising "I" part - quick upward sweep
+		{
+			frequency: 440,
+			duration: 120,
+			delay: 60,
+			volume: 0.22,
+			waveType: 'sine'
+		},
+		{
+			frequency: 220,
+			duration: 140,
+			delay: 60,
+			volume: 0.26,
+			waveType: 'sine'
+		},
+		{
+			frequency: 110,
+			duration: 160,
+			delay: 60,
+			volume: 0.22,
+			waveType: 'triangle'
+		},
+
+		// Hard "N!" ending - sharp cutoff
+		{
+			frequency: 523,
+			duration: 200,
+			delay: 140,
+			volume: 0.24,
+			waveType: 'sine'
+		},
+		{
+			frequency: 261,
+			duration: 220,
+			delay: 140,
+			volume: 0.28,
+			waveType: 'sine'
+		},
+		{
+			frequency: 130,
+			duration: 240,
+			delay: 140,
+			volume: 0.25,
+			waveType: 'triangle'
+		},
+
+		// Sub-bass punch
+		{
+			frequency: 65,
+			duration: 300,
+			delay: 0,
+			volume: 0.22,
+			waveType: 'triangle'
+		}
+	],
+
+	// Deep, cinematic logout sequence - three descending steps
+	logout: [
+		// First note - "Da"
+		{
+			frequency: 220,
+			duration: 300,
+			delay: 0,
+			volume: 0.2,
+			waveType: 'sine'
+		},
+		{
+			frequency: 110,
+			duration: 350,
+			delay: 0,
+			volume: 0.22,
+			waveType: 'sine'
+		},
+		{
+			frequency: 55,
+			duration: 400,
+			delay: 0,
+			volume: 0.18,
+			waveType: 'sine'
+		},
+
+		// Second note - "Da"
+		{
+			frequency: 165,
+			duration: 300,
+			delay: 180,
+			volume: 0.18,
+			waveType: 'sine'
+		},
+		{
+			frequency: 82,
+			duration: 350,
+			delay: 180,
+			volume: 0.2,
+			waveType: 'sine'
+		},
+		{
+			frequency: 41,
+			duration: 400,
+			delay: 180,
+			volume: 0.16,
+			waveType: 'sine'
+		},
+
+		// Third note - "Daaa" (longer, final)
+		{
+			frequency: 110,
+			duration: 600,
+			delay: 360,
+			volume: 0.22,
+			waveType: 'sine'
+		},
+		{
+			frequency: 55,
+			duration: 650,
+			delay: 360,
+			volume: 0.24,
+			waveType: 'sine'
+		},
+		{
+			frequency: 27,
+			duration: 700,
+			delay: 360,
+			volume: 0.2,
+			waveType: 'sine'
+		}
+	],
+};

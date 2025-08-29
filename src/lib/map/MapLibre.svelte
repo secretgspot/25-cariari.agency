@@ -232,7 +232,7 @@
 	@media (prefers-color-scheme: dark) {
 		.map {
 			/* Consider using a dark tile layer instead of CSS filters for better performance */
-			filter: invert(1) brightness(0.8) hue-rotate(180deg);
+			filter: invert(1) brightness(var(--brightness)) hue-rotate(180deg);
 		}
 	}
 </style>

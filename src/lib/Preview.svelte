@@ -46,13 +46,13 @@
 <section class="preview-content" class:loading>
 	{#if is_admin}
 		<Button
-			class="admin-edit icon"
+			class="admin-edit"
 			size="icon"
 			{loading}
 			disabled={loading}
 			onclick={() => goto(property.id + '/edit')}>
 			{#snippet icon()}
-				📝
+				✏️
 			{/snippet}
 			Show Details
 		</Button>
@@ -135,7 +135,13 @@
 	</div>
 
 	<footer>
-		<Button right shadow {loading} disabled={loading} onclick={() => goto(property.msl)}>
+		<Button
+			right
+			shadow
+			outline
+			{loading}
+			disabled={loading}
+			onclick={() => goto(property.msl)}>
 			{#snippet icon()}
 				👁‍🗨
 			{/snippet}
@@ -148,8 +154,8 @@
 	.preview-content {
 		position: relative;
 		z-index: 3;
-		background: var(--primary);
-		color: var(--primary-content);
+		background: var(--surface-1);
+		color: var(--text-1);
 		display: grid;
 		grid-template-rows: minmax(min-content, 30vh) 1fr minmax(min-content, 111px) minmax(
 				min-content,
@@ -167,6 +173,7 @@
 			height: min-content;
 			width: min-content;
 			z-index: 2;
+			aspect-ratio: 1;
 		}
 	}
 
@@ -215,7 +222,7 @@
 			} */
 			.type_age {
 				text-transform: uppercase;
-				color: var(--txt-tertiary);
+				color: var(--text-2);
 			}
 			.price_rent {
 				font-size: 1.8em;
@@ -249,10 +256,15 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-block: var(--padding-large);
+		margin-block: var(--size-8);
 
 		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
-			padding-block-end: var(--padding-large);
+			padding-block-end: var(--size-8);
+		}
+
+		:global(button) {
+			min-width: 220px;
+			max-width: 260px;
 		}
 	}
 

@@ -123,9 +123,9 @@
 		display: block;
 		line-height: 0;
 		text-decoration: none;
-		border-radius: var(--border-radius);
-		background: var(--primary);
-		color: var(--primary-content);
+		border-radius: var(--radius-2);
+		background: var(--surface-1);
+		color: var(--text-1);
 
 		&:hover {
 			filter: brightness(1.05);
@@ -134,14 +134,14 @@
 		&::after {
 			content: 'ad';
 			position: absolute;
-			top: var(--padding-extra-small);
-			right: var(--padding-extra-small);
-			color: var(--primary-content);
+			top: var(--size-1);
+			right: var(--size-1);
+			color: var(--text-1);
 			line-height: 1;
 			text-transform: uppercase;
-			background: var(--primary);
-			padding: calc(var(--padding-extra-small) / 2) calc(var(--padding-extra-small) / 2);
-			border-radius: calc(var(--border-radius) / 2);
+			background: var(--surface-1);
+			padding: calc(var(--size-1) / 2) calc(var(--size-1) / 2);
+			border-radius: calc(var(--radius-2) / 2);
 			pointer-events: none;
 			font-size: xx-small;
 		}
@@ -159,9 +159,9 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		background: var(--primary);
-		color: var(--primary-content);
-		border-radius: var(--border-radius);
+		background: var(--surface-1);
+		color: var(--text-1);
+		border-radius: var(--radius-2);
 		place-self: center;
 		width: min-content;
 		min-width: 320px;

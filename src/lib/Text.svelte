@@ -1,19 +1,15 @@
 <script>
 	/** @type {{type?: string, children?: import('svelte').Snippet, [key: string]: any}} */
-	let { type = "", children, ...rest } = $props();
+	let { type = '', children, ...rest } = $props();
 </script>
 
-<span
-	{...rest}
-	class:error={type == "error"}
-	class:success={type == "success"}
->
+<span {...rest} class:error={type == 'error'} class:success={type == 'success'}>
 	{@render children?.()}
 </span>
 
 <style>
 	.error {
-		color: var(--error);
+		color: var(--error-content);
 	}
 	.success {
 		color: var(--success-content);

@@ -44,18 +44,18 @@
 		height: 27px;
 	} */
 	.badge :global(svg) {
-		color: var(--primary-content);
+		color: var(--text-1);
 	}
 	.label {
 		text-transform: uppercase;
 		/* line-height: 1; */
 		/* font-family: 'Economica', sans-serif; */
 		font-size: 0.6rem;
-		color: var(--secondary-content);
+		color: var(--text-2);
 	}
 	.value {
 		/* font-size: 1.8em; */
-		color: var(--primary-content);
+		color: var(--text-1);
 		/* line-height: 1; */
 		/* font-family: 'Cabin', sans-serif; */
 	}
@@ -76,9 +76,9 @@
 
 	span {
 		margin: 0 0.2rem;
-		border: 1px dashed var(--secondary);
+		border: var(--border-size-1) dashed var(--surface-2);
 		padding: 0 0.2rem;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 		border-top: none;
 		border-bottom: none;
 		text-transform: uppercase;

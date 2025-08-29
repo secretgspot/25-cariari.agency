@@ -101,8 +101,8 @@
 		cursor: default;
 		&.fixed {
 			position: fixed;
-			top: var(--padding-small);
-			left: var(--padding-small);
+			top: var(--size-2);
+			left: var(--size-2);
 		}
 		&.invert {
 			mix-blend-mode: difference;
@@ -112,13 +112,13 @@
 		fill: none;
 		stroke-width: 6px;
 		.bw {
-			stroke: var(--color-black, #231f20);
+			stroke: var(--stone-12);
 		}
 	}
 	.shape {
 		fill-rule: evenodd;
 		.bw {
-			fill: var(--color-black, #231f20);
+			fill: var(--stone-12);
 		}
 	}
 </style>

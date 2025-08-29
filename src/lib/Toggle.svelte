@@ -107,11 +107,11 @@
 
 		.basic {
 			+ label {
-				border: var(--border);
-				border-radius: var(--border-radius);
+				border: var(--border-size-1) solid var(--surface-4);
+				border-radius: var(--radius-2);
 				padding: 2px;
 				&:after {
-					border-radius: var(--border-radius);
+					border-radius: var(--radius-2);
 					background: var(--error);
 				}
 			}
@@ -142,8 +142,8 @@
 					width: 100%;
 					position: absolute;
 					font-weight: bold;
-					color: var(--primary-content);
-					text-shadow: var(--shadow-small);
+					color: var(--text-1);
+					text-shadow: var(--shadow-1);
 				}
 
 				&:after {
@@ -168,7 +168,7 @@
 				border-color: transparent;
 				&::before,
 				&::after {
-					color: var(--color-white);
+					color: var(--error-content);
 				}
 			}
 
@@ -192,9 +192,9 @@
 
 		.flip {
 			+ label {
-				padding: var(--padding-small);
+				padding: var(--size-3);
 				transition: all var(--transition) ease;
-				perspective: 100px;
+				perspective: 300px;
 				min-width: 90px;
 				&:after,
 				&:before {
@@ -204,13 +204,13 @@
 					text-align: center;
 					transition: all var(--transition) ease;
 					width: 100%;
-					color: var(--primary-content);
+					color: var(--text-1);
 					position: absolute;
 					top: 0;
 					left: 0;
 					backface-visibility: hidden;
-					border-radius: var(--border-radius);
-					border: 1px solid var(--accent);
+					border-radius: var(--radius-2);
+					border: var(--border-size-1) solid var(--accent);
 				}
 
 				&:after {
@@ -223,19 +223,19 @@
 				}
 
 				&:active:before {
-					transform: rotateY(-20deg);
+					transform: rotateY(-12deg);
 				}
 			}
 			&.colored + label {
 				&::before {
 					background: var(--error);
 					border-color: var(--error);
-					color: var(--color-white);
+					color: var(--error-content);
 				}
 				&::after {
 					background: var(--success);
 					border-color: var(--success);
-					color: var(--color-white);
+					color: var(--success-content);
 				}
 			}
 
@@ -250,7 +250,7 @@
 				}
 
 				&:active:after {
-					transform: rotateY(20deg);
+					transform: rotateY(12deg);
 				}
 			}
 		}
