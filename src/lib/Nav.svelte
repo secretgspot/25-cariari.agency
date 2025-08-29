@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/state';
 	import { LinkButton } from '$lib/buttons';
+	import Icon from '$lib/Icon.svelte';
 
 	/** @type {{ is_logged_in: boolean; fixed?: boolean; basic?: boolean; url: any; }} */
 	let { fixed = false, basic = false, url, ...rest } = $props();
@@ -27,21 +28,14 @@
 		{#if page.data.is_logged_in}
 			<li>
 				<form action="/logout" method="post">
-					<LinkButton sound={true} sound_pattern="failA">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 512 512"
-							style="height: 17px;">
-							<path
-								fill="none"
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="32"
-								d="M304 336v40a40 40 0 0 1-40 40H104a40 40 0 0 1-40-40V136a40 40 0 0 1 40-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256" />
-						</svg>
+					<LinkButton sound_pattern="logout" underline={false} title="Logout">
+						<Icon kind="logout" size="18" />
 					</LinkButton>
 				</form>
+			</li>
+		{:else}
+			<li>
+				<LinkButton href="/login">Login</LinkButton>
 			</li>
 		{/if}
 	</div>

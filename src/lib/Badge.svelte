@@ -13,11 +13,11 @@
 <div class="badge {direction}" title="{value} {label}">
 	{#if type === 'icon'}
 		<!-- <img class="icon" src="images/icons/icon_{label}.svg" alt="{label}" loading="eager"> -->
-		<Icon type={label} size="30" />
+		<Icon kind={label} size="30" />
 		<div class="value">{value}</div>
 	{:else if type === 'tiny'}
 		<div class="value">{value}</div>
-		<Icon type={label} size="15" />
+		<Icon kind={label} size="15" />
 	{:else if type === 'text'}
 		{#if loop}
 			<div class="value">

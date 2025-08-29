@@ -111,7 +111,7 @@
 	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
 {/if}
 
-<aside class="login">
+<section class="login">
 	{#if currentView === 'magic'}
 		<p>
 			No password or personal identification is required to list your properties.<br />
@@ -166,10 +166,10 @@
 	{#if errorMessage}
 		<Notify type="danger">{errorMessage}</Notify>
 	{/if}
-</aside>
+</section>
 
 <style>
-	aside.login {
+	section.login {
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
@@ -178,6 +178,11 @@
 		justify-content: center;
 		flex: 1;
 		padding: var(--size-3);
+		max-width: 36ch;
+		/* Small tablets and larger mobile devices (481px - 768px) */
+		@media (min-width: 481px) {
+			max-width: 54ch;
+		}
 	}
 	input[type='text'],
 	input[type='email'] {

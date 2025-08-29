@@ -1,11 +1,9 @@
 # Todo (will be implemented at user specified request)
 
+- [x] Icon refactored
+- [ ] redo print page
+
 ## API Enhancements for AI/MCP Interaction
-
-### 1. Enhance Data Retrieval (`GET` Endpoints)
-
-- [x] **Filtering:** Implement query parameters to filter properties by fields (e.g., `?property_for=Sale&price_max=500000`).
-- [ ] **Full-Text Search:** Add a `q` parameter for keyword searches on description and address.
 
 ### 2. Enable Actions (Add `POST`, `PUT`, `DELETE`)
 
@@ -25,21 +23,6 @@
 - [ ] **API Key Authentication:** Secure `POST`, `PUT`, `DELETE` endpoints with API keys.
 - [ ] **Rate Limiting:** Implement rate limiting to prevent abuse.
 
-### 5. General Tweaks
-
-- [x] main map on mobile horizontally rotated needs proper styling
-- [x] refactor helpers functions
-- [x] should url be uuid or msl? in case of edit they should remain uuid
-- [x] audio ques for buttons and toaster notifications
-- [x] vibration ques for buttons and toaster notifications
-
-## Dependency Management
-
-- [ ] **Outdated Packages:** Several npm packages are outdated. Updating them can provide access to new features, security patches, and performance enhancements. Key packages to update include:
-  - `@supabase/supabase-js`
-  - `@sveltejs/kit`
-  - `vite`
-  - `nodemailer`
-  - `leaflet`
+### 5. Other
 
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)

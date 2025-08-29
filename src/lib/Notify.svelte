@@ -79,7 +79,7 @@
 <style>
 	aside {
 		display: grid;
-		width: fit-content;
+		/* width: fit-content; */
 		height: min-content;
 		max-width: 69ch;
 		grid-template-areas:

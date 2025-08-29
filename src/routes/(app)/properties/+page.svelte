@@ -37,7 +37,7 @@
 {/if}
 
 <main>
-	<div class="properties_list grid">
+	<article class="properties_list grid">
 		{#if filtered.length > 0}
 			{#each filtered as property (property.id)}
 				<Property {property} />
@@ -45,7 +45,7 @@
 		{:else}
 			<NothingToSee />
 		{/if}
-	</div>
+	</article>
 
 	<aside class="filter-wrapper">
 		<div class="filter-sticky">
@@ -95,11 +95,13 @@
 		row-gap: var(--size-2);
 		padding: var(--size-8) 0;
 		position: relative;
+		margin-inline: var(--size-3);
 
 		@media (min-width: 768px) {
 			/* grid-template-columns: repeat(auto-fit, minmax(min-content, 369px)); */
 			grid-template-columns: repeat(auto-fit, minmax(0, 369px));
 			justify-content: space-evenly;
+			margin-inline: unset;
 		}
 
 		> :global(.property) {

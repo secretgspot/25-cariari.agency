@@ -170,14 +170,14 @@
 				<h3>{data.property.contact_realtor}</h3>
 			{/if}
 			{#if data.property.contact_email}<span
-					><Icon type="email" size="18" /><a
+					><Icon kind="email" size="18" /><a
 						href="mailto:{data.property.contact_email}"
 						rel="nofollow">{data.property.contact_email}</a
 					></span
 				>{/if}
 			{#if data.property.contact_phone}
 				<span>
-					<Icon type="phone" size="18" />
+					<Icon kind="phone" size="18" />
 					<a href="tel:{data.property.contact_phone}" rel="nofollow"
 						>{data.property.contact_phone}</a>
 				</span>
@@ -284,7 +284,7 @@
 				text-decoration: none;
 				white-space: nowrap;
 				vertical-align: top;
-				margin-left: 0.3rem;
+				margin-left: var(--size-2);
 			}
 			:global(svg) {
 				color: var(--text-2);
@@ -382,7 +382,7 @@
 			justify-content: space-evenly;
 			align-content: center;
 			flex-wrap: wrap;
-			gap: var(--size-2);
+			gap: var(--size-3);
 			margin-block: calc(var(--size-8) * 2);
 		}
 

@@ -200,6 +200,8 @@
 		background: var(--surface-2);
 		padding: var(--size-2);
 		gap: var(--size-1);
+		border-bottom-left-radius: inherit;
+		border-bottom-right-radius: inherit;
 
 		.dates {
 			display: flex;
