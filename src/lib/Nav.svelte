@@ -50,20 +50,19 @@
 <style>
 	nav {
 		position: absolute;
-		top: var(--padding-small);
-		right: var(--padding-small);
-		row-gap: var(--gap-extra-small);
+		top: var(--size-2);
+		right: var(--size-2);
 		user-select: none;
 		z-index: 3;
 	}
 	.wrapper {
 		display: flex;
-		gap: var(--gap-extra-small);
+		gap: var(--size-2);
 		list-style: none;
-		background: var(--primary);
+		background: var(--surface-1);
 		/* backdrop-filter: blur(3px); */
-		padding: var(--padding-extra-small);
-		border-radius: var(--border-radius);
+		padding: var(--size-1);
+		border-radius: var(--radius-2);
 	}
 	.fixed {
 		position: fixed;

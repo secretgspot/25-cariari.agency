@@ -123,8 +123,8 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
-		margin: var(--padding-large) 0;
-		gap: var(--gap-small);
+		margin: var(--size-8) 0;
+		gap: var(--size-2);
 	}
 
 	.grid-container {
@@ -143,7 +143,7 @@
 			'features'
 			'description';
 		width: 90vw;
-		margin: var(--padding-large) auto;
+		margin: var(--size-8) auto;
 
 		@media (min-width: 768px) {
 			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -161,7 +161,7 @@
 		}
 
 		> div {
-			border: var(--border);
+			border: var(--border-size-1) solid var(--surface-4);
 		}
 	}
 

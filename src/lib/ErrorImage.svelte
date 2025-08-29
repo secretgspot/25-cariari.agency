@@ -12,7 +12,7 @@
 		><defs
 			><style>
 				.fourohfour-1 {
-					fill: var(--primary-content);
+					fill: var(--text-1);
 				}
 				.fourohfour-1,
 				.fourohfour-2 {
@@ -55,13 +55,13 @@
 			><style>
 				.fivezerozero-1,
 				.fivezerozero-2 {
-					fill: var(--primary-content);
+					fill: var(--text-1);
 					opacity: 0.1;
 					isolation: isolate;
 				}
 				.fivezerozero-2 {
 					fill: none;
-					stroke: var(--primary-content);
+					stroke: var(--text-1);
 					stroke-linecap: round;
 					stroke-miterlimit: 10;
 					stroke-width: 18px;
@@ -94,7 +94,7 @@
 		><defs
 			><style>
 				.empty-1 {
-					fill: var(--primary-content);
+					fill: var(--text-1);
 					opacity: 0.1;
 					isolation: isolate;
 				}

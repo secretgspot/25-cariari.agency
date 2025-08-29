@@ -1,57 +1,56 @@
 <script>
 	import { navigating } from '$app/state';
 	import { Spinner } from '$lib/loaders';
-	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
-	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
+	import { playButtonSound } from '$lib/utils/audio.js';
+	import { vibrateButton } from '$lib/utils/vibrate.js';
 
 	let {
-		size = 'medium',
+		size = 'regular', // regular, icon, small, block
 		disabled = false,
 		outline = false,
 		right = false,
+		active = false,
 		loading = false,
 		shadow = false,
 		isLink = false,
 		href = false,
 		external = false,
 		sound = true,
-		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
+		sound_pattern = 'click',
 		buzz = true,
+		buzz_pattern = 'click',
 		icon,
 		children,
+		onclick,
+		class: customClass = '', // Extract class prop separately
 		...rest
 	} = $props();
 
 	function handleClick(event) {
+		// Play sound if enabled locally
 		if (sound) {
-			const selectedPattern = chimePatterns[sound_pattern];
-			if (selectedPattern) {
-				if (Array.isArray(selectedPattern)) {
-					playChimeSequence(selectedPattern);
-				} else {
-					playChime(
-						selectedPattern.frequency,
-						selectedPattern.duration,
-						selectedPattern.volume,
-						selectedPattern.waveType,
-					);
-				}
-			}
+			playButtonSound(sound_pattern);
 		}
 
+		// Trigger vibration if enabled locally
 		if (buzz) {
-			vibrate(vibratePatterns.basic);
+			vibrateButton(buzz_pattern);
 		}
 
+		// Call the original onclick handler
 		if (rest.onclick) {
 			rest.onclick(event);
 		}
 	}
 
-	const isDisabled = $derived(disabled || navigating.complete);
+	// Only keep the derived values we actually need
+	const isDisabled = $derived(disabled || loading || navigating.complete);
 	const isLinkType = $derived(isLink || href);
 	const linkHref = $derived(href ?? 'javascript:void(0);');
 	const linkTarget = $derived(external ? '_blank' : null);
+
+	// Combine all classes properly
+	const buttonClasses = $derived(`button ${size} ${customClass}`.trim());
 </script>
 
 <!-- Icon Content Component -->
@@ -62,7 +61,7 @@
 		{:else if icon}
 			{@render icon()}
 		{:else}
-			🧵
+			👀
 		{/if}
 	</div>
 {/snippet}
@@ -76,7 +75,7 @@
 				{@render children?.()}
 			</span>
 		{:else}
-			<b class="title">{@render children?.()}</b>
+			<span class="title">{@render children?.()}</span>
 		{/if}
 	</div>
 {/snippet}
@@ -96,26 +95,27 @@
 <!-- Main Template -->
 {#if isLinkType}
 	<a
-		class="button {size} {rest.class ?? ''}"
+		role="button"
+		{...rest}
+		class={buttonClasses}
 		class:disabled={isDisabled}
 		class:shadow
 		class:outline
 		class:right
+		class:active
 		href={linkHref}
 		target={linkTarget}
-		role="button"
-		data-sveltekit-prefetch
-		{...rest}
 		onclick={handleClick}>
 		{@render buttonContent()}
 	</a>
 {:else}
 	<button
-		class="button {size} {rest.class ?? ''}"
+		class={buttonClasses}
 		class:disabled={isDisabled}
 		class:shadow
 		class:outline
 		class:right
+		class:active
 		disabled={isDisabled}
 		{...rest}
 		onclick={handleClick}>
@@ -128,149 +128,126 @@
 		display: flex;
 		width: auto;
 		height: min-content;
-		border: var(--border);
-		border-radius: var(--border-radius);
-		/* background: var(--primary); */
-		background: hsl(var(--p) / var(--bg-opacity, 1));
-		color: var(--primary-content);
+		border: var(--border-size-1) solid var(--surface-3);
+		border-radius: var(--radius-2);
+		background: transparent;
 		text-decoration: none;
 		padding: 0;
 		cursor: pointer;
 		user-select: none;
 		transition: background var(--transition) cubic-bezier(0.33, 1, 0.69, 1);
 		touch-action: manipulation;
-		z-index: 2;
+		-webkit-tap-highlight-color: transparent;
 		&:hover,
 		&:active,
 		&:focus,
 		&.active {
-			background: var(--primary-focus);
-			/* background: hsl(var(--pf) / var(--bg-opacity, 0.45)); */
+			background: var(--surface-2);
 		}
-	}
-	.shadow {
-		box-shadow: var(--shadow-button);
-		&:hover,
-		&:active {
-			box-shadow: var(--shadow-button-active);
+
+		.icon_wrap {
+			display: flex;
 		}
-	}
-	.icon_wrap {
-		display: flex;
-	}
-	.content_wrap {
-		display: flex;
-		flex-flow: column;
+
+		.content_wrap {
+			display: flex;
+			flex-flow: column;
+		}
 	}
 
 	.icon {
 		display: inline-flex;
 		align-items: center;
-		border-radius: var(--border-radius);
-		/* box-shadow: inherit; */
 		justify-content: center;
 		width: inherit;
 		height: inherit;
-		/* border-color: transparent; */
-		background: transparent;
-		color: var(--primary);
-		&:hover {
-			background: transparent;
-			color: var(--primary-content);
-			outline: solid 6px hsl(var(--a) / var(--bg-opacity, 0.1));
-		}
 
 		.icon_wrap {
-			padding: var(--padding-extra-small);
+			padding: var(--size-1);
 		}
 	}
 
 	.small {
 		align-items: center;
 		white-space: nowrap;
-		&:active,
-		&:focus,
-		&:hover {
-			background: var(--primary);
-			/* border-color: var(--accent); */
-			border-style: solid;
-		}
 		.icon_wrap {
-			padding: var(--padding-small);
+			padding: var(--size-2);
 		}
+
 		.content_wrap {
-			padding: 0 calc(var(--padding-small) * 2);
-			border-left: var(--border);
+			padding: 0 calc(var(--size-2) * 2);
+			border-left: var(--border-size-1) solid var(--surface-3);
 		}
 	}
 
-	.medium {
-		width: 270px;
+	.regular {
 		align-items: center;
-		/* box-shadow: var(--shadow-small); */
-		&:active,
-		&:focus,
-		&:hover {
-			border-style: solid;
-			/* border-color: var(--accent); */
-		}
+
 		.icon_wrap {
 			display: flex;
 			flex-flow: row wrap;
 			justify-content: flex-start;
 			align-items: center;
-			padding: var(--padding-small);
+			padding: var(--size-3);
 		}
+
 		.content_wrap {
 			display: flex;
 			flex-flow: column nowrap;
 			justify-content: center;
 			align-items: flex-start;
 			flex: 1 0 auto;
-			padding: var(--padding-small);
-			border-left: var(--border);
+			padding: var(--size-3);
+			border-left: var(--border-size-1) solid var(--surface-3);
 		}
 	}
 
 	.block {
 		width: 100%;
-		padding: var(--padding-small);
-		/* text-shadow: 0 1px 0 var(--base-300); */
-		font-weight: 600;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		-webkit-tap-highlight-color: transparent;
-		&:active,
-		&:focus,
-		&:hover {
-			border-style: solid;
-			/* border-color: var(--accent); */
-		}
+		align-items: center;
+		justify-content: center;
+
 		.content_wrap {
-			flex: 1;
-			.title {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
+			display: flex;
+			flex-flow: column nowrap;
+			justify-content: center;
+			align-items: flex-start;
+			padding: var(--size-3);
 		}
 	}
 
 	.right {
 		flex-flow: row-reverse;
+		place-self: end;
 		.content_wrap {
 			border-left: 0;
-			border-right: var(--border);
+			border-right: var(--border-size-1) solid var(--surface-3);
 		}
 	}
+
+	.outline {
+		outline: 1px solid var(--stone-9);
+		&:active,
+		&.active {
+			outline: 2px solid var(--stone-3);
+		}
+	}
+
+	.shadow {
+		box-shadow: 0px 2px 0px 0px var(--surface-4);
+		&:active {
+			box-shadow: 0px 0px 0px 0px var(--surface-4);
+			transform: translateY(2px);
+		}
+	}
+
 	[disabled],
 	.disabled {
 		cursor: pointer;
 		background: var(--primary-focus);
 		opacity: 0.6;
 		pointer-events: none;
+
 		&:hover,
 		&:focus {
 			background: var(--primary-focus);
@@ -278,18 +255,20 @@
 			opacity: 0.6;
 		}
 	}
-	[green] {
-		border-color: var(--success);
+
+	[green],
+	.green {
+		border-color: var(--green-3);
 		&:hover {
-			border-color: var(--info);
-			filter: hue-rotate(111deg);
+			border-color: var(--green-4);
 		}
 	}
-	[red] {
-		border-color: var(--error);
+
+	[red],
+	.red {
+		border-color: var(--red-3);
 		&:hover {
-			border-color: var(--info);
-			filter: hue-rotate(111deg);
+			border-color: var(--red-4);
 		}
 	}
 </style>

@@ -14,7 +14,7 @@
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
-	<LinkButton class="property-image" href={`/${property.msl}`}>
+	<LinkButton class="property-image" underline={false} href={`/${property.msl}`}>
 		{#if property.photo}
 			<img
 				src={property.photo}
@@ -56,11 +56,6 @@
 	</div>
 
 	<footer class="property-footer">
-		<div class="dates wrap">
-			<small>added {ago(property.created_at)} ago</small>
-			<small>updated {ago(property.updated_at)} ago</small>
-		</div>
-
 		<div class="details wrap">
 			<!-- {#if property.location}<small class="loc"
 					>{property.location.lat} / {property.location.lng}</small
@@ -82,10 +77,19 @@
 			<span>[{property.msl}]</span>
 		</div>
 
+		<div class="dates wrap">
+			<small>added {ago(property.created_at)} ago</small>
+			<small>updated {ago(property.updated_at)} ago</small>
+		</div>
+
 		<div class="buttons">
 			{#if user_id === property.user_id || isAdmin}
 				<!-- <Button href="property/{property.id}">Edit</Button> -->
-				<Button size="block" onclick={() => goto(`/${property.id}/edit`)}>Edit</Button>
+				<Button size="icon" onclick={() => goto(`/${property.id}/edit`)}>
+					{#snippet icon()}
+						✏️
+					{/snippet}
+				</Button>
 			{/if}
 			<!-- <Button href="/{property.id}">View</Button> -->
 		</div>
@@ -102,10 +106,10 @@
 			'property-header property-header'
 			'property-footer property-footer';
 		position: relative;
-		border: 0px solid var(--border-color);
-		/* margin: 1rem; */
-		background: var(--primary);
-		box-shadow: var(--shadow-small);
+		border: 0px solid var(--surface-2);
+		border-radius: var(--radius-2);
+		background: var(--surface-1);
+		box-shadow: var(--shadow-1);
 		cursor: default;
 		position: relative;
 
@@ -113,9 +117,9 @@
 			grid-template-areas:
 				'property-image property-header'
 				'property-image property-footer';
-			margin: 1rem;
+			margin: var(--size-3);
 			&:hover {
-				outline: 6px solid hsl(var(--a) / 0.1);
+				outline: 3px solid var(--surface-3);
 			}
 		}
 	}
@@ -123,9 +127,10 @@
 		content: 'Delisted';
 		position: absolute;
 		background: var(--warning);
+		border-top-left-radius: var(--radius-2);
 		color: var(--warning-content);
-		padding: var(--padding-extra-small);
-		opacity: 0.6;
+		padding: var(--size-1);
+		opacity: 0.9;
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> HEADER */
@@ -133,9 +138,9 @@
 		grid-area: property-header;
 		display: flex;
 		flex-direction: column;
-		padding: var(--padding-small);
+		padding: var(--size-2);
 		/* box-shadow: var(--shadow-small); */
-		gap: var(--gap-extra-small);
+		gap: var(--size-1);
 
 		.land_use {
 			display: flex;
@@ -144,7 +149,7 @@
 
 		.type_age {
 			text-transform: uppercase;
-			color: var(--secondary-content);
+			color: var(--text-2);
 		}
 
 		.price_rent {
@@ -158,7 +163,7 @@
 			/* font-size: 90%; */
 			display: flex;
 			flex-direction: column;
-			color: var(--secondary-content);
+			color: var(--text-2);
 			display: none;
 		}
 	}
@@ -174,12 +179,16 @@
 		background-size: cover;
 		filter: brightness(var(--brightness));
 		cursor: pointer;
+		border-radius: inherit;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
 
 		img {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
 			aspect-ratio: 3 / 2;
+			border-radius: inherit;
 		}
 	}
 
@@ -188,14 +197,14 @@
 		grid-area: property-footer;
 		display: flex;
 		flex-direction: column;
-		background: var(--primary-focus);
-		padding: var(--padding-small);
-		gap: var(--gap-extra-small);
+		background: var(--surface-2);
+		padding: var(--size-2);
+		gap: var(--size-1);
 
 		.dates {
 			display: flex;
 			justify-content: space-between;
-			color: var(--accent-content);
+			color: var(--text-2);
 			font-size: smaller;
 			/* margin: 1rem; */
 		}
@@ -207,10 +216,10 @@
 			/* margin: 0 1rem 1rem; */
 
 			.features {
-				color: var(--accent-content);
+				color: var(--accent);
 				font-size: x-small;
 				display: flex;
-				gap: var(--padding-small);
+				gap: var(--size-2);
 			}
 
 			/* .loc {
@@ -225,7 +234,9 @@
 		right: 0;
 	}
 	.property-footer .buttons :global(button) {
+		border: none;
 		border-radius: 0;
-		padding: var(--padding-extra-small);
+		padding: var(--size-1);
+		border-top-right-radius: var(--radius-2);
 	}
 </style>

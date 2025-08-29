@@ -79,10 +79,7 @@
 				</fieldset>
 			</div>
 			<div class="button-wrap">
-				<Button type="submit" left shadow loading={sending} disabled={sending}>
-					{#snippet icon()}
-						📧
-					{/snippet}
+				<Button type="submit" size="block" shadow loading={sending} disabled={sending}>
 					{#if sending}
 						Sending...
 					{:else}
@@ -101,7 +98,7 @@
 	.contact {
 		display: grid;
 		grid-column: 1 / -1;
-		margin-block: var(--padding-large);
+		margin-block: var(--size-8);
 
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
@@ -127,26 +124,26 @@
 		height: 3px;
 		width: 18ch;
 		border: none;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 		background: LinkText;
 		background: var(--gradient-gold) fixed;
 	}
 
 	.message {
 		display: grid;
-		margin-block: var(--padding-large);
+		margin-block: var(--size-8);
 		place-content: center;
 		text-align: center;
 
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
-			margin-inline: 0 var(--padding-large);
+			margin-inline: 0 var(--size-8);
 			text-align: left;
 		}
 
 		header {
 			display: grid;
-			/* color: var(--primary-content); */
+			/* color: var(--text-1); */
 		}
 
 		p {
@@ -168,10 +165,10 @@
 	.contact-form {
 		display: grid;
 		gap: 2ch;
-		margin-block: var(--padding-large);
-		background: var(--primary);
-		padding: var(--padding-medium);
-		border-radius: var(--border-radius);
+		margin-block: var(--size-8);
+		background: var(--surface-1);
+		padding: var(--size-3);
+		border-radius: var(--radius-2);
 
 		.inputs {
 			display: flex;
@@ -179,17 +176,17 @@
 		}
 
 		fieldset {
-			border-radius: var(--border-radius);
+			border-radius: var(--radius-2);
 			border: none;
 			display: grid;
-			gap: var(--gap-small);
+			gap: var(--size-2);
 			padding: 0;
 
 			legend {
 				text-transform: uppercase;
 				font-size: 0.81rem;
-				color: var(--secondary-content);
-				margin-block: 0 var(--padding-extra-small);
+				color: var(--text-2);
+				margin-block: 0 var(--size-1);
 			}
 		}
 
@@ -197,25 +194,25 @@
 		fieldset input[type='email'],
 		fieldset textarea {
 			display: block;
-			padding: var(--padding-small);
-			color: var(--primary-content);
-			border: var(--border);
-			border-radius: var(--border-radius);
+			padding: var(--size-2);
+			color: var(--text-1);
+			border: var(--border-size-1) solid var(--surface-4);
+			border-radius: var(--radius-2);
 			width: 100%;
 			background: transparent;
 		}
 
 		.button-wrap {
-			margin-block-start: var(--padding-medium);
+			margin-block-start: var(--size-3);
 		}
 	}
 
 	.success {
 		border: 3px solid var(--success);
-		border-radius: var(--border-radius);
-		padding: var(--padding-large);
+		border-radius: var(--radius-2);
+		padding: var(--size-8);
 		place-content: center;
-		margin-inline: var(--padding-large);
+		margin-inline: var(--size-8);
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
 			margin-inline: 0;
@@ -228,14 +225,14 @@
 	}
 
 	span.error {
-		margin-block: var(--padding-small) 0;
+		margin-block: var(--size-2) 0;
 		display: block;
 	}
 
 	form {
 		position: relative;
 		overflow: hidden;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 
 		&::before {
 			content: '';
@@ -252,9 +249,9 @@
 		&::after {
 			content: '';
 			position: absolute;
-			background: var(--primary);
+			background: var(--surface-1);
 			inset: 1px;
-			border-radius: calc(var(--border-radius) / 2);
+			border-radius: calc(var(--radius-2) / 2);
 		}
 
 		> div {

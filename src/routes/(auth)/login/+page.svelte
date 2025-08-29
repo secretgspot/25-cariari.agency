@@ -172,20 +172,20 @@
 	aside.login {
 		display: flex;
 		flex-direction: column;
-		gap: var(--gap-small);
+		gap: var(--size-2);
 		align-self: center;
 		justify-self: center;
 		justify-content: center;
 		flex: 1;
-		padding: var(--padding-medium);
+		padding: var(--size-3);
 	}
 	input[type='text'],
 	input[type='email'] {
 		display: block;
-		padding: var(--padding-small);
-		color: var(--primary-content);
-		border: var(--border);
-		border-radius: var(--border-radius);
+		padding: var(--size-2);
+		color: var(--text-1);
+		border: var(--border-size-1) solid var(--surface-4);
+		border-radius: var(--radius-2);
 		width: 100%;
 		background: transparent;
 	}

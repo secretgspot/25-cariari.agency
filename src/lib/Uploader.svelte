@@ -199,18 +199,17 @@
 	.drop-container {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: var(--gap-medium);
-		margin-bottom: var(--gap-medium);
+		gap: var(--size-3);
+		margin-bottom: var(--size-3);
 	}
 
 	.dropzone {
 		position: relative;
-		border: var(--border);
-		border-style: dashed;
-		border-radius: var(--border-radius);
+		border: var(--border-size-1) dashed var(--surface-2);
+		border-radius: var(--radius-2);
 		border-width: 6px;
 		display: flex;
-		padding: var(--padding-large);
+		padding: var(--size-8);
 		justify-content: center;
 		align-items: center;
 		text-align: center;
@@ -219,7 +218,7 @@
 
 	.active {
 		border-color: var(--accent-focus);
-		background: var(--primary-focus);
+		background: var(--surface-2);
 	}
 
 	input[type='file'] {
@@ -234,7 +233,7 @@
 
 	.file-list {
 		display: grid;
-		gap: var(--gap-small);
+		gap: var(--size-2);
 		grid-template: auto/repeat(auto-fill, minmax(120px, 140px));
 		justify-content: center;
 	}
@@ -244,13 +243,13 @@
 		position: relative;
 		max-width: 150px;
 		max-height: 150px;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 	}
 	.card img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		border-radius: var(--border-radius);
+		border-radius: var(--radius-2);
 	}
 	.card:hover .file-action,
 	.card:focus-within .file-action {
@@ -261,16 +260,16 @@
 		display: flex;
 		justify-content: space-between;
 		position: absolute;
-		right: calc(var(--padding-extra-small) * -1);
-		top: calc(var(--padding-extra-small) * -1);
+		right: calc(var(--size-1) * -1);
+		top: calc(var(--size-1) * -1);
 		width: 27px;
 		height: 27px;
 		@media (min-width: 481px) {
 			display: none;
 		}
 		:global(.icon) {
-			background: var(--secondary);
-			color: var(--secondary-content);
+			background: var(--surface-2);
+			color: var(--text-2);
 			&:hover {
 				background: var(--error);
 				color: var(--error-content);

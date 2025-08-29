@@ -8,18 +8,22 @@
 	*/
 	let {
 		name = '',
+		label = '',
 		selected = $bindable(),
 		disabled = false,
 		options = ['Residential', 'Commercial', 'Industrial'],
 	} = $props();
 </script>
 
-<label class="select">
+<label class="select" {disabled}>
 	<select {name} bind:value={selected}>
 		{#each options as option}
 			<option value={option}>{option}</option>
 		{/each}
 	</select>
+	{#if label}
+		{label}
+	{/if}
 </label>
 
 <style>
@@ -38,18 +42,19 @@
 			justify-content: flex-start;
 			gap: 20px;
 
-			background: var(--primary);
-			padding: var(--padding-small);
-			color: var(--primary-content);
+			background: var(--surface-1);
+			padding: var(--size-2);
+			color: var(--text-1);
 
 			&:hover,
 			&:focus {
-				background: var(--primary-focus);
+				background: var(--surface-2);
 			}
 			&::checkmark {
 				order: 1;
 				margin-left: auto;
 				content: '✔';
+				/* color: var(--accent); */
 			}
 		}
 	}

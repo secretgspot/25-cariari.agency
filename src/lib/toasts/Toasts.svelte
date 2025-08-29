@@ -21,7 +21,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		display: flex;
-		gap: var(--gap-extra-small);
+		gap: var(--size-1);
 		justify-content: center;
 		flex-direction: column;
 		align-items: flex-end;

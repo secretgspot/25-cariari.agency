@@ -15,9 +15,7 @@
 	<div class="property_type">
 		<h3>Property Type</h3>
 
-		<label class="select">
-			<Select name="property_type" bind:selected={$filterStore.filter_type} />
-		</label>
+		<Select name="property_type" bind:selected={$filterStore.filter_type} />
 	</div>
 
 	<div class="transaction_type">
@@ -68,19 +66,17 @@
 		<h3>Features</h3>
 
 		<div class="row">
-			<label class="select">
-				<Select
-					name="beds"
-					bind:selected={$filterStore.beds}
-					options={['Any', '1+', '2+', '3+', '4+', '5+']} /> bedrooms
-			</label>
+			<Select
+				name="beds"
+				label="bedrooms"
+				bind:selected={$filterStore.beds}
+				options={['Any', '1+', '2+', '3+', '4+', '5+']} />
 
-			<label class="select">
-				<Select
-					name="baths"
-					bind:selected={$filterStore.baths}
-					options={['Any', '1+', '2+', '3+', '4+', '5+']} /> baths
-			</label>
+			<Select
+				name="baths"
+				label="baths"
+				bind:selected={$filterStore.baths}
+				options={['Any', '1+', '2+', '3+', '4+', '5+']} />
 
 			<label class="number">
 				<input
@@ -126,10 +122,10 @@
 <style>
 	.filters {
 		display: grid;
-	}
-	.filters h3 {
-		color: var(--secondary-content);
-		font-weight: normal;
+		h3 {
+			color: var(--text-2);
+			font-weight: normal;
+		}
 	}
 
 	.row {
@@ -141,33 +137,17 @@
 		flex-direction: column;
 	}
 
-	input[type='text'],
-	input[type='number'],
-	:global(select) {
-		display: block;
-		padding: var(--padding-extra-small);
-		border: var(--border);
-		border-radius: var(--border-radius);
-		width: 100%;
-		background: transparent;
-		color: var(--primary-content);
-	}
-	/* input[type="text"],
-	input[type="number"] {
-		max-width: 81px;
-	} */
-
 	.property_type,
 	.transaction_type,
 	.price_range,
 	.features,
 	.other {
-		box-shadow: var(--shadow-small);
-		padding: 0 var(--padding-medium) var(--padding-medium);
+		box-shadow: var(--shadow-1);
+		padding: 0 var(--size-3) var(--size-3);
 	}
 
 	.price_range .range:first-child {
-		margin-bottom: var(--padding-small);
+		margin-bottom: var(--size-2);
 	}
 
 	.transaction_type .row {
@@ -175,11 +155,14 @@
 	}
 
 	.features .row {
-		gap: var(--gap-small);
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+		align-items: baseline;
+		gap: var(--size-2);
 	}
 
 	.other .row {
 		align-items: flex-start;
-		gap: var(--gap-medium);
+		gap: var(--size-3);
 	}
 </style>
