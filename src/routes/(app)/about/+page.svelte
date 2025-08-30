@@ -27,7 +27,7 @@
 
 	<p>Welcome! This is a free service for the Cariari area of La Asunción, Heredia.</p>
 
-	<h2>Listing Your Property</h2>
+	<h2 class="gold-text">Listing Your Property</h2>
 	<p>
 		Ready to list your property? Just click <LinkButton
 			href="/properties/add"
@@ -35,7 +35,7 @@
 		Once your email is confirmed, you'll have full control to edit or remove your listing anytime.
 	</p>
 
-	<h2>Advertising Inquiries</h2>
+	<h2 class="gold-text">Advertising Inquiries</h2>
 	<p>
 		For any questions about advertising or anything else, please don't hesitate to contact
 		us below.

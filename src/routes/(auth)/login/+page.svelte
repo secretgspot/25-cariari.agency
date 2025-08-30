@@ -178,7 +178,7 @@
 		justify-content: center;
 		flex: 1;
 		padding: var(--size-3);
-		max-width: 36ch;
+		max-width: 39ch;
 		/* Small tablets and larger mobile devices (481px - 768px) */
 		@media (min-width: 481px) {
 			max-width: 54ch;

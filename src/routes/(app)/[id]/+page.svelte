@@ -34,7 +34,7 @@
 <article>
 	<header>
 		<div>
-			<h1 class:delisted={!data.property.is_active}>
+			<h1 class:delisted={!data.property.is_active} class="gold-text">
 				{data.property.msl}
 			</h1>
 			<p>
@@ -172,13 +172,14 @@
 			{#if data.property.contact_email}<span
 					><Icon kind="email" size="18" /><a
 						href="mailto:{data.property.contact_email}"
-						rel="nofollow">{data.property.contact_email}</a
+						rel="nofollow"
+						class="gold-text">{data.property.contact_email}</a
 					></span
 				>{/if}
 			{#if data.property.contact_phone}
 				<span>
 					<Icon kind="phone" size="18" />
-					<a href="tel:{data.property.contact_phone}" rel="nofollow"
+					<a href="tel:{data.property.contact_phone}" rel="nofollow" class="gold-text"
 						>{data.property.contact_phone}</a>
 				</span>
 			{/if}
@@ -276,11 +277,16 @@
 			/* align-items: center; */
 			gap: var(--size-1);
 
+			span {
+				display: flex;
+				align-items: center;
+			}
+
 			h3 {
 				margin: 0;
 			}
 			a {
-				color: var(--accent-content);
+				/* color: var(--accent-content); */
 				text-decoration: none;
 				white-space: nowrap;
 				vertical-align: top;
@@ -366,6 +372,7 @@
 			gap: var(--size-3);
 			flex: 0 1 100%;
 			justify-content: center;
+			margin-block-start: var(--size-3);
 		}
 
 		p.description {

@@ -1,7 +1,6 @@
 # Todo (will be implemented at user specified request)
 
-- [x] Icon refactored
-- [ ] redo print page
+- [x] redo print page
 
 ## API Enhancements for AI/MCP Interaction
 

@@ -1,14 +1,13 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
+	import { prefersDarkTheme } from '$lib/utils/helpers.js';
 
 	let { position } = $props();
+	let isDark = prefersDarkTheme();
 
 	let map;
 	let mapContainer;
 	let marker; // Store the marker instance
-
-	// Define a buffer for the bounds, in meters
-	const BOUNDS_BUFFER_METERS = 50; // Adjust as needed
 
 	onMount(async () => {
 		if (!position) return;
@@ -27,7 +26,11 @@
 			attributionControl: false,
 		}).setView([parseFloat(position.lat), parseFloat(position.lng)], 17);
 
-		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}', {
+		const tileUrl = isDark
+			? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.{ext}'
+			: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}';
+
+		L.tileLayer(tileUrl, {
 			subdomains: 'abcd',
 			minZoom: 15,
 			maxZoom: 18,
@@ -144,11 +147,5 @@
 		min-width: 200px;
 		border-radius: 8px;
 		overflow: hidden;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.map {
-			filter: invert(1) brightness(var(--brightness)) hue-rotate(180deg);
-		}
 	}
 </style>

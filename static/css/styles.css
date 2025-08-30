@@ -14,6 +14,7 @@
 	--surface-4: var(--surface-4-light);
 	--accent: var(--blue-7);
 	--accent-content: var(--blue-12);
+	--gold-text: var(--gradient-gold);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +30,7 @@
 		--surface-4: var(--surface-4-dark);
 		--accent: var(--yellow-3);
 		--accent-content: var(--yellow-1);
+		--gold-text: var(--gradient-19);
 	}
 }
 
@@ -44,6 +46,7 @@
 	--surface-4: var(--surface-4-light);
 	--accent: var(--blue-7);
 	--accent-content: var(--blue-12);
+	--gold-text: var(--gradient-gold);
 }
 
 [color-scheme="dark"] {
@@ -58,6 +61,7 @@
 	--surface-4: var(--surface-4-dark);
 	--accent: var(--yellow-3);
 	--accent-content: var(--yellow-1);
+	--gold-text: var(--gradient-19);
 }
 
 /* Additional global styles if needed */
@@ -92,16 +96,27 @@ html {
 
 	/* general */
 	--success: var(--green-6);
-	--success-content: var(--green-11);
+	--success-content: var(--green-9);
 	--error: var(--red-6);
-	--error-content: var(--red-11);
+	--error-content: var(--red-9);
 	--warning: var(--orange-6);
-	--warning-content: var(--orange-11);
+	--warning-content: var(--orange-9);
 	--info: var(--blue-6);
-	--info-content: var(--blue-11);
+	--info-content: var(--blue-9);
 
 	/* GRADIENTS */
-	--gradient-gold: radial-gradient(ellipse farthest-corner at right bottom, #fedb37 0%, #fdb931 8%, #9f7928 30%, #8a6e2f 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #ffffff 0%, #ffffac 8%, #d1b464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+	--gradient-gold: radial-gradient(ellipse farthest-corner at right bottom,
+			var(--yellow-3) 0%,
+			var(--yellow-5) 8%,
+			var(--brown-6) 30%,
+			var(--brown-7) 40%,
+			transparent 80%),
+		radial-gradient(ellipse farthest-corner at left top,
+			var(--gray-0) 0%,
+			var(--yellow-1) 8%,
+			var(--yellow-8) 25%,
+			var(--brown-9) 62.5%,
+			var(--brown-9) 100%);
 
 	height: 100%;
 }
@@ -132,6 +147,13 @@ body {
 	background: var(--surface-3);
 	color: var(--text-2);
 	cursor: not-allowed;
+}
+
+.gold-text {
+	background: var(--gold-text) fixed;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
 }
 
 /**
@@ -192,14 +214,14 @@ input[type=range] {
 		width: 100%;
 		height: 1px;
 		cursor: pointer;
-		background: var(--accent-content);
+		background: var(--accent);
 	}
 
 	&::-webkit-slider-thumb {
 		height: 18px;
 		width: 36px;
 		border-radius: var(--radius-2);
-		background: var(--accent);
+		background: var(--gradient-19);
 		cursor: pointer;
 		appearance: none;
 		margin-top: -9px;

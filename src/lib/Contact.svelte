@@ -20,7 +20,7 @@
 			efficiently and effectively.
 		</p>
 		<footer>
-			<h3>{import.meta.env.VITE_PHONE}</h3>
+			<h3 class="gold-text">{import.meta.env.VITE_PHONE}</h3>
 		</footer>
 	</div>
 
@@ -155,10 +155,6 @@
 
 		h2 {
 			text-wrap: balance;
-		}
-
-		footer {
-			color: var(--accent-content);
 		}
 	}
 
