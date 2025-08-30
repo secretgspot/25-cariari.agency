@@ -34,6 +34,7 @@
 
 {#if !navigating.complete}
 	<Logo type="regular" color="bw" fixed onclick={() => goto('/')} />
+	<Nav fixed />
 {/if}
 
 <main>
@@ -49,10 +50,7 @@
 
 	<aside class="filter-wrapper">
 		<div class="filter-sticky">
-			<div class="filters-menu">
-				<h3>{filtered.length} / {totalDisplayCount}</h3>
-				<Nav basic />
-			</div>
+			<h3 class="filter-count">Showing {filtered.length} / {totalDisplayCount}</h3>
 
 			<Filter loggedIn={data.is_logged_in} isAdmin={data.is_admin} />
 		</div>
@@ -126,26 +124,11 @@
 			top: 0;
 		}
 
-		.filters-menu {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			align-items: center;
-			justify-items: center;
-			padding: var(--size-2);
-
-			@media (min-width: 720px) {
-				grid-template-columns: repeat(2, 1fr);
-			}
-
-			h3 {
-				white-space: nowrap;
-				margin: 0;
-				justify-self: end;
-
-				@media (min-width: 720px) {
-					justify-self: auto;
-				}
-			}
+		h3.filter-count {
+			white-space: nowrap;
+			margin: 0;
+			margin-block-start: var(--size-9);
+			margin-inline: var(--size-3);
 		}
 	}
 </style>

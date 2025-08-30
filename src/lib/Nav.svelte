@@ -10,59 +10,85 @@
 
 <!-- {JSON.stringify(is_logged_in, null, 2)} -->
 
-<nav class:fixed class:basic {...rest}>
-	<div class="wrapper">
-		{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
-		{#if page.url.pathname != '/'}
-			<li><LinkButton href="/">Map</LinkButton></li>
-		{/if}
-		{#if page.url.pathname != '/properties'}
-			<li><LinkButton href="/properties">Properties</LinkButton></li>
-		{/if}
-		{#if page.url.pathname != '/properties/add'}
-			<li><LinkButton href="/properties/add">Add</LinkButton></li>
-		{/if}
-		{#if page.url.pathname != '/about'}
-			<li><LinkButton href="/about">About</LinkButton></li>
-		{/if}
-		{#if page.data.is_logged_in}
-			<li>
-				<form action="/logout" method="post">
-					<LinkButton sound_pattern="logout" underline={false} title="Logout">
-						<Icon kind="logout" size="18" />
-					</LinkButton>
-				</form>
-			</li>
-		{:else}
-			<li>
-				<LinkButton href="/login">Login</LinkButton>
-			</li>
-		{/if}
-	</div>
+<nav class="site-nav" class:fixed class:basic {...rest}>
+	{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
+	{#if page.url.pathname != '/'}
+		<LinkButton href="/" underline={false} class="nav-link">
+			<span class="nav-icon"><Icon kind="map" size="21" /></span>
+			<span class="nav-text">Map</span>
+		</LinkButton>
+	{/if}
+	{#if page.url.pathname != '/properties'}
+		<LinkButton href="/properties" underline={false} class="nav-link">
+			<span class="nav-icon"><Icon kind="properties" size="21" /></span>
+			<span class="nav-text">Properties</span>
+		</LinkButton>
+	{/if}
+	{#if page.url.pathname != '/properties/add'}
+		<LinkButton href="/properties/add" underline={false} class="nav-link">
+			<span class="nav-icon"><Icon kind="add" size="21" /></span>
+			<span class="nav-text">Add</span>
+		</LinkButton>
+	{/if}
+	{#if page.url.pathname != '/about'}
+		<LinkButton href="/about" underline={false} class="nav-link">
+			<span class="nav-icon"><Icon kind="about" size="21" /></span>
+			<span class="nav-text">About</span>
+		</LinkButton>
+	{/if}
+	{#if page.data.is_logged_in}
+		<form action="/logout" method="post">
+			<LinkButton
+				sound_pattern="logout"
+				underline={false}
+				title="Logout"
+				class="nav-link">
+				<Icon kind="logout" size="18" />
+			</LinkButton>
+		</form>
+	{:else}
+		<LinkButton href="/login">Login</LinkButton>
+	{/if}
 </nav>
 
 <style>
-	nav {
+	nav.site-nav {
 		position: absolute;
 		top: var(--size-2);
 		right: var(--size-2);
 		user-select: none;
 		z-index: 3;
-	}
-	.wrapper {
 		display: flex;
-		gap: var(--size-2);
+		align-items: center;
+		gap: var(--size-3);
 		list-style: none;
 		background: var(--surface-1);
-		/* backdrop-filter: blur(3px); */
 		padding: var(--size-1);
 		border-radius: var(--radius-2);
-	}
-	.fixed {
-		position: fixed;
-	}
-	.basic {
-		position: static;
-		justify-self: end;
+
+		&.fixed {
+			position: fixed;
+		}
+		&.basic {
+			position: static;
+			justify-self: end;
+		}
+
+		.nav-text {
+			display: none;
+			color: var(--text-2);
+			@media (min-width: 481px) {
+				display: block;
+			}
+		}
+		:global(.nav-link) {
+			display: flex;
+			align-items: flex-end;
+			gap: var(--size-2);
+			color: var(--text-1);
+			&:hover {
+				color: var(--accent);
+			}
+		}
 	}
 </style>
