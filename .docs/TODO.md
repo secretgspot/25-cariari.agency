@@ -1,7 +1,5 @@
 # Todo (will be implemented at user specified request)
 
-- [x] redo print page
-
 ## API Enhancements for AI/MCP Interaction
 
 ### 2. Enable Actions (Add `POST`, `PUT`, `DELETE`)
@@ -14,8 +12,6 @@
 ### 3. Implement Robust Standards for Machine Readability
 
 - [ ] **OpenAPI (Swagger) Specification:** Create a `GET /api/openapi.json` endpoint.
-- [x] **Structured JSON Responses:** Wrap responses with metadata (e.g., pagination info).
-- [x] **Detailed JSON Error Messages:** Provide structured errors with codes and details.
 
 ### 4. Add Security and Access Control
 
@@ -25,3 +21,5 @@
 ### 5. Other
 
 - [ ] implement Leaflet.markedcluster [github](https://github.com/Leaflet/Leaflet.markercluster?tab=readme-ov-file)
+- [ ] better token input?
+- [ ] maybe a settings page?

@@ -85,11 +85,15 @@
 					min="0"
 					bind:value={$filterStore.lot_size} /> min lot size
 			</label>
+
+			<label class="text">
+				<input type="text" name="msl-filter" bind:value={$filterStore.msl} /> msl
+			</label>
 		</div>
 	</div>
 
 	<div class="other">
-		<h3>Other</h3>
+		<h3>Listing View</h3>
 
 		<div class="row">
 			{#if isAdmin}
@@ -111,10 +115,6 @@
 					on="Mine"
 					off="All" />
 			{/if}
-
-			<label class="text">
-				<input type="text" name="msl-filter" bind:value={$filterStore.msl} /> msl
-			</label>
 		</div>
 	</div>
 </section>
@@ -156,7 +156,7 @@
 
 	.features .row {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+		grid-template-columns: 1fr 1fr;
 		align-items: baseline;
 		gap: var(--size-2);
 	}

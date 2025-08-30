@@ -46,7 +46,7 @@
 
 <!-- <JsonDump name="data" {data} /> -->
 {#if !navigating.complete && !loading}
-	<LogoSvg animate={true} kind="gold" fixed />
+	<LogoSvg animate={true} kind="gold" fixed invert />
 {/if}
 
 <main class:preview={selectedProperty}>
