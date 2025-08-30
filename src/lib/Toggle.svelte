@@ -230,12 +230,12 @@
 				&::before {
 					background: var(--error);
 					border-color: var(--error);
-					color: var(--error-content);
+					/* color: var(--error-content); */
 				}
 				&::after {
 					background: var(--success);
 					border-color: var(--success);
-					color: var(--success-content);
+					/* color: var(--success-content); */
 				}
 			}
 

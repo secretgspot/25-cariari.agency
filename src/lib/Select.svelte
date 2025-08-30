@@ -27,16 +27,21 @@
 </label>
 
 <style>
-	select,
-	::picker(select) {
-		appearance: base-select;
-	}
-
 	select {
+		appearance: base-select;
 		min-width: 69px;
 		&:open::picker-icon {
 			rotate: 180deg;
 		}
+
+		&::picker(select) {
+			appearance: base-select;
+			background: var(--surface-1);
+			border: var(--border-size-1) solid var(--surface-4);
+			border-radius: var(--radius-2);
+			box-shadow: var(--shadow-2);
+		}
+
 		option {
 			display: flex;
 			justify-content: flex-start;

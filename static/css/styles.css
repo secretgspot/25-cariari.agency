@@ -199,6 +199,11 @@ textarea {
 	border-radius: var(--radius-2);
 	width: 100%;
 	background: transparent;
+
+	&:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
 }
 
 input[type=range] {
