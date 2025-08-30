@@ -1,6 +1,6 @@
 <script>
 	import { Button } from '$lib/buttons';
-	import { slide } from 'svelte/transition';
+	import Icon from '$lib/Icon.svelte';
 
 	/**
 	 * @typedef {Object} ExistingAttachment
@@ -169,21 +169,19 @@
 
 	<div class="file-list">
 		{#each displayItems || [] as item (item.id)}
-			<div class="card" transition:slide={{ duration: 93 }}>
+			<div class="card">
 				<img src={item.url} alt={item.name} loading="lazy" />
 				{#if item.canDelete}
 					<div class="file-action">
-						<Button type="button" size="icon" disabled={loading} onclick={item.action}>
+						<Button
+							type="button"
+							size="icon"
+							outline
+							red
+							disabled={loading}
+							onclick={item.action}>
 							{#snippet icon()}
-								<svg
-									fill="currentColor"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									width="18px"
-									height="18px">
-									<path
-										d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z" />
-								</svg>
+								<Icon kind="delete" size="18" />
 							{/snippet}
 							{item.isNew ? 'Remove' : 'Delete'}
 						</Button>
@@ -201,24 +199,23 @@
 		grid-template-columns: 1fr;
 		gap: var(--size-3);
 		margin-bottom: var(--size-3);
-	}
 
-	.dropzone {
-		position: relative;
-		border: var(--border-size-1) dashed var(--surface-2);
-		border-radius: var(--radius-2);
-		border-width: 6px;
-		display: flex;
-		padding: var(--size-8);
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		height: 90px;
-	}
-
-	.active {
-		border-color: var(--accent-focus);
-		background: var(--surface-2);
+		.dropzone {
+			position: relative;
+			border: var(--border-size-1) dashed var(--surface-2);
+			border-radius: var(--radius-2);
+			border-width: 6px;
+			display: flex;
+			padding: var(--size-8);
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			height: 90px;
+			&.active {
+				border-color: var(--surface-4);
+				background: var(--surface-2);
+			}
+		}
 	}
 
 	input[type='file'] {
@@ -236,43 +233,45 @@
 		gap: var(--size-2);
 		grid-template: auto/repeat(auto-fill, minmax(120px, 140px));
 		justify-content: center;
-	}
 
-	.card {
-		display: flex;
-		position: relative;
-		max-width: 150px;
-		max-height: 150px;
-		border-radius: var(--radius-2);
-	}
-	.card img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: var(--radius-2);
-	}
-	.card:hover .file-action,
-	.card:focus-within .file-action {
-		display: flex;
-	}
+		.card {
+			display: flex;
+			position: relative;
+			max-width: 150px;
+			max-height: 150px;
+			border-radius: var(--radius-2);
+			aspect-ratio: 1;
+			&:hover .file-action,
+			&:focus-within .file-action {
+				display: flex;
+			}
 
-	.file-action {
-		display: flex;
-		justify-content: space-between;
-		position: absolute;
-		right: calc(var(--size-1) * -1);
-		top: calc(var(--size-1) * -1);
-		width: 27px;
-		height: 27px;
-		@media (min-width: 481px) {
-			display: none;
-		}
-		:global(.icon) {
-			background: var(--surface-2);
-			color: var(--text-2);
-			&:hover {
-				background: var(--error);
-				color: var(--error-content);
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				border-radius: var(--radius-2);
+			}
+
+			.file-action {
+				display: flex;
+				justify-content: space-between;
+				position: absolute;
+				right: calc(var(--size-1) * -1);
+				top: calc(var(--size-1) * -1);
+				width: 27px;
+				height: 27px;
+				@media (min-width: 481px) {
+					display: none;
+				}
+				:global(.icon) {
+					background: var(--surface-2);
+					color: var(--text-2);
+					/* &:hover {
+						background: var(--error);
+						color: var(--error-content);
+					} */
+				}
 			}
 		}
 	}

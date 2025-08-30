@@ -57,9 +57,6 @@
 
 	<footer class="property-footer">
 		<div class="details wrap">
-			<!-- {#if property.location}<small class="loc"
-					>{property.location.lat} / {property.location.lng}</small
-				>{/if} -->
 			<small class="features">
 				{#if property.beds > 0}
 					<Badge type="tiny" label="beds" value={property.beds} />
@@ -84,14 +81,12 @@
 
 		<div class="buttons">
 			{#if user_id === property.user_id || isAdmin}
-				<!-- <Button href="property/{property.id}">Edit</Button> -->
 				<Button size="icon" onclick={() => goto(`/${property.id}/edit`)}>
 					{#snippet icon()}
 						✏️
 					{/snippet}
 				</Button>
 			{/if}
-			<!-- <Button href="/{property.id}">View</Button> -->
 		</div>
 	</footer>
 </section>
@@ -123,14 +118,17 @@
 			}
 		}
 	}
-	.deactivated::after {
+	.deactivated :global(.property-image::after) {
 		content: 'Delisted';
 		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		background: var(--warning);
-		border-top-left-radius: var(--radius-2);
 		color: var(--warning-content);
 		padding: var(--size-1);
-		opacity: 0.9;
+		opacity: 0.6;
+		text-align: center;
 	}
 
 	/* PROPERTIES LIST -> PROPERTY -> HEADER */
@@ -218,16 +216,10 @@
 			/* margin: 0 1rem 1rem; */
 
 			.features {
-				color: var(--accent);
 				font-size: x-small;
 				display: flex;
 				gap: var(--size-2);
 			}
-
-			/* .loc {
-				color: var(--accent-content);
-				font-size: x-small;
-			} */
 		}
 	}
 	.property-footer .buttons {

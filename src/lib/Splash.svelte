@@ -7,7 +7,9 @@
 	<div class="backdrop"></div>
 
 	<div class="logo-group">
-		<LogoSvg animate={true} kind="gold" size="150" time={3} />
+		<span>Cariari</span>
+		<LogoSvg animate={true} kind="gold" size="69" time={3} />
+		<span>Agency</span>
 	</div>
 </div>
 
@@ -22,14 +24,18 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		height: 100dvh;
+		width: 100dvw;
 	}
 	.backdrop {
-		/* background: rgba(255,255,255,0.18); */
-		/* background: var(--bg-primary); */
-		width: 100%;
-		height: 100%;
-		position: absolute;
+		z-index: 8;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		backdrop-filter: blur(30px);
+		background: var(--surface-1);
 	}
 	.logo-group {
 		z-index: 12;
@@ -39,37 +45,15 @@
 		user-select: none;
 		cursor: pointer;
 		position: relative;
-	}
-	.logo-group::before,
-	.logo-group::after {
-		position: absolute;
-		color: var(--text-1);
-		font-size: 2rem;
-		font-weight: lighter;
-		text-transform: uppercase;
-		margin: 0 1rem;
-	}
-	.logo-group::before {
-		content: 'Cariari';
-		right: 100%;
-	}
-	.logo-group::after {
-		content: 'Realty';
-		left: 100%;
-	}
-	@media screen and (orientation: portrait) {
-		.logo-group::before,
-		.logo-group::after {
-			margin: 1rem 0;
-			left: 0;
-			right: 0;
-			text-align: center;
+		gap: var(--size-3);
+		@media screen and (orientation: portrait) {
+			flex-direction: column;
 		}
-		.logo-group::before {
-			bottom: 100%;
-		}
-		.logo-group::after {
-			top: 100%;
+
+		span {
+			font-size: var(--font-size-fluid-2);
+			font-weight: lighter;
+			text-transform: uppercase;
 		}
 	}
 </style>
