@@ -11,7 +11,6 @@
 <!-- {JSON.stringify(is_logged_in, null, 2)} -->
 
 <nav class="site-nav" class:fixed class:basic {...rest}>
-	{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
 	{#if page.url.pathname != '/'}
 		<LinkButton href="/" underline={false} class="nav-link">
 			<span class="nav-icon"><Icon kind="map" size="21" /></span>
@@ -37,7 +36,8 @@
 		</LinkButton>
 	{/if}
 	{#if page.data.is_logged_in}
-		<form action="/logout" method="post">
+		<form action="/logout" method="post" class="form-logout">
+			{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
 			<LinkButton
 				sound_pattern="logout"
 				underline={false}
@@ -85,9 +85,23 @@
 			display: flex;
 			align-items: flex-end;
 			gap: var(--size-2);
+			padding: var(--size-1) var(--size-2);
 			color: var(--text-1);
 			&:hover {
 				color: var(--accent);
+			}
+		}
+
+		.form-logout {
+			display: grid;
+			align-items: stretch;
+			justify-items: stretch;
+			> span[title='admin'] {
+				font-size: small;
+				grid-area: 1/1;
+			}
+			:global(.nav-link) {
+				grid-area: 1/1;
 			}
 		}
 	}

@@ -83,30 +83,32 @@
 					type="number"
 					name="lot-filter"
 					min="0"
-					bind:value={$filterStore.lot_size} /> min lot size
+					bind:value={$filterStore.lot_size} />
+				<span class="label-text">min lot size</span>
 			</label>
 
 			<label class="text">
-				<input type="text" name="msl-filter" bind:value={$filterStore.msl} /> msl
+				<input type="text" name="msl-filter" bind:value={$filterStore.msl} />
+				<span class="label-text">msl</span>
 			</label>
 		</div>
 	</div>
 
-	<div class="other">
-		<h3>Listing View</h3>
+	{#if loggedIn}
+		<div class="other">
+			<h3>Listing View</h3>
 
-		<div class="row">
-			{#if isAdmin}
-				<Toggle
-					name="active"
-					bind:checked={$filterStore.active}
-					label={$filterStore.active ? 'Listed' : 'Delisted'}
-					kind="flip"
-					on="Listed"
-					off="Delisted" />
-			{/if}
+			<div class="row">
+				{#if isAdmin}
+					<Toggle
+						name="active"
+						bind:checked={$filterStore.active}
+						label={$filterStore.active ? 'Listed' : 'Delisted'}
+						kind="flip"
+						on="Listed"
+						off="Delisted" />
+				{/if}
 
-			{#if loggedIn}
 				<Toggle
 					name="user_only"
 					bind:checked={$filterStore.user_only}
@@ -114,9 +116,9 @@
 					kind="flip"
 					on="Mine"
 					off="All" />
-			{/if}
+			</div>
 		</div>
-	</div>
+	{/if}
 </section>
 
 <style>
@@ -159,10 +161,16 @@
 		grid-template-columns: 1fr 1fr;
 		align-items: baseline;
 		gap: var(--size-2);
+		row-gap: var(--size-3);
+
+		.label-text {
+			font-size: small;
+			color: var(--text-2);
+		}
 	}
 
 	.other .row {
-		align-items: flex-start;
+		justify-content: flex-start;
 		gap: var(--size-3);
 	}
 </style>

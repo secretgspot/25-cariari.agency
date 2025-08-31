@@ -57,7 +57,7 @@
 	}
 	.close {
 		background: transparent;
-		border: 0 none;
+		border: none;
 		padding: 0;
 		cursor: pointer;
 		pointer-events: auto;

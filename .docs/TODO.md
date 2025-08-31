@@ -1,5 +1,7 @@
 # Todo (will be implemented at user specified request)
 
+- [ ] when property deleted there should be a toaster notification of success or fail.
+
 ## 🔥 HIGH PRIORITY - Architecture & Structure Improvements
 
 ### 1. Map Library Consolidation

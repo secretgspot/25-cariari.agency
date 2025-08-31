@@ -170,7 +170,7 @@
 		/* min-height: 369px; */
 		width: min-content;
 		height: min-content;
-		border: var(--border-size-1) solid var(--surface-2);
+		border: var(--border-size-1) solid var(--surface-4);
 		border-radius: var(--radius-2);
 		pointer-events: none;
 		z-index: 6;
@@ -181,10 +181,7 @@
 
 		&,
 		&::backdrop {
-			background-image: radial-gradient(
-				hsl(var(--red-3) / 0.6),
-				hsl(var(--blue-3) / 0.9)
-			);
+			background-image: radial-gradient(var(--surface-2), var(--surface-1) 60%);
 			backdrop-filter: blur(3px);
 			transition:
 				display var(--transition) allow-discrete,

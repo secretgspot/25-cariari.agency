@@ -22,7 +22,7 @@
 		{/each}
 	</select>
 	{#if label}
-		{label}
+		<span class="label-text">{label}</span>
 	{/if}
 </label>
 
@@ -62,5 +62,9 @@
 				/* color: var(--accent); */
 			}
 		}
+	}
+	.label-text {
+		font-size: small;
+		color: var(--text-2);
 	}
 </style>

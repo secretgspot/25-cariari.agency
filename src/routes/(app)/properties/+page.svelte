@@ -127,7 +127,7 @@
 		h3.filter-count {
 			white-space: nowrap;
 			margin: 0;
-			margin-block-start: var(--size-9);
+			padding-block-start: var(--size-9);
 			margin-inline: var(--size-3);
 		}
 	}

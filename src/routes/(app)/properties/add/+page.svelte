@@ -685,10 +685,10 @@
 	}
 
 	.section_property_type .active {
-		border: 1px solid var(--success);
+		border: var(--border-size-1) solid var(--success);
 	}
 	.section_property_type .removed {
-		border: 1px solid var(--error);
+		border: var(--border-size-1) solid var(--error);
 	}
 
 	/* .section_location .location input:first-of-type {
