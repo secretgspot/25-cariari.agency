@@ -8,6 +8,7 @@
 	import { isEmpty } from '$lib/utils/validators.js';
 	import { formatLargeNumber } from '$lib/utils/formatters.js';
 	import { browser } from '$app/environment';
+	// import { playButtonSound } from '$lib/utils/audio.js';
 
 	// --- State ---
 	let { markers = [], onSelected } = $props();
@@ -69,7 +70,7 @@
 
 			const tooltipText = `${msl || 'N/A'} - ${
 				Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'
-			}${price ? ` $${formatLargeNumber(price)}` : ''}`;
+			}${price ? ` ${formatLargeNumber(price)}` : ''}`;
 
 			marker.bindTooltip(tooltipText, {
 				permanent: false,
@@ -77,6 +78,7 @@
 				offset: [0, -10],
 			});
 			marker.on('click', (e) => {
+				// playButtonSound('click');
 				if (onSelected && e.target.options.property_id) {
 					onSelected(e.target.options.property_id);
 				}
