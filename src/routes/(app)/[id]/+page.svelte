@@ -176,7 +176,7 @@
 				<h3>{data.property.contact_realtor}</h3>
 			{/if}
 			{#if data.property.contact_email}<span
-					><Icon kind="email" size="18" /><a
+					><Icon kind="email" size="21" /><a
 						href="mailto:{data.property.contact_email}"
 						rel="nofollow"
 						class="gold-text">{data.property.contact_email}</a
@@ -184,7 +184,7 @@
 				>{/if}
 			{#if data.property.contact_phone}
 				<span>
-					<Icon kind="phone" size="18" />
+					<Icon kind="phone" size="21" />
 					<a href="tel:{data.property.contact_phone}" rel="nofollow" class="gold-text"
 						>{data.property.contact_phone}</a>
 				</span>

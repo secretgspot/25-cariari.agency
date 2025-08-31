@@ -9,7 +9,7 @@
 	<Notify type="danger">{page.status}: {page.error.message}</Notify>
 
 	{#if page.status == 401 || page.status == 404 || page.status == 500}
-		<Button shadow right href="/" alt="Home">
+		<Button shadow href="/" alt="Home">
 			{#snippet icon()}
 				🎈
 			{/snippet}

@@ -9,6 +9,7 @@
 	import Compressor from 'compressorjs';
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
+	import Icon from '$lib/Icon.svelte';
 	import { Button } from '$lib/buttons';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Toggle from '$lib/Toggle.svelte';
@@ -561,7 +562,7 @@
 						size="icon"
 						onclick={() => addFeature(featureInput, propertyData)}>
 						{#snippet icon()}
-							➕
+							<Icon kind="plus" size="21" />
 						{/snippet}
 					</Button>
 				</div>
@@ -623,7 +624,7 @@
 		{#if propertyData.is_active && !isAdmin}
 			<Button formaction="?/remove" color="danger" {loading} disabled={loading}>
 				{#snippet icon()}
-					❌
+					<Icon kind="delete" size="27" />
 				{/snippet}
 				Remove
 			</Button>
@@ -638,7 +639,7 @@
 				disabled={loading}
 				onclick={showDeleteConfirm}>
 				{#snippet icon()}
-					❌
+					<Icon kind="delete" size="27" />
 				{/snippet}
 				Delete
 			</Button>
@@ -654,7 +655,7 @@
 					goto(`/${propertyData.id}/print`);
 				}}>
 				{#snippet icon()}
-					👁‍🗨
+					<Icon kind="receipt" size="27" />
 				{/snippet}
 				Print
 			</Button>
@@ -682,7 +683,7 @@
 			</Button> -->
 		<Button formaction="?/edit" shadow {loading} disabled={loading}>
 			{#snippet icon()}
-				💾
+				<Icon kind="edit" size="27" />
 			{/snippet}
 			Submit Changes
 		</Button>

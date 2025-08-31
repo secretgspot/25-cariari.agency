@@ -7,6 +7,7 @@
 	import { formatter } from '$lib/utils/formatters.js';
 	import { ago } from '$lib/utils/time.js';
 	import { Spinner } from '$lib/loaders';
+	import Icon from '$lib/Icon.svelte';
 
 	/** @type {{data: any}} */
 	let { property_id, supabase, is_admin } = $props();
@@ -144,7 +145,7 @@
 			disabled={loading}
 			onclick={() => goto(property.msl)}>
 			{#snippet icon()}
-				👁‍🗨
+				<Icon kind="view" size="27" />
 			{/snippet}
 			Show Details
 		</Button>

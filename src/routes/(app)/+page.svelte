@@ -109,11 +109,13 @@
 		gap: var(--size-3);
 		position: absolute;
 		top: calc(var(--size-3) * 3);
-		right: var(--size-3);
+		right: 0;
 		user-select: none;
 		z-index: 3;
 		background: var(--surface-1);
 		padding: var(--size-1);
 		border-radius: var(--radius-2);
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
 	}
 </style>

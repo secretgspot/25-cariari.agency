@@ -13,25 +13,25 @@
 <nav class="site-nav" class:fixed class:basic {...rest}>
 	{#if page.url.pathname != '/'}
 		<LinkButton href="/" underline={false} class="nav-link">
-			<span class="nav-icon"><Icon kind="map" size="21" /></span>
+			<span class="nav-icon"><Icon kind="map" size="27" /></span>
 			<span class="nav-text">Map</span>
 		</LinkButton>
 	{/if}
 	{#if page.url.pathname != '/properties'}
 		<LinkButton href="/properties" underline={false} class="nav-link">
-			<span class="nav-icon"><Icon kind="properties" size="21" /></span>
+			<span class="nav-icon"><Icon kind="properties" size="27" /></span>
 			<span class="nav-text">Properties</span>
 		</LinkButton>
 	{/if}
 	{#if page.url.pathname != '/properties/add'}
 		<LinkButton href="/properties/add" underline={false} class="nav-link">
-			<span class="nav-icon"><Icon kind="add" size="21" /></span>
+			<span class="nav-icon"><Icon kind="add" size="27" /></span>
 			<span class="nav-text">Add</span>
 		</LinkButton>
 	{/if}
 	{#if page.url.pathname != '/about'}
 		<LinkButton href="/about" underline={false} class="nav-link">
-			<span class="nav-icon"><Icon kind="about" size="21" /></span>
+			<span class="nav-icon"><Icon kind="about" size="27" /></span>
 			<span class="nav-text">About</span>
 		</LinkButton>
 	{/if}
@@ -43,11 +43,14 @@
 				underline={false}
 				title="Logout"
 				class="nav-link">
-				<Icon kind="logout" size="18" />
+				<Icon kind="logout" size="21" />
 			</LinkButton>
 		</form>
 	{:else}
-		<LinkButton href="/login">Login</LinkButton>
+		<LinkButton href="/login" underline={false} title="Login" class="nav-link">
+			<span class="nav-icon"><Icon kind="login" size="27" /></span>
+			<span class="nav-text">Login</span>
+		</LinkButton>
 	{/if}
 </nav>
 
@@ -55,7 +58,7 @@
 	nav.site-nav {
 		position: absolute;
 		top: var(--size-2);
-		right: var(--size-2);
+		right: 0;
 		user-select: none;
 		z-index: 3;
 		display: flex;
@@ -65,6 +68,8 @@
 		background: var(--surface-1);
 		padding: var(--size-1);
 		border-radius: var(--radius-2);
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
 
 		&.fixed {
 			position: fixed;
@@ -94,7 +99,7 @@
 		.form-logout {
 			display: grid;
 			align-items: stretch;
-			justify-items: stretch;
+			justify-items: end;
 			> span[title='admin'] {
 				font-size: small;
 				grid-area: 1/1;

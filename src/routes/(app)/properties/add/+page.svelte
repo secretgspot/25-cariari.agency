@@ -7,6 +7,7 @@
 	import Logo from '$lib/Logo.svelte';
 	import Nav from '$lib/Nav.svelte';
 	import { Button } from '$lib/buttons';
+	import Icon from '$lib/Icon.svelte';
 	import Checkboxes from '$lib/Checkboxes.svelte';
 	import Toggle from '$lib/Toggle.svelte';
 	import Select from '$lib/Select.svelte';
@@ -617,7 +618,7 @@
 			</Button> -->
 		<Button shadow {loading} disabled={loading}>
 			{#snippet icon()}
-				💾
+				<Icon kind="save" size="27" />
 			{/snippet}
 			Add Property
 		</Button>
