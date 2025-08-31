@@ -150,8 +150,8 @@
 				toggle.checked = isLocating;
 				label.htmlFor = 'gps-toggle';
 
-				const targetIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="27" height="27"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="50" d="M256 484c125.92 0 228-102.08 228-228 0-125.921-102.08-228-228-228C130.079 28 28 130.079 28 256c0 125.92 102.079 228 228 228Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M256.001 302.546c25.707 0 46.545-20.839 46.545-46.546 0-25.706-20.838-46.545-46.545-46.545S209.455 230.294 209.455 256c0 25.707 20.839 46.546 46.546 46.546Z"/></svg>`;
-				const targetFoundIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="27" height="27"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M256 490c129.234 0 234-104.766 234-234 0-129.235-104.766-234-234-234C126.765 22 22 126.765 22 256c0 129.234 104.765 234 234 234Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="60" d="M256.001 303.77c26.383 0 47.77-21.387 47.77-47.77 0-26.383-21.387-47.771-47.77-47.771-26.383 0-47.771 21.388-47.771 47.771s21.388 47.77 47.771 47.77Z"/></svg>`;
+				const targetIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="21" height="21"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="50" d="M256 484c125.92 0 228-102.08 228-228 0-125.921-102.08-228-228-228C130.079 28 28 130.079 28 256c0 125.92 102.079 228 228 228Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M256.001 302.546c25.707 0 46.545-20.839 46.545-46.546 0-25.706-20.838-46.545-46.545-46.545S209.455 230.294 209.455 256c0 25.707 20.839 46.546 46.546 46.546Z"/></svg>`;
+				const targetFoundIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="21" height="21"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M256 490c129.234 0 234-104.766 234-234 0-129.235-104.766-234-234-234C126.765 22 22 126.765 22 256c0 129.234 104.765 234 234 234Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="60" d="M256.001 303.77c26.383 0 47.77-21.387 47.77-47.77 0-26.383-21.387-47.771-47.77-47.771-26.383 0-47.771 21.388-47.771 47.771s21.388 47.77 47.771 47.77Z"/></svg>`;
 
 				label.innerHTML = isLocating ? targetFoundIcon : targetIcon;
 
@@ -229,11 +229,19 @@
 		});
 
 		// Add controls
-		L.control
+		const layersControl = L.control
 			.layers({ Default: defaultLayer, Satellite: satelliteLayer }, null, {
 				position: 'bottomright',
 			})
 			.addTo(map);
+
+		const layersIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="21" height="21"><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="50" d="M226.099 434.548V77.452c0-33.901-14.314-47.462-50.476-47.462H84.466c-36.162 0-50.476 13.56-50.476 47.462v357.096c0 33.901 14.314 47.462 50.476 47.462h91.157c36.162 0 50.476-13.561 50.476-47.462Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M486.001 434.548V77.452c0-33.901-14.314-47.462-50.476-47.462h-91.157c-35.91 0-50.475 13.56-50.475 47.462v357.096c0 33.901 14.314 47.462 50.475 47.462h91.157c36.162 0 50.476-13.561 50.476-47.462Z"/></svg>`;
+		const layersToggle = layersControl
+			.getContainer()
+			.querySelector('.leaflet-control-layers-toggle');
+		if (layersToggle) {
+			layersToggle.innerHTML = layersIcon;
+		}
 
 		createToggleControl();
 
