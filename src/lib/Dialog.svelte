@@ -54,6 +54,7 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { Button } from '$lib/buttons';
+	import Icon from '$lib/Icon.svelte';
 
 	// Define props using Svelte 5 runes
 	const {
@@ -136,7 +137,7 @@
 			aria-label="Close dialog"
 			onclick={() => closeDialog('closed')}>
 			{#snippet icon()}
-				❌
+				<Icon kind="del" size="18" />
 			{/snippet}
 		</Button>
 	</header>

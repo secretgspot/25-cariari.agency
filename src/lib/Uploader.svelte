@@ -181,7 +181,7 @@
 							disabled={loading}
 							onclick={item.action}>
 							{#snippet icon()}
-								<Icon kind="delete" size="18" />
+								<Icon kind="del" size="18" />
 							{/snippet}
 							{item.isNew ? 'Remove' : 'Delete'}
 						</Button>

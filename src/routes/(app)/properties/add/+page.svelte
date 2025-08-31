@@ -542,7 +542,7 @@
 						size="icon"
 						onclick={() => addFeature(featureInput, property)}>
 						{#snippet icon()}
-							➕
+							<Icon kind="plus" size="21" />
 						{/snippet}
 					</Button>
 				</div>

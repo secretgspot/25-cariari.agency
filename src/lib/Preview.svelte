@@ -53,7 +53,7 @@
 			disabled={loading}
 			onclick={() => goto(property.id + '/edit')}>
 			{#snippet icon()}
-				✏️
+				<Icon kind="modify" size="27" />
 			{/snippet}
 			Show Details
 		</Button>
@@ -147,7 +147,7 @@
 			{#snippet icon()}
 				<Icon kind="view" size="27" />
 			{/snippet}
-			Show Details
+			View Property
 		</Button>
 	</footer>
 </section>
@@ -176,6 +176,10 @@
 			width: min-content;
 			z-index: 2;
 			aspect-ratio: 1;
+			background: var(--surface-1);
+			border-top-right-radius: 0;
+			border-top-left-radius: 0;
+			border-bottom-right-radius: 0;
 		}
 	}
 

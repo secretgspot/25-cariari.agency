@@ -5,6 +5,7 @@
 	import { ago } from '$lib/utils/time.js';
 	import { Button, LinkButton } from '$lib/buttons';
 	import Badge from '$lib/Badge.svelte';
+	import Icon from '$lib/Icon.svelte';
 
 	/** @type {{property: any}} */
 	let { property } = $props();
@@ -87,7 +88,7 @@
 			{#if user_id === property.user_id || isAdmin}
 				<Button size="icon" onclick={() => goto(`/${property.id}/edit`)}>
 					{#snippet icon()}
-						✏️
+						<Icon kind="modify" size="27" />
 					{/snippet}
 				</Button>
 			{/if}
@@ -236,5 +237,7 @@
 		border-radius: 0;
 		padding: var(--size-1);
 		border-top-right-radius: var(--radius-2);
+		border-bottom-left-radius: var(--radius-2);
+		background: var(--surface-1);
 	}
 </style>
