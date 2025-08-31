@@ -9,6 +9,7 @@
 		name = '',
 		disabled = false,
 		kind = 'square',
+		color = 'var(--sale)',
 		sound = true,
 		sound_pattern = 'tick', // basic, successA, successB, successC, failA, failB, failC, notification, warning, tick, swipe, bell, click
 		buzz = true,
@@ -51,7 +52,7 @@
 		{name}
 		{disabled}
 		onchange={handleChange} />
-	<label for={'chk-' + name}>{label}</label>
+	<label for={'chk-' + name} style="--incoming-color: {color}">{label}</label>
 </div>
 
 <style>
@@ -90,7 +91,7 @@
 			top: 6px;
 			left: 0;
 			font-size: 2.1em;
-			color: var(--success);
+			color: var(--incoming-color);
 			line-height: 0;
 		}
 
@@ -172,7 +173,7 @@
 				border: 1px solid var(--accent);
 				width: 1.3em;
 				height: 1.3em;
-				box-shadow: inset 0px 0px 0 3px var(--success);
+				box-shadow: inset 0px 0px 0 3px var(--incoming-color);
 			}
 		}
 	}

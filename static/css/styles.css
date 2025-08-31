@@ -103,6 +103,8 @@ html {
 	--warning-content: var(--orange-9);
 	--info: var(--blue-6);
 	--info-content: var(--blue-9);
+	--sale: var(--green-6);
+	--rent: var(--orange-6);
 
 	/* GRADIENTS */
 	--gradient-gold: radial-gradient(ellipse farthest-corner at right bottom,

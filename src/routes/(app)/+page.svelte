@@ -53,8 +53,18 @@
 	<section class="map-wrapper">
 		<Nav />
 		<div class="filter-controls">
-			<Checkbox name="sale" label="Sale" kind="circle" bind:checked={saleFilter} />
-			<Checkbox name="rent" label="Rent" kind="circle" bind:checked={rentFilter} />
+			<Checkbox
+				name="sale"
+				label="Sale"
+				kind="circle"
+				color="var(--sale)"
+				bind:checked={saleFilter} />
+			<Checkbox
+				name="rent"
+				label="Rent"
+				kind="circle"
+				color="var(--rent)"
+				bind:checked={rentFilter} />
 		</div>
 		<Map
 			markers={filteredProperties()}
@@ -114,6 +124,7 @@
 		z-index: 3;
 		background: var(--surface-1);
 		padding: var(--size-1);
+		padding-right: var(--size-6);
 		border-radius: var(--radius-2);
 		border-top-right-radius: 0;
 		border-bottom-right-radius: 0;

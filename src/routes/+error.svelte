@@ -3,6 +3,7 @@
 	import Notify from '$lib/Notify.svelte';
 	import ErrorImage from '$lib/ErrorImage.svelte';
 	import { Button } from '$lib/buttons';
+	import Icon from '$lib/Icon.svelte';
 </script>
 
 <main>
@@ -11,7 +12,7 @@
 	{#if page.status == 401 || page.status == 404 || page.status == 500}
 		<Button shadow href="/" alt="Home">
 			{#snippet icon()}
-				🎈
+				<Icon kind="home" size="27" />
 			{/snippet}
 			Return to homepage
 		</Button>
