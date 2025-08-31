@@ -14,7 +14,11 @@
 </script>
 
 <section class="property" class:deactivated={!property.is_active}>
-	<LinkButton class="property-image" underline={false} href={`/${property.msl}`}>
+	<LinkButton
+		class="property-image"
+		sound_pattern="swipe"
+		underline={false}
+		href={`/${property.msl}`}>
 		{#if property.photo}
 			<img
 				src={property.photo}

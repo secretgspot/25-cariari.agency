@@ -631,6 +631,7 @@
 		{#if isAdmin}
 			<Button
 				type="button"
+				sound_pattern="longPress"
 				shadow
 				red
 				{loading}

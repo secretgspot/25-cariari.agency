@@ -27,7 +27,13 @@
 
 <!-- <JsonDump name="data" {data} /> -->
 {#if !navigating.complete}
-	<LogoSvg animate={true} invert={true} kind="gold" fixed onclick={() => goto('/')} />
+	<LogoSvg
+		fixed
+		kind="gold"
+		animate={true}
+		invert={true}
+		clickable={true}
+		onclick={() => goto('/')} />
 	<Nav fixed />
 {/if}
 

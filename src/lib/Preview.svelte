@@ -139,6 +139,7 @@
 			right
 			shadow
 			outline
+			sound_pattern="swipe"
 			{loading}
 			disabled={loading}
 			onclick={() => goto(property.msl)}>

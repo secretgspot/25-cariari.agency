@@ -8,6 +8,7 @@
 		fixed = false,
 		time = 9,
 		invert = false,
+		clickable = false,
 		...rest
 	} = $props();
 </script>
@@ -16,6 +17,7 @@
 	class="logo"
 	class:fixed
 	class:invert
+	class:clickable
 	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	viewBox="0 0 220 220"
@@ -106,6 +108,9 @@
 		}
 		&.invert {
 			mix-blend-mode: difference;
+		}
+		&.clickable {
+			cursor: pointer;
 		}
 	}
 	.ring {
