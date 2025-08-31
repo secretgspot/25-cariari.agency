@@ -794,9 +794,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 			position: relative;
 			cursor: pointer;
 			user-select: none;
-			padding: var(--size-3);
+			padding: var(--size-1);
 			transition: all var(--transition) ease;
 			perspective: 90px;
+			line-height: 1;
 
 			&:after,
 			&:before {
@@ -806,21 +807,22 @@ svg.leaflet-image-layer.leaflet-interactive path {
 				text-align: center;
 				transition: all var(--transition) ease;
 				width: 100%;
-				background: var(--surface-1);
+				/* background: var(--surface-1); */
 				color: var(--text-1);
 				position: absolute;
 				top: 0;
 				left: 0;
 				backface-visibility: hidden;
 				border-radius: var(--radius-2);
-				border: var(--border-size-1) solid var(--accent);
+				border: var(--border-size-1) solid var(--surface-4);
 				aspect-ratio: 1;
 			}
 
 			&:after {
 				content: attr(data-tg-on);
 				transform: rotateY(-180deg);
-				border-width: medium;
+				border-color: var(--accent);
+				/* border-width: medium; */
 			}
 
 			&:before {
