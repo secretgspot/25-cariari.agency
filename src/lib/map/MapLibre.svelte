@@ -2,36 +2,112 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import pkg from 'maplibre-gl';
-	const { Map, Marker } = pkg;
+	const { Map, Marker, GeolocateControl } = pkg;
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { isValidMarker, getPropertyIconName } from '$lib/utils/mapUtils.js';
-	import mapStyle from './style.json';
+	import { prefersDarkTheme } from '$lib/utils/helpers.js';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
 
-	let mapElement; // Bind to the div element
+	let mapElement;
 	let mapInstance = $state(null);
 	let isMapReady = $state(false);
-	let mapMarkers = []; // To store MapLibre GL markers
 	let currentOpenPopup = $state(null);
 
-	// Define onMarkerClick outside, so it's accessible by updateMarkers and keeps its reference stable
+	// Style State
+	const mapStyles = [
+		{
+			name: 'Lite',
+			style: {
+				version: 8,
+				sources: {
+					'carto-light': {
+						type: 'raster',
+						tiles: [
+							'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+							'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+							'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+							'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+						],
+						tileSize: 256,
+						attribution: '© OpenStreetMap contributors, © CARTO',
+					},
+				},
+				layers: [
+					{
+						id: 'carto-light-layer',
+						type: 'raster',
+						source: 'carto-light',
+					},
+				],
+			},
+		},
+		{
+			name: 'Dark',
+			style: {
+				version: 8,
+				sources: {
+					'carto-dark': {
+						type: 'raster',
+						tiles: [
+							'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+							'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+							'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+							'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+						],
+						tileSize: 256,
+						attribution: '© OpenStreetMap contributors, © CARTO',
+					},
+				},
+				layers: [
+					{
+						id: 'carto-dark-layer',
+						type: 'raster',
+						source: 'carto-dark',
+					},
+				],
+			},
+		},
+		{
+			name: 'Satellite',
+			style: {
+				version: 8,
+				sources: {
+					'arcgis-satellite': {
+						type: 'raster',
+						tiles: [
+							'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+						],
+						tileSize: 256,
+						attribution:
+							'© Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+					},
+				},
+				layers: [
+					{
+						id: 'arcgis-satellite-layer',
+						type: 'raster',
+						source: 'arcgis-satellite',
+					},
+				],
+			},
+		},
+	];
+	let currentStyle = $state(prefersDarkTheme() ? mapStyles[1] : mapStyles[0]);
+
 	const handleMarkerClick = (property_id, lng, lat, tooltipText) => {
 		if (onSelected && property_id) {
 			onSelected(property_id);
 		}
 
-		// Close any currently open popup
 		if (currentOpenPopup) {
 			currentOpenPopup.remove();
 			currentOpenPopup = null;
 		}
 
-		// Smooth pan to the clicked marker
 		if (mapInstance) {
 			const lngLat = [lng, lat];
-			console.log('Clicked marker LngLat:', lngLat);
 			mapInstance.flyTo({
 				center: lngLat,
 				zoom: 17,
@@ -40,9 +116,8 @@
 				easing: (t) => t,
 			});
 
-			// Create and open a new popup
 			const popup = new pkg.Popup({
-				offset: [0, -10], // Adjusted offset to move tooltip down by 30px from previous position
+				offset: [0, -10],
 				closeButton: false,
 				closeOnClick: false,
 			})
@@ -51,70 +126,79 @@
 				.addTo(mapInstance);
 
 			currentOpenPopup = popup;
-		} else {
-			console.warn('Map not ready for centering or popup.');
 		}
 	};
 
-	// Function to update markers on the map
-	const updateMapMarkers = async (newMarkers) => {
-		if (!mapInstance || !isMapReady) {
-			return;
-		}
+	const updateMapMarkers = (newMarkers) => {
+		if (!mapInstance || !isMapReady) return;
 
-		// Remove existing markers
-		mapMarkers.forEach((marker) => marker.remove());
-		mapMarkers = [];
+		const source = mapInstance.getSource('property-markers');
+		if (!source) return;
 
 		const validMarkers = newMarkers.filter(isValidMarker);
 
-		for (const item of validMarkers) {
-			try {
-				const { id: property_id, msl, property_for, location } = item;
-				const { lat, lng } = location;
+		const features = validMarkers.map((marker) => ({
+			type: 'Feature',
+			geometry: {
+				type: 'Point',
+				coordinates: [Number(marker.location.lng), Number(marker.location.lat)],
+			},
+			properties: {
+				id: marker.id,
+				msl: marker.msl,
+				property_for: marker.property_for,
+				icon: getPropertyIconName(marker.property_for),
+			},
+		}));
 
-				console.log(`Marker ${property_id} location:`, location);
-				console.log(`Marker ${property_id} lat: ${lat}, lng: ${lng}`);
-
-				const iconName = getPropertyIconName(property_for);
-				const iconUrl = `/map/${iconName}.svg`; // Assuming icons are in static/map/
-
-				// Create a custom HTML element for the marker
-				const el = document.createElement('div');
-				el.className = 'map-marker';
-				el.style.backgroundImage = `url(${iconUrl})`;
-				el.style.width = '21px';
-				el.style.height = '21px';
-				el.style.backgroundSize = 'contain';
-				el.style.backgroundRepeat = 'no-repeat';
-				el.style.backgroundPosition = 'center';
-				el.style.cursor = 'pointer';
-
-				// Create the MapLibre GL JS marker
-				const marker = new Marker({ element: el })
-					.setLngLat([Number(lng), Number(lat)])
-					.addTo(mapInstance);
-
-				// Store property_id with the marker for click handling
-				marker.property_id = property_id;
-
-				// Create and attach tooltip
-				const tooltipText = `${msl || 'N/A'} - ${
-					Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'
-				}`;
-
-				// Store the marker
-				mapMarkers.push(marker);
-
-				// Add click listener to the marker element
-				el.addEventListener('click', () => {
-					handleMarkerClick(property_id, Number(lng), Number(lat), tooltipText);
-				});
-			} catch (error) {
-				console.error('Error processing marker:', error, item);
-			}
-		}
+		source.setData({
+			type: 'FeatureCollection',
+			features,
+		});
 	};
+
+	// Style Switcher Function
+	const onStyleChange = (newStyle) => {
+		currentStyle = newStyle;
+		mapInstance.setStyle(newStyle.style);
+	};
+
+	class StyleControl {
+		onAdd(map) {
+			this._map = map;
+			this._container = document.createElement('div');
+			this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+
+			const select = document.createElement('select');
+			select.className = 'maplibregl-ctrl-select';
+			mapStyles.forEach((style) => {
+				const option = document.createElement('option');
+				option.value = style.name;
+				option.textContent = style.name;
+				if (style.name === currentStyle.name) {
+					option.selected = true;
+				}
+				select.appendChild(option);
+			});
+
+			select.addEventListener('change', (e) => {
+				const selectedStyle = mapStyles.find((s) => s.name === e.target.value);
+				if (selectedStyle) {
+					onStyleChange(selectedStyle);
+				}
+			});
+
+			this._container.appendChild(select);
+			return this._container;
+		}
+
+		onRemove() {
+			if (this._container.parentNode) {
+				this._container.parentNode.removeChild(this._container);
+			}
+			this._map = undefined;
+		}
+	}
 
 	let resizeObserver;
 	const handleResize = () => {
@@ -123,37 +207,129 @@
 		}
 	};
 
-	function initializeMap() {
-		const initialCenter = [-84.16400029415285, 9.970881419133026]; // [lng, lat] - moved west by 5%
-		const maxBounds = [
-			[-84.199448, 9.9465288], // Southwest coordinates [lng, lat] - moved up by 15% from original
-			[-84.128766, 9.9970008], // Northeast coordinates [lng, lat] - moved up by 15% from original
-		];
+	let imageLoadPromise = null;
+	async function loadImages(map) {
+		if (!imageLoadPromise) {
+			imageLoadPromise = (async () => {
+				const iconNames = ['Sale', 'Rent', 'Sale_Rent', 'default'];
+				for (const name of iconNames) {
+					if (!map.hasImage(name)) {
+						const url = `/map/${name}.svg`;
+						try {
+							const img = new Image(42, 42);
+							img.src = url;
+							await img.decode();
+							map.addImage(name, img);
+						} catch (error) {
+							console.error(`Failed to load image: ${url}`, error);
+						}
+					}
+				}
+			})();
+		}
+		return imageLoadPromise;
+	}
 
-		/*
-		 * stadiamaps styles https://docs.stadiamaps.com/themes/
-		 * https://tiles.stadiamaps.com/styles/alidade_smooth.json
-		 * https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json
-		 * https://tiles.stadiamaps.com/styles/stamen_toner.json
-		 * https://tiles.stadiamaps.com/styles/stamen_toner_lite.json
-		 * https://tiles.stadiamaps.com/styles/alidade_satellite.json
-		 */
+	async function setupMarkers(map) {
+		await loadImages(map);
+
+		if (!map.getSource('property-markers')) {
+			map.addSource('property-markers', {
+				type: 'geojson',
+				data: { type: 'FeatureCollection', features: [] },
+			});
+		}
+
+		if (!map.getLayer('property-markers-layer')) {
+			map.addLayer({
+				id: 'property-markers-layer',
+				type: 'symbol',
+				source: 'property-markers',
+				layout: {
+					'icon-image': ['get', 'icon'],
+					'icon-size': 0.5,
+					'icon-allow-overlap': true,
+				},
+			});
+
+			map.on('click', 'property-markers-layer', (e) => {
+				e.preventDefault();
+				if (e.features && e.features.length > 0) {
+					const feature = e.features[0];
+					const { id, msl, property_for } = feature.properties;
+					const coordinates = feature.geometry.coordinates.slice();
+					const tooltipText = `${msl || 'N/A'} - ${
+						Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'
+					}`;
+
+					while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+						coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+					}
+
+					handleMarkerClick(id, coordinates[0], coordinates[1], tooltipText);
+				}
+			});
+
+			map.on('mouseenter', 'property-markers-layer', () => {
+				map.getCanvas().style.cursor = 'pointer';
+			});
+
+			map.on('mouseleave', 'property-markers-layer', () => {
+				map.getCanvas().style.cursor = '';
+			});
+		}
+	}
+
+	function initializeMap() {
+		const initialCenter = [-84.16046, 9.97088]; // from Map.svelte
+		const maxBounds = [
+			[-84.1789, 9.962],
+			[-84.1423, 9.9802],
+		]; // from Map.svelte
 
 		mapInstance = new Map({
 			container: mapElement,
-			style: 'https://tiles.stadiamaps.com/styles/stamen_toner_lite.json', // Use imported style.json
+			style: currentStyle.style,
 			center: initialCenter,
 			zoom: 16,
 			minZoom: 15,
 			maxZoom: 18,
 			maxBounds: maxBounds,
 			attributionControl: false,
+
+			renderWorldCopies: false,
+			dragRotate: false,
+			touchPitch: false,
 		});
 
-		mapInstance.on('load', () => {
-			isMapReady = true;
-			console.log('🗺 MapLibre GL Map is ready');
-			mapInstance.resize(); // Ensure map resizes correctly after load
+		mapInstance.on('click', () => {
+			if (currentOpenPopup) {
+				currentOpenPopup.remove();
+				currentOpenPopup = null;
+			}
+		});
+
+		const geolocateControl = new GeolocateControl({
+			positionOptions: {
+				enableHighAccuracy: true,
+				timeout: 5000,
+				maximumAge: 0,
+			},
+			trackUserLocation: true,
+			showUserLocation: true,
+		});
+		mapInstance.addControl(geolocateControl, 'bottom-left');
+
+		mapInstance.addControl(new StyleControl(), 'bottom-right');
+
+		mapInstance.on('styledata', async () => {
+			if (!isMapReady) {
+				isMapReady = true;
+				console.log('🗺 MapLibre GL Map is ready');
+			}
+			await setupMarkers(mapInstance);
+			updateMapMarkers(markers);
+			mapInstance.resize();
 		});
 
 		mapInstance.on('error', (e) => {
@@ -164,7 +340,6 @@
 	onMount(async () => {
 		if (!browser) return;
 
-		// Defer map initialization to ensure element has dimensions
 		setTimeout(() => {
 			try {
 				if (
@@ -175,9 +350,7 @@
 					console.error('Map element not found or has no dimensions.');
 					return;
 				}
-
 				initializeMap();
-
 				if (window.ResizeObserver) {
 					resizeObserver = new ResizeObserver(handleResize);
 					resizeObserver.observe(mapElement);
@@ -189,7 +362,6 @@
 	});
 
 	$effect(() => {
-		console.log('Markers prop changed:', markers);
 		if (isMapReady) {
 			updateMapMarkers(markers);
 		}
@@ -199,15 +371,10 @@
 		try {
 			if (resizeObserver) {
 				resizeObserver.disconnect();
-				resizeObserver = null;
 			}
-
 			if (mapInstance) {
 				mapInstance.remove();
-				mapInstance = null;
 			}
-			mapMarkers = [];
-			isMapReady = false;
 		} catch (error) {
 			console.error('Error during MapLibre GL cleanup:', error);
 		}
@@ -217,22 +384,13 @@
 <div id="maplibre-canvas" class="map" bind:this={mapElement}></div>
 
 <style>
-	@import 'maplibre-gl/dist/maplibre-gl.css';
+	@import './maplibre-gl.css';
 
 	.map {
 		height: 100%;
 		width: 100%;
 		z-index: 1;
-		/* Ensure the map container has a minimum size */
 		min-height: 200px;
 		min-width: 200px;
-	}
-
-	/* Use CSS custom properties for better dark mode control */
-	@media (prefers-color-scheme: dark) {
-		.map {
-			/* Consider using a dark tile layer instead of CSS filters for better performance */
-			filter: invert(1) brightness(var(--brightness)) hue-rotate(180deg);
-		}
 	}
 </style>

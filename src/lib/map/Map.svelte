@@ -265,6 +265,8 @@
 <div class="map" bind:this={mapElement}></div>
 
 <style>
+	@import './leaflet.css';
+
 	.map {
 		height: 100%;
 		width: 100%;
