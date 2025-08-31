@@ -85,7 +85,6 @@
 			display: flex;
 			align-items: flex-end;
 			gap: var(--size-2);
-			padding: var(--size-1) var(--size-2);
 			color: var(--text-1);
 			&:hover {
 				color: var(--accent);
