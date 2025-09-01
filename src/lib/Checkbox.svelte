@@ -148,21 +148,24 @@
 				display: block;
 				width: 1.4em;
 				height: 1.4em;
-				border: var(--border-size-1) solid var(--surface-4);
+				/* border: var(--border-size-1) solid var(--surface-4); */
+				outline: var(--border-size-1) solid var(--surface-4);
 				border-radius: 50%;
 				position: absolute;
 				left: 0;
 				top: 50%;
 				transform: translateY(-50%);
+				box-shadow: inset 0 0 0 2px var(--incoming-color);
 			}
 		}
 		&:hover {
 			+ label {
 				color: var(--text-2);
 				&:before {
-					border: 1px solid var(--accent);
-					width: 1.3em;
-					height: 1.3em;
+					/* border: 1px solid var(--accent); */
+					outline: var(--border-size-1) solid var(--accent);
+					/* width: 1.3em; */
+					/* height: 1.3em; */
 				}
 			}
 		}
@@ -170,10 +173,11 @@
 		&:checked {
 			+ label:before {
 				border-radius: 50%;
-				border: 1px solid var(--accent);
+				/* border: var(--border-size-1) solid var(--accent); */
+				outline: var(--border-size-1) solid var(--accent);
 				width: 1.3em;
 				height: 1.3em;
-				box-shadow: inset 0px 0px 0 3px var(--incoming-color);
+				box-shadow: inset 0px 0px 0 6px var(--incoming-color);
 			}
 		}
 	}
