@@ -139,6 +139,8 @@
 </div>
 
 <style>
+	@import './leaflet.css';
+
 	.map {
 		height: 222px;
 		width: 100%;

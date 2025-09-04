@@ -202,6 +202,8 @@
 <div id="map-canvas" class="map" bind:this={mapElement}></div>
 
 <style>
+	@import './leaflet.css';
+
 	.map {
 		height: 222px;
 		width: 100%;
@@ -209,7 +211,7 @@
 		/* Ensure minimum dimensions */
 		min-height: 200px;
 		min-width: 200px;
-		border-radius: 8px;
+		border-radius: var(--radius-2);
 		overflow: hidden;
 	}
 

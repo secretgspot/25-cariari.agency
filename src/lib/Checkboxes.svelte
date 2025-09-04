@@ -152,7 +152,7 @@
 				width: 1.4em;
 				height: 1.4em;
 				border: var(--border-size-1) solid var(--surface-4);
-				border-radius: 50%;
+				border-radius: var(--radius-round);
 				position: absolute;
 				left: 0;
 				top: 50%;
@@ -172,7 +172,7 @@
 
 		&:checked {
 			+ label:before {
-				border-radius: 50%;
+				border-radius: var(--radius-round);
 				border: 1px solid var(--accent);
 				width: 1.3em;
 				height: 1.3em;

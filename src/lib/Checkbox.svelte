@@ -150,7 +150,7 @@
 				height: 1.4em;
 				/* border: var(--border-size-1) solid var(--surface-4); */
 				outline: var(--border-size-1) solid var(--surface-4);
-				border-radius: 50%;
+				border-radius: var(--radius-round);
 				position: absolute;
 				left: 0;
 				top: 50%;
@@ -172,7 +172,7 @@
 
 		&:checked {
 			+ label:before {
-				border-radius: 50%;
+				border-radius: var(--radius-round);
 				/* border: var(--border-size-1) solid var(--accent); */
 				outline: var(--border-size-1) solid var(--accent);
 				width: 1.3em;

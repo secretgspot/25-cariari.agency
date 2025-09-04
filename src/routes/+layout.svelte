@@ -34,6 +34,6 @@
 
 {#if navigating.complete}
 	<Splash />
-{:else}
-	{@render children?.()}
+	<!-- {:else} -->
 {/if}
+{@render children?.()}
