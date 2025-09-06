@@ -211,19 +211,19 @@
 }
 
 .leaflet-top .leaflet-control {
-	margin-top: var(--size-2);
+	margin-top: var(--size-3);
 }
 
 .leaflet-bottom .leaflet-control {
-	margin-bottom: var(--size-2);
+	margin-bottom: var(--size-3);
 }
 
 .leaflet-left .leaflet-control {
-	margin-left: var(--size-2);
+	margin-left: var(--size-3);
 }
 
 .leaflet-right .leaflet-control {
-	margin-right: var(--size-2);
+	margin-right: var(--size-3);
 }
 
 
