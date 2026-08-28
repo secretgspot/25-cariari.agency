@@ -27,21 +27,21 @@
 	} = $props();
 
 	function handleClick(event) {
-		// Play sound if enabled locally
-		if (sound) {
-			playButtonSound(sound_pattern);
-		}
+			// Play sound if enabled locally
+			if (sound) {
+				playButtonSound(sound_pattern);
+			}
 
-		// Trigger vibration if enabled locally
-		if (buzz) {
-			vibrateButton(buzz_pattern);
-		}
+			// Trigger vibration if enabled locally
+			if (buzz) {
+				vibrateButton(buzz_pattern);
+			}
 
-		// Call the original onclick handler
-		if (rest.onclick) {
-			rest.onclick(event);
+			// Call the original onclick handler
+			if (onclick) {
+				onclick(event);
+			}
 		}
-	}
 
 	// Only keep the derived values we actually need
 	const isDisabled = $derived(disabled || loading || navigating.complete);

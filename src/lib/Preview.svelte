@@ -51,7 +51,7 @@
 			size="icon"
 			{loading}
 			disabled={loading}
-			onclick={() => goto(property.id + '/edit')}>
+			onclick={() => goto(`/${property.id}/edit`)}>
 			{#snippet icon()}
 				<Icon kind="modify" size="27" />
 			{/snippet}
@@ -143,7 +143,7 @@
 			sound_pattern="swipe"
 			{loading}
 			disabled={loading}
-			onclick={() => goto(property.msl)}>
+			onclick={() => goto(`/${property.msl}`)}>
 			{#snippet icon()}
 				<Icon kind="view" size="27" />
 			{/snippet}

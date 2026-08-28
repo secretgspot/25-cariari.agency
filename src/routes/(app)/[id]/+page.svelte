@@ -9,8 +9,9 @@
 	import MapStatic from '$lib/map/MapStatic.svelte'; // MapStaticLibre
 	import { formatter } from '$lib/utils/formatters.js';
 	import { ago } from '$lib/utils/time.js';
-	import Nav from '$lib/Nav.svelte';
-	// import JsonDump from '$lib/JSONDump.svelte';
+		import Nav from '$lib/Nav.svelte';
+		import InquiryForm from '$lib/InquiryForm.svelte';
+		// import JsonDump from '$lib/JSONDump.svelte';
 
 	/** @type {{data: any}} */
 	let { data } = $props();
@@ -191,10 +192,14 @@
 			{/if}
 		</div>
 	</footer>
-	<div class="commercial-wrapper">
-		<Ad />
-	</div>
-</article>
+		<div class="inquiry-wrapper">
+		<InquiryForm {data} />
+		</div>
+
+		<div class="commercial-wrapper">
+			<Ad />
+		</div>
+	</article>
 
 <style>
 	:root {
@@ -425,9 +430,12 @@
 		}
 	}
 	.commercial-wrapper {
-		margin: 0 0 var(--size-3) 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-</style>
+			margin: 0 0 var(--size-3) 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.inquiry-wrapper {
+			margin-block: var(--size-8);
+		}
+	</style>

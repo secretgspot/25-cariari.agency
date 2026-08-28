@@ -1,6 +1,6 @@
 <script>
 	import { navigating } from '$app/state';
-	import { invalidate } from '$app/navigation';
+	import { afterNavigate, invalidate } from '$app/navigation';
 	import { Toasts } from '$lib/toasts';
 	import Splash from '$lib/Splash.svelte';
 	import 'open-props/style';
