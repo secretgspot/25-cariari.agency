@@ -9,24 +9,24 @@
 		"clean:all": "rimraf .svelte-kit node_modules"
 	},
 	"devDependencies": {
-		"@svelte-put/qr": "^2.1.0",
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/kit": "^2.5.27",
-		"@sveltejs/vite-plugin-svelte": "^4.0.0",
-		"leaflet": "^1.9.4",
-		"nodemailer": "^7.0.5",
-		"rimraf": "^6.0.1",
-		"svelte": "^5.0.0",
-		"svelte-maplibre-gl": "^1.0.1",
-		"vite": "^5.4.4",
-		"vite-plugin-devtools-json": "^0.2.1"
-	},
-	"type": "module",
-	"dependencies": {
-		"@supabase/ssr": "^0.6.1",
-		"@supabase/supabase-js": "^2.52.0",
-		"compressorjs": "^1.2.1",
-		"open-props": "^1.7.16",
-		"uuid": "^11.1.0"
-	}
+			"@svelte-put/qr": "^2.1.0",
+			"@sveltejs/adapter-auto": "^3.3.0",
+			"@sveltejs/kit": "^2.5.27",
+			"@sveltejs/vite-plugin-svelte": "^4.0.0",
+			"leaflet": "^1.9.4",
+			"nodemailer": "^7.0.13",
+			"rimraf": "^6.0.1",
+			"svelte": "^5.0.0",
+			"svelte-maplibre-gl": "^1.0.3",
+			"vite": "^5.4.21",
+			"vite-plugin-devtools-json": "^0.2.1"
+		},
+		"type": "module",
+		"dependencies": {
+			"@supabase/ssr": "^0.12.5",
+			"@supabase/supabase-js": "^2.52.0",
+			"compressorjs": "^1.2.1",
+			"open-props": "^1.7.16",
+			"uuid": "^11.1.1"
+		}
 }
