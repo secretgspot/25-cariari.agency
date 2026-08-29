@@ -2,29 +2,6 @@
 
 - [ ] when property deleted there should be a toaster notification of success or fail.
 
-## 🔥 HIGH PRIORITY - Architecture & Structure Improvements
-
-### 1. Map Library Consolidation
-
-- [ ] **Choose one mapping library** - Decide between Leaflet or MapLibre
-- [ ] **Remove duplicate implementations** - Eliminate unused map components and dependencies
-- [ ] **Standardize map API** - Create unified map interface for all components
-- [ ] **Update bundle analysis** - Verify reduction in bundle size (~50% expected)
-
-### 2. State Management Optimization
-
-- [ ] **Analyze current state usage** - Review component state patterns and prop drilling
-- [ ] **Implement global state management** - Add Zustand store for shared state
-- [ ] **Consolidate user/auth state** - Simplify authentication state handling
-- [ ] **Create reusable state slices** - Separate concerns (properties, filters, settings)
-
-### 3. Component Architecture Refactor
-
-- [ ] **Component size analysis** - Identify components >200 lines
-- [ ] **Break down complex components** - Split large components into smaller pieces
-- [ ] **Standardize prop interfaces** - Create consistent typing and documentation
-- [ ] **Implement composition patterns** - Use slots and composition over inheritance
-
 ## ⚡ PERFORMANCE OPTIMIZATION
 
 ### 4. Bundle Size Reduction

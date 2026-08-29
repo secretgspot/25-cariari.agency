@@ -41,7 +41,7 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 - **Frontend:** SvelteKit [SvelteLit Docs](https://svelte.dev/docs/kit/introduction)
 - **Backend/DB:** Supabase [Supabase Docs](https://supabase.com/docs)
 - **Hosting:** Vercel [Vercel Docs](https://vercel.com/docs)
-- **Map:** Leaflet/MapLibre (maps) [Leaflet Docs](https://leafletjs.com/reference.html) [Maplibre Docs](https://maplibre.org/maplibre-gl-js/docs/)
+- **Map:** Leaflet (maps) [Leaflet Docs](https://leafletjs.com/reference.html)
 - **QR:** QR [QR Docs](https://github.com/Castlenine/svelte-qrcode)
 
 ## Main Features
@@ -49,7 +49,7 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 - Property listing, filtering, and detail views
 - Add/Edit/Delete/Delist property (CRUD)
 - Print-friendly property pages with QR codes
-- Map-based property browsing (Leaflet/MapLibre)
+- Map-based property browsing (Leaflet)
 - User authentication (Supabase Auth)
 - Admin and regular user flows
 - Responsive, modern UI with reusable Svelte components

@@ -59,14 +59,14 @@ To ensure the project has up-to-date TypeScript definitions for the Supabase dat
 - **Frontend:** SvelteKit 2 (Svelte 5), Vite
 - **Backend/DB:** Supabase (PostgreSQL, Auth)
 - **Hosting:** Vercel
-- **Other:** Leaflet and MapLibre (maps), QR.js (QR codes)
+- **Other:** Leaflet (maps), QR.js (QR codes)
 
 ## Main Features
 
 - Property listing, filtering, and detail views
 - Add/Edit/Delete/Delist property (CRUD)
 - Print-friendly property pages with QR codes
-- Map-based property browsing (Leaflet or MapLibre)
+- Map-based property browsing (Leaflet)
 - User authentication (Supabase Auth)
 - Admin and regular user flows
 - Responsive, modern UI with reusable Svelte components

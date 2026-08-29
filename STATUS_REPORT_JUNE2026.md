@@ -11,7 +11,7 @@
 | **Framework** | SvelteKit 5 (Svelte 5 runes) |
 | **Language** | JavaScript (ESM) + minimal TypeScript types |
 | **Database** | Supabase (PostgreSQL, Auth, Storage) |
-| **Maps** | Leaflet + MapLibre GL (dual, swapped during dev) |
+|| **Maps** | Leaflet (MapLibre removed, consolidated) |
 | **Email** | Nodemailer + Gmail SMTP |
 | **Hosting** | Vercel |
 | **Auth** | Supabase OTP magic link + `@supabase/ssr` |
@@ -48,7 +48,7 @@
 
 | # | Issue | Location | Fix |
 |---|---|---|---|
-| 12 | **No lazy/dynamic import for heavy map deps** in static/picker components | `MapStatic.svelte`, `MapPicker.svelte`, `MapLibre.svelte` + Libre variants | Use `await import('leaflet')` / `await import('maplibre-gl')` inside `onMount` (Map.svelte already does this correctly) |
+|| 12 | **No lazy/dynamic import for heavy map deps** in static/picker components | `MapStatic.svelte`, `MapPicker.svelte` | Use `await import('leaflet')` inside `onMount` (Map.svelte already does this correctly) |
 | 13 | **`open-props` full package bundled** despite only using CSS variable tokens | `package.json` + `static/css/styles.css` | Replace with only needed custom properties inline, or use `open-props/postcss` to tree-shake |
 | 14 | **No Core Web Vitals optimization** | Global | Optimize LCP (hero image priority), INP (map interaction responsiveness), CLS (map container aspect ratio) |
 | 15 | **Images lack explicit dimensions** | Throughout add/edit pages, property cards | Add `width`/`height` to avoid CLS; consider `fetchpriority="high"` on first meaningful image |
@@ -73,7 +73,7 @@
 | 22 | **GPS map bounds hardcoded** to ~2km² area | All map components: `maxBounds` constant | Make bounds configurable or remove for production flexibility |
 | 23 | **Console.log / debug statements in production code** | `Map.svelte:258`, `hooks.server.js:38,46,59,61`, `Icon.svelte:24` | Remove or gate behind `dev` check |
 | 24 | **Contact form has no visual feedback** on submit | `about/+page.svelte` + `about/+page.server.js` | Add loading spinner + success/error toast (currently redirects with `?sent=true` query param) |
-| 25 | **MapLibre components not wired into any page** (dead code?) | `MapLibre.svelte`, `MapStaticLibre.svelte`, `MapPickerLibre.svelte` | Keep for dev-swapping — no action needed per user preference |
+|| 25 | **MapLibre components removed** — consolidated to Leaflet | — | Done |
 
 ---
 
@@ -110,7 +110,7 @@
 | Item | Status | Notes |
 |---|---|---|
 | Property deletion toast notification | ❌ Not done | No toast on delete success/fail |
-| Map library consolidation (Leaflet vs MapLibre) | 🟡 Deferred | Deliberately kept both for dev-swapping |
+|| Map library consolidation (Leaflet vs MapLibre) | ✅ Done | Consolidated to Leaflet; MapLibre removed |
 | Zustand or global state management | ❌ Not done | Currently using Svelte stores + runes |
 | Component size analysis (>200 lines) | ❌ Not done | |
 | Server-side image processing (Sharp/WebP) | ❌ Not done | Client-side CompressorJS only |
