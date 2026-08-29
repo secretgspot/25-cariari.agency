@@ -1,11 +1,11 @@
 <script>
 	import Notify from '$lib/Notify.svelte';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { navigating, page } from '$app/state';
+	import { navigating } from '$app/state';
 	import Logo from '$lib/Logo.svelte';
-	// import Text from '$lib/Text.svelte'; // Keeping commented out as per your original
 	import { Button } from '$lib/buttons';
 	import { isEmpty } from '$lib/utils/validators.js';
+	import TokenVerification from '$lib/auth/TokenVerification.svelte';
 
 	let { data } = $props();
 
@@ -14,10 +14,7 @@
 	let successMessage = $state('');
 	let isLoading = $state(false);
 	let email = $state('');
-	let token = $state('');
 	let currentView = $state('magic');
-
-	// console.log('(auth)/login/+page.svelte page: ', page);
 
 	/**
 	 * Handles the submission of the email for login code request.
@@ -57,49 +54,42 @@
 	}
 
 	/**
-	 * Handles the verification of the login code.
+	 * Handles the verification of the login code via TokenVerification component.
 	 */
-	async function handleVerifyToken() {
-		// Reset messages and set loading state
+	async function handleVerifyComplete(tokenValue) {
 		errorMessage = '';
 		successMessage = '';
 		isLoading = true;
-
-		// Client-side validation for token (optional, but good practice)
-		if (isEmpty(token)) {
-			errorMessage = 'Verification code cannot be empty.';
-			isLoading = false;
-			return;
-		}
 
 		// Call Supabase to verify the OTP
 		const { data: verifyData, error: verifyOtpError } =
 			await data.supabase.auth.verifyOtp({
 				email,
-				token,
+				token: tokenValue,
 				type: 'email',
 			});
 
 		if (verifyOtpError) {
-			// If verification fails, revert to magic link view, clear token, and show error
-			currentView = 'magic';
-			token = ''; // Clear token for re-entry
+			// If verification fails, trigger shake animation and show error
 			errorMessage = verifyOtpError.message;
 		} else {
 			// If verification succeeds, show success message, invalidate all data, and redirect
 			successMessage = 'Successfully verified! Redirecting...';
-			currentView = 'verified'; // Optionally show a temporary 'verified' state
+			currentView = 'verified';
 
 			// Invalidate all server-side data to ensure session is refreshed
 			await invalidateAll();
 
 			// Redirect to the intended page or default to root
-			// data.redirectTo will be populated from the URL query param if present
 			goto(data.redirectTo || '/');
 		}
 
 		// Reset loading state
 		isLoading = false;
+	}
+
+	function handleVerifyError(message) {
+		errorMessage = message;
 	}
 </script>
 
@@ -138,32 +128,29 @@
 	{/if}
 
 	{#if currentView === 'verify'}
-		<p>Please enter the code you've received by email and press 'Verify'.</p>
+		<p>Please enter the 6-digit code you received by email.</p>
 
-		<input
-			type="text"
-			name="token"
-			bind:value={token}
-			placeholder="e.g., 123456"
-			aria-label="Verification code"
-			inputmode="numeric"
-			pattern="[0-9]*"
-			required
-			onkeydown={(e) => e.key === 'Enter' && handleVerifyToken()} />
-		<Button
-			shadow
-			size="block"
-			loading={isLoading}
+		<TokenVerification
+			length={6}
+			onComplete={handleVerifyComplete}
+			onError={handleVerifyError}
+			error={errorMessage}
 			disabled={isLoading}
-			onclick={handleVerifyToken}>
-			Verify login code
-		</Button>
+			autoFocus={true}
+		/>
+
+		{#if successMessage}
+			<Notify type="success">{successMessage}</Notify>
+		{/if}
+		{#if errorMessage}
+			<Notify type="danger">{errorMessage}</Notify>
+		{/if}
 	{/if}
 
-	{#if successMessage}
+	{#if successMessage && currentView !== 'verify'}
 		<Notify type="success">{successMessage}</Notify>
 	{/if}
-	{#if errorMessage}
+	{#if errorMessage && currentView !== 'verify'}
 		<Notify type="danger">{errorMessage}</Notify>
 	{/if}
 </section>
@@ -194,7 +181,4 @@
 		width: 100%;
 		background: transparent;
 	}
-	/* p {
-    max-width: 369px;
-  } */
 </style>
