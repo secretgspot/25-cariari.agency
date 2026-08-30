@@ -8,6 +8,7 @@
 	const property = $derived(data?.property);
 	const propertyId = $derived(property?.id);
 	const msl = $derived(property?.msl);
+	const realtor = $derived(property?.contact_realtor);
 
 	let sending = $state(false);
 	let success = $state(false);
@@ -22,10 +23,15 @@
 	</div>
 {:else}
 	<div class="inquiry-form">
-		<header class="form-header">
-			<h3>Property Inquiry</h3>
-			<p class="subtitle">Reference: <strong>{msl}</strong></p>
-		</header>
+			<header class="form-header">
+				<h3>Property Inquiry</h3>
+				<div class="header-info">
+					<p class="subtitle">Reference: <strong>{msl}</strong></p>
+					{#if realtor}
+						<p class="realtor">Listing Agent: <strong>{realtor}</strong></p>
+					{/if}
+				</div>
+			</header>
 
 		<form method="POST" class="form" use:enhance={() => {
 			sending = true;
@@ -59,14 +65,14 @@
 				<fieldset>
 					<legend>Phone</legend>
 					<input
-						type="tel"
-						id="phone"
-						name="phone"
-						autocomplete="tel"
-						required
-						placeholder="+506 8870-8877"
-						value={form?.data?.phone ?? ''}
-					/>
+											type="tel"
+											id="phone"
+											name="phone"
+											autocomplete="tel"
+											required
+											placeholder="+506 8888-8888"
+											value={form?.data?.phone ?? ''}
+										/>
 				</fieldset>
 			</div>
 			<div class="inputs">
@@ -136,23 +142,52 @@
 	}
 
 	.form-header {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--size-1);
 		text-align: center;
 		margin-bottom: var(--size-4);
 		padding-bottom: var(--size-3);
 		border-bottom: var(--border-size-1) solid var(--surface-3);
+
+		@media (min-width: 481px) {
+			flex-direction: row;
+			justify-content: space-between;
+		}
 	}
 
 	.form-header h3 {
-		margin: 0 0 var(--size-1);
+		margin: 0;
 		color: var(--text-1);
 		font-weight: 400;
 		font-size: 1.1rem;
+		white-space: nowrap;
+	}
+
+	.header-info {
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-1);
+		align-items: center;
+
+		@media (min-width: 481px) {
+			flex-direction: row;
+			gap: var(--size-4);
+		}
 	}
 
 	.subtitle {
 		margin: 0;
 		color: var(--text-2);
 		font-size: 0.85rem;
+	}
+
+	.realtor {
+		margin: 0;
+		color: var(--accent);
+		font-size: 0.85rem;
+		font-weight: 500;
 	}
 
 	.form {
