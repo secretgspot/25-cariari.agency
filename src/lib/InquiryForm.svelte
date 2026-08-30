@@ -117,8 +117,10 @@
 						Send Inquiry
 					{/if}
 				</Button>
-				{#if error || form?.errors}
-					<span class="error">Error sending inquiry. Please try again.</span>
+				{#if form?.rateLimited}
+					<span class="error">{form?.message || 'Too many inquiries sent. Please wait before trying again.'}</span>
+				{:else if error || form?.errors}
+					<span class="error">{form?.errors?.message || 'Error sending inquiry. Please try again.'}</span>
 				{/if}
 			</div>
 		</form>

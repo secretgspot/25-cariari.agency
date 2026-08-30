@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/buttons';
 
-	let { data } = $props();
+	let { data, form } = $props();
 
 	let sending = $state(false);
 	let success = $state(false);
@@ -86,8 +86,10 @@
 						Send
 					{/if}
 				</Button>
-				{#if error}
-					<span class="error"> Error sending a message. </span>
+				{#if form?.rateLimited}
+					<span class="error">{form?.message || 'Too many messages sent. Please wait before trying again.'}</span>
+				{:else if error || form?.error || form?.missing}
+					<span class="error">{form?.message || 'Error sending a message.'}</span>
 				{/if}
 			</div>
 		</form>

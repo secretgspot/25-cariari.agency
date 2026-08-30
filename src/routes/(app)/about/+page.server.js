@@ -1,5 +1,7 @@
 import { VITE_GOOGLE_EMAIL } from '$env/static/private';
 import transporter from "$lib/utils/emailSetup.server.js";
+import { applyRateLimit } from '$lib/utils/rateLimit.js';
+import { fail } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
@@ -7,14 +9,18 @@ export async function load() {
 };
 
 export const actions = {
-	// default: async ({ request }) => {
-	// 	const formData = await request.formData();
-	// 	const data = Object.fromEntries(formData);
-	// 	// return { data };
-	// 	console.log('Form data:', data);
-	// }
 	default: async ({ request }) => {
 		try {
+			// Rate limiting check (max 3 contact submissions per hour per client)
+			const rateLimit = applyRateLimit(request, 'contact');
+			if (!rateLimit.allowed) {
+				const minutes = Math.ceil(rateLimit.retryAfter / 60);
+				return fail(429, {
+					rateLimited: true,
+					message: `Too many messages sent. Please wait ${minutes} minute${minutes === 1 ? '' : 's'} before trying again.`
+				});
+			}
+
 			const formData = await request.formData();
 			const email = formData.get("email");
 			const name = formData.get("name");

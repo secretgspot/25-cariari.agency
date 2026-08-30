@@ -5,6 +5,8 @@
 	import Nav from '$lib/Nav.svelte';
 	import Contact from '$lib/Contact.svelte';
 	import { LinkButton } from '$lib/buttons';
+
+	let { data, form } = $props();
 </script>
 
 <svelte:head>
@@ -45,7 +47,7 @@
 		<i>— Cariari.Agency</i>
 	</blockquote>
 
-	<Contact />
+	<Contact {form} />
 
 	<figure>
 		<svg viewBox="0 0 757 350" fill="none" xmlns="http://www.w3.org/2000/svg">

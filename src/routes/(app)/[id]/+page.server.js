@@ -1,6 +1,7 @@
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import transporter from '$lib/utils/emailSetup.server.js';
+import { applyRateLimit } from '$lib/utils/rateLimit.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -43,6 +44,16 @@ export async function load(event) {
 /** @type {import('./$types').Actions} */
 export const actions = {
 	default: async (event) => {
+		// Rate limiting check (max 5 inquiries per hour per client)
+		const rateLimit = applyRateLimit(event.request, 'inquiry');
+		if (!rateLimit.allowed) {
+			const minutes = Math.ceil(rateLimit.retryAfter / 60);
+			return fail(429, {
+				rateLimited: true,
+				message: `Too many inquiries sent. Please wait ${minutes} minute${minutes === 1 ? '' : 's'} before trying again.`
+			});
+		}
+
 		const supabaseClient = event.locals.supabase;
 		const formData = await event.request.formData();
 
