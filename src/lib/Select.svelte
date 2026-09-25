@@ -29,7 +29,15 @@
 <style>
 	select {
 		appearance: base-select;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		min-width: 69px;
+
+		&::picker-icon {
+			margin-left: auto;
+		}
+
 		&:open::picker-icon {
 			rotate: 180deg;
 		}

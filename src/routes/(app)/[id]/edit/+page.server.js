@@ -213,7 +213,7 @@ export const actions = {
 	// DELETES PROPERTY
 	delete: async (event) => {
 
-		const { request } = event;
+		const { request, params } = event;
 		const supabaseClient = event.locals.supabase;
 		const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
@@ -224,9 +224,48 @@ export const actions = {
 
 		const formData = await request.formData();
 
-		const property_id = formData.get('id');
+		const property_id = formData.get('id') || params.id;
+		const msl = formData.get('msl');
 
-		// push it to the server
+		// 1. Delete associated photos from Supabase Storage bucket
+		const filesToRemove = new Set();
+
+		// Fetch photo records from DB
+		const { data: photoRecords } = await supabaseClient
+			.from('photos')
+			.select('file_path')
+			.eq('property_id', property_id);
+
+		if (photoRecords && photoRecords.length > 0) {
+			for (const p of photoRecords) {
+				if (p.file_path) filesToRemove.add(p.file_path);
+			}
+		}
+
+		// Also list files in storage bucket under the property's MSL folder
+		if (msl) {
+			const { data: bucketFiles } = await supabaseClient.storage
+				.from('photos')
+				.list(msl);
+
+			if (bucketFiles && bucketFiles.length > 0) {
+				for (const f of bucketFiles) {
+					if (f.name) filesToRemove.add(`${msl}/${f.name}`);
+				}
+			}
+		}
+
+		if (filesToRemove.size > 0) {
+			const { error: storageError } = await supabaseClient.storage
+				.from('photos')
+				.remove(Array.from(filesToRemove));
+
+			if (storageError) {
+				console.error('Error deleting photos from storage bucket:', storageError);
+			}
+		}
+
+		// 2. Delete property from DB (cascades to 'photos' and 'inquiries' tables)
 		const { error: resErr } = await supabaseClient.from('properties').delete().eq('id', property_id);
 		if (resErr) {
 			if (resErr instanceof AuthApiError && resErr.status === 400) {

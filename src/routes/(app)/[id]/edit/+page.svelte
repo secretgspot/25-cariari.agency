@@ -4,7 +4,7 @@
 	import { navigating, page } from '$app/state';
 	import { error } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
-	import { enhance, applyAction } from '$app/forms';
+	import { enhance, applyAction, deserialize } from '$app/forms';
 	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import Compressor from 'compressorjs';
 	import Logo from '$lib/Logo.svelte';
@@ -232,14 +232,25 @@
 					timeout: 3000,
 				});
 				await applyAction(result);
-			} else if (result.type === 'invalid') {
+			} else if (result.type === 'invalid' || result.type === 'failure') {
+				const errMsg = result.data?.message || 'Operation failed.';
 				addToast({
-					message: `${result.data.message}`,
+					message: errMsg,
 					type: 'error',
 					dismissible: true,
 					timeout: 0,
 				});
-				errorMessage = result.data.message;
+				errorMessage = errMsg;
+				await applyAction(result);
+			} else if (result.type === 'error') {
+				const errMsg = result.error?.message || 'An unexpected error occurred.';
+				addToast({
+					message: errMsg,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+				errorMessage = errMsg;
 				await applyAction(result);
 			}
 			await update({ reset: false });
@@ -704,26 +715,71 @@
 	title="Delete Property"
 	message="Are you sure you want to delete this property? This action cannot be undone."
 	type="confirm"
-	onConfirm={() => {
+	onConfirm={async () => {
 		loading = true;
-		const deleteForm = document.createElement('form');
-		deleteForm.name = 'delete-form';
-		deleteForm.method = 'POST';
-		deleteForm.action = `?/delete`;
-		// Add the required hidden fields
-		const idInput = document.createElement('input');
-		idInput.type = 'hidden';
-		idInput.name = 'id';
-		idInput.value = propertyData.id;
-		deleteForm.appendChild(idInput);
-		const mslInput = document.createElement('input');
-		mslInput.type = 'hidden';
-		mslInput.name = 'msl';
-		mslInput.value = propertyData.msl;
-		deleteForm.appendChild(mslInput);
-		document.body.appendChild(deleteForm);
-		deleteForm.submit();
-		document.body.removeChild(deleteForm);
+		errorMessage = '';
+		message = '';
+
+		const formData = new FormData();
+		formData.append('id', propertyData.id);
+		formData.append('msl', propertyData.msl);
+
+		try {
+			const response = await fetch('?/delete', {
+				method: 'POST',
+				body: formData,
+			});
+
+			const result = deserialize(await response.text());
+
+			if (result.type === 'redirect') {
+				addToast({
+					message: `Property ${propertyData.msl} deleted successfully!`,
+					type: 'success',
+					timeout: 3000,
+				});
+				await goto(result.location);
+			} else if (result.type === 'success') {
+				addToast({
+					message: result.data?.message || `Property ${propertyData.msl} deleted successfully!`,
+					type: 'success',
+					timeout: 3000,
+				});
+				await goto('/properties');
+			} else if (result.type === 'failure') {
+				loading = false;
+				const errMsg = result.data?.message || 'Unable to delete property.';
+				errorMessage = errMsg;
+				addToast({
+					message: errMsg,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+			} else if (result.type === 'error') {
+				loading = false;
+				const errMsg = result.error?.message || 'An unexpected error occurred during deletion.';
+				errorMessage = errMsg;
+				addToast({
+					message: errMsg,
+					type: 'error',
+					dismissible: true,
+					timeout: 0,
+				});
+			} else {
+				loading = false;
+			}
+		} catch (err) {
+			loading = false;
+			const errMsg = err?.message || 'Network error while attempting to delete property.';
+			errorMessage = errMsg;
+			addToast({
+				message: errMsg,
+				type: 'error',
+				dismissible: true,
+				timeout: 0,
+			});
+		}
 	}}
 	onCancel={() => {
 		/* Optionally handle cancel here */
