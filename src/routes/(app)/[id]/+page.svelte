@@ -13,8 +13,8 @@
 		import InquiryForm from '$lib/InquiryForm.svelte';
 		// import JsonDump from '$lib/JSONDump.svelte';
 
-	/** @type {{data: any}} */
-	let { data } = $props();
+	/** @type {{data: any, form?: any}} */
+	let { data, form } = $props();
 	// console.log('(app)/[id=uuid]/+page.svelte data:', data);
 </script>
 
@@ -193,7 +193,7 @@
 		</div>
 	</footer>
 		<div class="inquiry-wrapper">
-		<InquiryForm {data} />
+		<InquiryForm {data} {form} />
 		</div>
 
 		<div class="commercial-wrapper">

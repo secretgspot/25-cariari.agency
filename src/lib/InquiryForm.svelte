@@ -13,6 +13,7 @@
 	let sending = $state(false);
 	let success = $state(false);
 	let error = $state(false);
+	let errorMessage = $state('');
 </script>
 
 {#if success}
@@ -35,15 +36,28 @@
 
 		<form method="POST" class="form" use:enhance={() => {
 			sending = true;
+			error = false;
+			errorMessage = '';
 			return async ({ result, update }) => {
 				await update();
 				sending = false;
-				if (result?.type === 'success') {
+				if (result?.type === 'success' && result?.data?.success) {
 					success = true;
 					error = false;
+				} else if (result?.type === 'failure') {
+					success = false;
+					error = true;
+					errorMessage = result?.data?.message || result?.data?.errors?.message || 'Error sending inquiry. Please try again.';
 				} else if (result?.type === 'error') {
 					success = false;
 					error = true;
+					errorMessage = result?.error?.message || 'Server error. Please try again.';
+				} else {
+					if (result?.data?.errors) {
+						success = false;
+						error = true;
+						errorMessage = result?.data?.errors?.message || 'Error sending inquiry.';
+					}
 				}
 			};
 		}}>
@@ -119,6 +133,8 @@
 				</Button>
 				{#if form?.rateLimited}
 					<span class="error">{form?.message || 'Too many inquiries sent. Please wait before trying again.'}</span>
+				{:else if errorMessage}
+					<span class="error">{errorMessage}</span>
 				{:else if error || form?.errors}
 					<span class="error">{form?.errors?.message || 'Error sending inquiry. Please try again.'}</span>
 				{/if}

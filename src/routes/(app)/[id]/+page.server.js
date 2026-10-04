@@ -65,68 +65,62 @@ export const actions = {
 		}
 
 		// Validate required fields
-				const name = formData.get('name');
-				const phone = formData.get('phone');
-				const email = formData.get('email');
-				const propertyId = formData.get('property_id');
+		const name = formData.get('name');
+		const phone = formData.get('phone');
+		const email = formData.get('email');
+		const propertyId = formData.get('property_id');
 
-				console.log('🔍 Inquiry form submission:', { name, phone, email, propertyId, website: formData.get('website') });
+		if (!name || !phone || !email || !propertyId) {
+			console.log('❌ Missing required fields');
+			return fail(400, { errors: { message: 'All required fields must be filled' } });
+		}
 
-				if (!name || !phone || !email || !propertyId) {
-					console.log('❌ Missing required fields');
-					return { errors: { message: 'All required fields must be filled' } };
-				}
+		// Validate email format
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			console.log('❌ Invalid email format:', email);
+			return fail(400, { errors: { message: 'Invalid email format' } });
+		}
 
-				// Validate email format
-				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-				if (!emailRegex.test(email)) {
-					console.log('❌ Invalid email format:', email);
-					return { errors: { message: 'Invalid email format' } };
-				}
+		// Verify property exists - get full contact info
+		const { data: property, error: propError } = await supabaseClient
+			.from('properties')
+			.select('id, msl, contact_email, contact_realtor, contact_phone')
+			.eq('id', propertyId)
+			.single();
 
-				// Verify property exists - get full contact info
-				const { data: property, error: propError } = await supabaseClient
-					.from('properties')
-					.select('id, msl, contact_email, contact_realtor, contact_phone')
-					.eq('id', propertyId)
-					.single();
+		if (propError || !property) {
+			console.log('❌ Property not found:', propError?.message);
+			return fail(404, { errors: { message: 'Property not found' } });
+		}
 
-				if (propError || !property) {
-					console.log('❌ Property not found:', propError?.message);
-					return { errors: { message: 'Property not found' } };
-				}
+		// Prepare inquiry data
+		const inquiryData = {
+			property_id: propertyId,
+			name,
+			phone,
+			email,
+			message: formData.get('message') || null,
+			status: 'new'
+		};
 
-				// Prepare inquiry data
-				const inquiryData = {
-					property_id: propertyId,
-					name,
-					phone,
-					email,
-					message: formData.get('message') || null,
-					status: 'new'
-				};
+		// Save to database (no .select().single() so RLS permits public write without requiring public SELECT)
+		const { error: insertError } = await supabaseClient
+			.from('inquiries')
+			.insert(inquiryData);
 
-				console.log('📝 Inserting inquiry:', inquiryData);
+		if (insertError) {
+			console.error('❌ Failed to save inquiry:', insertError);
+			return fail(500, { errors: { message: 'Failed to submit inquiry. Please try again.' } });
+		}
 
-				// Save to database
-				const { error: insertError, data: inserted } = await supabaseClient
-					.from('inquiries')
-					.insert(inquiryData)
-					.select()
-					.single();
-
-				if (insertError) {
-					console.error('❌ Failed to save inquiry:', insertError);
-					return { errors: { message: 'Failed to submit inquiry. Please try again.' } };
-				}
-
-				console.log('✅ Inquiry saved:', inserted);
+		console.log(`📥 inquiery for ${property.msl} by ${name}`);
 
 		// Send email notification to listing agent (using shared transporter like contact form)
 		try {
 			// Determine recipient - prefer realtor's email, fallback to default
 			const agentEmail = property.contact_email || env.DEFAULT_AGENT_EMAIL;
-			const agentName = property.contact_realtor || 'Listing Agent';
+			const agentName = property.contact_realtor ? `Listing Agent ${property.contact_realtor}` : 'Listing Agent';
 			const agentPhone = property.contact_phone || null;
 
 			if (agentEmail) {
@@ -140,7 +134,7 @@ export const actions = {
 								<div style="font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #333333;">
 									<h3 style="color: #000000; font-size: 20px; margin-bottom: 15px;">New Property Inquiry</h3>
 									<p style="margin-bottom: 8px;"><strong>Property:</strong> <span style="color: #000000;">${property.msl}</span></p>
-									<p style="margin-bottom: 8px;"><strong>Listing Agent:</strong> <span style="color: #000000;">${agentName}</span></p>
+									<p style="margin-bottom: 8px;"><strong>Listing Agent:</strong> <span style="color: #000000;">${property.contact_realtor || 'Listing Agent'}</span></p>
 									<p style="margin-bottom: 20px;"><strong>From:</strong> <span style="color: #000000;">${name}</span> (${email})</p>
 									<p style="margin-bottom: 8px;"><strong>Phone:</strong> <span style="color: #000000;">${phone}</span></p>
 									<p style="margin-bottom: 8px;"><strong>Message:</strong></p>
@@ -156,17 +150,14 @@ export const actions = {
 								console.error('📬 Error sending email:', err);
 								reject(err);
 							} else {
-								console.log('📬 Email sent:', info.response);
+								console.log(`📬 Email sent to ${agentName}`);
 								resolve(info);
 							}
 						}
 					);
 				});
-			} else if (agentPhone) {
-				// No email available - log that phone fallback would be used
-				console.log(`📬 No email for ${agentName}, inquiry saved. Agent phone: ${agentPhone}`);
 			} else {
-				console.log('📬 No contact info for agent, inquiry saved to database only');
+				console.log(`📬 No email for ${agentName}, inquiry saved.`);
 			}
 		} catch (emailError) {
 			console.error('Failed to send email notification:', emailError);
