@@ -1,10 +1,10 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import pkg from 'maplibre-gl';
 	const { Map, Marker } = pkg;
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { isValidPosition, normalizePosition } from '$lib/utils/mapUtils.js';
+	import { isValidPosition, normalizePosition } from '#lib/utils/mapUtils.js';
 
 	let { position = $bindable({}) } = $props();
 
@@ -50,7 +50,7 @@
 		const initialPos = isValidPosition(position) ? position : DEFAULT_POSITION;
 		const maxBounds = [
 			[-84.1789, 9.962], // Southwest coordinates [lng, lat]
-			[-84.1423, 9.9802], // Northeast coordinates [lng, lat]
+			[-84.1423, 9.9802] // Northeast coordinates [lng, lat]
 		];
 
 		mapInstance = new Map({
@@ -58,8 +58,8 @@
 			style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json', // Placeholder style
 			center: [initialPos.lng, initialPos.lat],
 			zoom: 15,
-			maxBounds: maxBounds,
-			attributionControl: false,
+			maxBounds,
+			attributionControl: false
 		});
 
 		mapInstance.on('load', () => {
@@ -79,25 +79,25 @@
 		if (!browser) return;
 
 		setTimeout(() => {
-			try {
+				try {
 				if (
 					!mapElement ||
 					mapElement.clientWidth === 0 ||
 					mapElement.clientHeight === 0
 				) {
-					console.error('Map element not found or has no dimensions.');
-					return;
-				}
+						console.error('Map element not found or has no dimensions.');
+						return;
+					}
 
-				initializeMap();
+					initializeMap();
 
-				if (window.ResizeObserver) {
-					resizeObserver = new ResizeObserver(() => mapInstance.resize());
-					resizeObserver.observe(mapElement);
-				}
+					if (window.ResizeObserver) {
+						resizeObserver = new ResizeObserver(() => mapInstance.resize());
+						resizeObserver.observe(mapElement);
+					}
 			} catch (error) {
-				console.error('Error initializing MapLibre GL map picker:', error);
-			}
+					console.error('Error initializing MapLibre GL map picker:', error);
+				}
 		}, 0);
 	});
 

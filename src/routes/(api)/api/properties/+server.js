@@ -1,5 +1,5 @@
 
-import { json } from '@sveltejs/kit';
+
 
 /**
  * @api {get} /api/properties Request Properties information
@@ -103,7 +103,7 @@ export async function GET(event) {
 		data = result.data;
 		err = result.error;
 	} catch (e) {
-		return json({
+		return Response.json({
 			status: 'error',
 			error: {
 				code: 'DATABASE_ERROR',
@@ -115,7 +115,7 @@ export async function GET(event) {
 	}
 
 	if (err) {
-		return json({
+		return Response.json({
 			status: 'error',
 			error: {
 				code: 'DATABASE_ERROR',
@@ -126,7 +126,7 @@ export async function GET(event) {
 		}, { status: 500 });
 	}
 
-	return json({
+	return Response.json({
 		status: 'success',
 		data: data
 	});

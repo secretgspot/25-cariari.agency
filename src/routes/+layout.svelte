@@ -1,8 +1,8 @@
 <script>
 	import { navigating } from '$app/state';
 	import { afterNavigate, invalidate } from '$app/navigation';
-	import { Toasts } from '$lib/toasts';
-	import Splash from '$lib/Splash.svelte';
+	import { Toasts } from '#lib/toasts/index.js';
+	import Splash from '#lib/Splash.svelte';
 	import 'open-props/style';
 
 	let { children, data } = $props();

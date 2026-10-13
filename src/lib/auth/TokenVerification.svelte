@@ -15,7 +15,7 @@
 	 */
 	
 	import { createEventDispatcher } from 'svelte';
-	import Notify from '$lib/Notify.svelte';
+	import Notify from '#lib/Notify.svelte';
 	
 	// Extract props immediately to avoid "reference only captures initial value" warnings
 	let { 

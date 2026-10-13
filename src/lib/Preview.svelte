@@ -1,13 +1,13 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import Badge from '$lib/Badge.svelte';
-	import { Button } from '$lib/buttons';
-	import Ad from '$lib/Ad.svelte';
-	import { formatter } from '$lib/utils/formatters.js';
-	import { ago } from '$lib/utils/time.js';
-	import { Spinner } from '$lib/loaders';
-	import Icon from '$lib/Icon.svelte';
+	import Badge from '#lib/Badge.svelte';
+	import { Button } from '#lib/buttons/index.js';
+	import Ad from '#lib/Ad.svelte';
+	import { formatter } from '#lib/utils/formatters.js';
+	import { ago } from '#lib/utils/time.js';
+	import { Spinner } from '#lib/loaders/index.js';
+	import Icon from '#lib/Icon.svelte';
 
 	/** @type {{data: any}} */
 	let { property_id, supabase, is_admin } = $props();

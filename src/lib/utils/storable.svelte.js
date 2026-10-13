@@ -1,7 +1,7 @@
 // This file should be named 'storable.svelte.js' (or 'storable.svelte.ts')
 // to allow the Svelte compiler to process the $state and $effect runes.
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 // In Svelte 5, $state and $effect are compiler runes and do not need to be imported.
 // They are globally recognized within .svelte files and JavaScript/TypeScript files
 // that are processed by the Svelte compiler (like this .svelte.js file).

@@ -2,11 +2,11 @@
 	/** @type {import('./$types').PageData} */
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import Logo from '$lib/Logo.svelte';
-	import Nav from '$lib/Nav.svelte';
-	import Badge from '$lib/Badge.svelte';
-	import QR from '$lib/QR.svelte';
-	import { Button, LinkButton } from '$lib/buttons';
+	import Logo from '#lib/Logo.svelte';
+	import Nav from '#lib/Nav.svelte';
+	import Badge from '#lib/Badge.svelte';
+	import QR from '#lib/QR.svelte';
+	import { Button, LinkButton } from '#lib/buttons/index.js';
 
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/print/+page.svelte page:', page);

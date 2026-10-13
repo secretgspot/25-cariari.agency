@@ -1,6 +1,6 @@
-import { VITE_GOOGLE_EMAIL } from '$env/static/private';
-import transporter from "$lib/utils/emailSetup.server.js";
-import { applyRateLimit } from '$lib/utils/rateLimit.js';
+import { VITE_GOOGLE_EMAIL } from "$app/env/private";
+import transporter from "#lib/utils/emailSetup.server.js";
+import { applyRateLimit } from '#lib/utils/rateLimit.js';
 import { fail } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -46,7 +46,7 @@ export const actions = {
 				to: VITE_GOOGLE_EMAIL,
 				subject: `Cariari.Agency message from ${name}, ${email}`,
 				text: body,
-				html: html,
+				html
 			};
 
 			const sendEmail = async (message) => {

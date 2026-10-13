@@ -1,6 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { prefersDarkTheme } from '$lib/utils/helpers.js';
+	import { prefersDarkTheme } from '#lib/utils/helpers.js';
 
 	let { position } = $props();
 	let isDark = prefersDarkTheme();

@@ -1,11 +1,11 @@
 <script>
-	import Notify from '$lib/Notify.svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import Notify from '#lib/Notify.svelte';
+	import { goto, refreshAll } from '$app/navigation';
 	import { navigating } from '$app/state';
-	import Logo from '$lib/Logo.svelte';
-	import { Button } from '$lib/buttons';
-	import { isEmpty } from '$lib/utils/validators.js';
-	import TokenVerification from '$lib/auth/TokenVerification.svelte';
+	import Logo from '#lib/Logo.svelte';
+	import { Button } from '#lib/buttons/index.js';
+	import { isEmpty } from '#lib/utils/validators.js';
+	import TokenVerification from '#lib/auth/TokenVerification.svelte';
 
 	let { data } = $props();
 
@@ -78,7 +78,7 @@
 			currentView = 'verified';
 
 			// Invalidate all server-side data to ensure session is refreshed
-			await invalidateAll();
+			await refreshAll();
 
 			// Redirect to the intended page or default to root
 			goto(data.redirectTo || '/');

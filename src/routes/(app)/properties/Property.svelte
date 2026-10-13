@@ -1,11 +1,11 @@
 <script>
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { formatter } from '$lib/utils/formatters.js';
-	import { ago } from '$lib/utils/time.js';
-	import { Button, LinkButton } from '$lib/buttons';
-	import Badge from '$lib/Badge.svelte';
-	import Icon from '$lib/Icon.svelte';
+	import { formatter } from '#lib/utils/formatters.js';
+	import { ago } from '#lib/utils/time.js';
+	import { Button, LinkButton } from '#lib/buttons/index.js';
+	import Badge from '#lib/Badge.svelte';
+	import Icon from '#lib/Icon.svelte';
 
 	/** @type {{property: any}} */
 	let { property } = $props();

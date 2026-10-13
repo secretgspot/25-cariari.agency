@@ -1,5 +1,5 @@
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
 
 /** @type {import('./$types').LayoutLoad} */
 export const load = async ({ fetch, data, depends }) => {
@@ -24,6 +24,6 @@ export const load = async ({ fetch, data, depends }) => {
 
 	return {
 		supabase,
-		...data, // This spreads all the server data including userProfile
+		...data // This spreads all the server data including userProfile
 	};
 };

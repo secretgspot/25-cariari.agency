@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { VITE_GOOGLE_EMAIL, VITE_GOOGLE_EMAIL_PASSWORD } from '$env/static/private';
+import { VITE_GOOGLE_EMAIL, VITE_GOOGLE_EMAIL_PASSWORD } from '$app/env/private';
 
 let transporter = nodemailer.createTransport({
 	host: 'smtp.gmail.com',

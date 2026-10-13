@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/state';
-	import { LinkButton } from '$lib/buttons';
-	import Icon from '$lib/Icon.svelte';
+	import { LinkButton } from '#lib/buttons/index.js';
+	import Icon from '#lib/Icon.svelte';
 
 	/** @type {{ is_logged_in: boolean; fixed?: boolean; basic?: boolean; url: any; }} */
 	let { fixed = false, basic = false, url, ...rest } = $props();

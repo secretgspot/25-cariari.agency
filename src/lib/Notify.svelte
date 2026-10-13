@@ -1,5 +1,5 @@
 <script>
-	import Icon from '$lib/Icon.svelte';
+	import Icon from '#lib/Icon.svelte';
 	// https://joyofcode.xyz/animation-with-svelte for animation/transition
 	// import { scale } from "svelte/transition";
 	/** @type {{type?: string, children?: import('svelte').Snippet, [key: string]: any}} */

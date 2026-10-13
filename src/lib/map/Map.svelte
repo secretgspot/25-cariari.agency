@@ -4,12 +4,12 @@
 		enableWakeLock,
 		disableWakeLock,
 		prefersDarkTheme,
-	} from '$lib/utils/helpers.js';
-	import { isEmpty } from '$lib/utils/validators.js';
-	import { formatLargeNumber } from '$lib/utils/formatters.js';
-	import { browser } from '$app/environment';
-	// import { playButtonSound } from '$lib/utils/audio.js';
+	} from '#lib/utils/helpers.js';
+	import { isEmpty } from '#lib/utils/validators.js';
+	import { formatLargeNumber } from '#lib/utils/formatters.js';
+	import { browser } from '$app/env';
 
+	// import { playButtonSound } from '#lib/utils/audio.js';
 	// --- State ---
 	let { markers = [], onSelected } = $props();
 	let mapElement;
@@ -63,20 +63,11 @@
 
 		validMarkers.forEach(({ id, msl, property_for, location, price }) => {
 			const iconName = getIconName(property_for);
-			const marker = L.marker([location.lat, location.lng], {
-				property_id: id,
-				icon: icons[iconName] || icons.default,
-			});
+			const marker = L.marker([location.lat, location.lng], { property_id: id, icon: icons[iconName] || icons.default });
+			const tooltipText = `${msl || 'N/A'} - ${Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'}${price ? ` ${formatLargeNumber(price)}` : ''}`;
 
-			const tooltipText = `${msl || 'N/A'} - ${
-				Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'
-			}${price ? ` ${formatLargeNumber(price)}` : ''}`;
+			marker.bindTooltip(tooltipText, { permanent: false, direction: 'top', offset: [0, -10] });
 
-			marker.bindTooltip(tooltipText, {
-				permanent: false,
-				direction: 'top',
-				offset: [0, -10],
-			});
 			marker.on('click', (e) => {
 				// playButtonSound('click');
 				if (onSelected && e.target.options.property_id) {

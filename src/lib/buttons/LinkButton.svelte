@@ -1,8 +1,8 @@
 <script>
 	import { navigating } from '$app/state';
-	import { Spinner } from '$lib/loaders';
-	import { playButtonSound } from '$lib/utils/audio.js';
-	import { vibrateButton } from '$lib/utils/vibrate.js';
+	import { Spinner } from '#lib/loaders/index.js';
+	import { playButtonSound } from '#lib/utils/audio.js';
+	import { vibrateButton } from '#lib/utils/vibrate.js';
 
 	/** @type {{disabled?: boolean, isLink?: boolean, href?: any, external?: boolean, children?: import('svelte').Snippet, [key: string]: any}} */
 	let {

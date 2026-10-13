@@ -1,7 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { isEmpty } from '$lib/utils/validators.js';
-	import { browser } from '$app/environment';
+	import { isEmpty } from '#lib/utils/validators.js';
+	import { browser } from '$app/env';
 
 	let { position = $bindable({}) } = $props();
 
@@ -109,10 +109,10 @@
 			const baseLayer = leafletInstance.tileLayer(
 				'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 				{
-					subdomains: 'abcd',
-					minZoom: 15,
-					maxZoom: 18,
-					ext: 'jpg',
+				subdomains: 'abcd',
+				minZoom: 15,
+				maxZoom: 18,
+				ext: 'jpg',
 					errorTileUrl:
 						'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
 				},
@@ -127,7 +127,7 @@
 			mapInstance = leafletInstance.map(mapElement, {
 				zoomControl: false,
 				center: [initialPos.lat, initialPos.lng],
-				maxBounds: maxBounds,
+				maxBounds,
 				maxBoundsViscosity: 0.8,
 				zoom: 15,
 				attributionControl: false,

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import { playNotificationSound } from '$lib/utils/audio.js';
-import { vibrateNotification } from '$lib/utils/vibrate.js';
+import { playNotificationSound } from '#lib/utils/audio.js';
+import { vibrateNotification } from '#lib/utils/vibrate.js';
 
 // Create the writable store for toasts
 export const toasts = writable([]);

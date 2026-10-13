@@ -1,6 +1,6 @@
 <script>
-	import { Button } from '$lib/buttons';
-	import Icon from '$lib/Icon.svelte';
+	import { Button } from '#lib/buttons/index.js';
+	import Icon from '#lib/Icon.svelte';
 
 	/**
 	 * @typedef {Object} ExistingAttachment

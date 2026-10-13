@@ -1,6 +1,6 @@
 // $lib/settings/settings.js
 import { writable, derived } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 /**
  * Default settings configuration
@@ -102,10 +102,10 @@ const systemTheme = createSystemThemeStore();
 export const effectiveTheme = derived(
 	[settings, systemTheme],
 	([$settings, $systemTheme]) => {
-		if ($settings.theme === 'System') {
-			return $systemTheme;
-		}
-		return $settings.theme.toLowerCase();
+	if ($settings.theme === 'System') {
+		return $systemTheme;
+	}
+	return $settings.theme.toLowerCase();
 	}
 );
 

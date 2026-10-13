@@ -1,7 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import transporter from '$lib/utils/emailSetup.server.js';
-import { applyRateLimit } from '$lib/utils/rateLimit.js';
+import { DEFAULT_AGENT_EMAIL, VITE_GOOGLE_EMAIL } from '$app/env/private';
+import transporter from '#lib/utils/emailSetup.server.js';
+import { applyRateLimit } from '#lib/utils/rateLimit.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -119,15 +119,19 @@ export const actions = {
 		// Send email notification to listing agent (using shared transporter like contact form)
 		try {
 			// Determine recipient - prefer realtor's email, fallback to default
-			const agentEmail = property.contact_email || env.DEFAULT_AGENT_EMAIL;
-			const agentName = property.contact_realtor ? `Listing Agent ${property.contact_realtor}` : 'Listing Agent';
+			const agentEmail = property.contact_email || DEFAULT_AGENT_EMAIL;
+
+			const agentName = property.contact_realtor
+				? `Listing Agent ${property.contact_realtor}`
+				: 'Listing Agent';
+
 			const agentPhone = property.contact_phone || null;
 
 			if (agentEmail) {
 				await new Promise((resolve, reject) => {
 					transporter.sendMail(
 						{
-							from: env.VITE_GOOGLE_EMAIL || 'Cariari Agency <noreply@cariari.agency>',
+							from: VITE_GOOGLE_EMAIL || 'Cariari Agency <noreply@cariari.agency>',
 							to: agentEmail,
 							subject: `New Inquiry for Property ${property.msl}`,
 							html: `

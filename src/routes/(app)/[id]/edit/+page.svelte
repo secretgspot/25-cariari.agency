@@ -7,22 +7,22 @@
 	import { enhance, applyAction, deserialize } from '$app/forms';
 	import { v4 as uuidv4 } from 'uuid'; // For unique file names
 	import Compressor from 'compressorjs';
-	import Logo from '$lib/Logo.svelte';
-	import Nav from '$lib/Nav.svelte';
-	import Icon from '$lib/Icon.svelte';
-	import { Button } from '$lib/buttons';
-	import Checkboxes from '$lib/Checkboxes.svelte';
-	import Toggle from '$lib/Toggle.svelte';
-	import Select from '$lib/Select.svelte';
-	import MapPicker from '$lib/map/MapPicker.svelte'; // MapPickerLibre
-	import Uploader from '$lib/Uploader.svelte';
-	import Notify from '$lib/Notify.svelte';
-	import Dialog from '$lib/Dialog.svelte';
-	import { addToast } from '$lib/toasts';
-	import { addFeature, removeFeature, enter } from '$lib/utils/helpers.js';
-	import { getPosition } from '$lib/utils/gps.js';
-	import { isEmpty } from '$lib/utils/validators.js';
-	// import JsonDump from '$lib/JSONDump.svelte';
+	import Logo from '#lib/Logo.svelte';
+	import Nav from '#lib/Nav.svelte';
+	import Icon from '#lib/Icon.svelte';
+	import { Button } from '#lib/buttons/index.js';
+	import Checkboxes from '#lib/Checkboxes.svelte';
+	import Toggle from '#lib/Toggle.svelte';
+	import Select from '#lib/Select.svelte';
+	import MapPicker from '#lib/map/MapPicker.svelte'; // MapPickerLibre
+	import Uploader from '#lib/Uploader.svelte';
+	import Notify from '#lib/Notify.svelte';
+	import Dialog from '#lib/Dialog.svelte';
+	import { addToast } from '#lib/toasts/index.js';
+	import { addFeature, removeFeature, enter } from '#lib/utils/helpers.js';
+	import { getPosition } from '#lib/utils/gps.js';
+	import { isEmpty } from '#lib/utils/validators.js';
+	// import JsonDump from '#lib/JSONDump.svelte';
 
 	// Component Props
 	let { data } = $props();

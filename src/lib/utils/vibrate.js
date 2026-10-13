@@ -1,4 +1,4 @@
-import { settings } from '$lib/settings/settings.js';
+import { settings } from '#lib/settings/settings.js';
 import { get } from 'svelte/store';
 
 /**

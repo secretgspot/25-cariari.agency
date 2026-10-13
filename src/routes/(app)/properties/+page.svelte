@@ -1,11 +1,11 @@
 <script>
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import NothingToSee from '$lib/NothingToSee.svelte';
+	import NothingToSee from '#lib/NothingToSee.svelte';
 	import Property from './Property.svelte';
 	import Filter from './Filter.svelte';
-	import Logo from '$lib/Logo.svelte';
-	import Nav from '$lib/Nav.svelte';
+	import Logo from '#lib/Logo.svelte';
+	import Nav from '#lib/Nav.svelte';
 	import { filterStore, getFilteredProperties } from './filter-store.js';
 
 	/** @type {import('./$types').PageData} */

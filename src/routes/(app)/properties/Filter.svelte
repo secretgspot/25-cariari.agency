@@ -1,9 +1,9 @@
 <script>
 	import { filterStore } from './filter-store.js';
-	import Toggle from '$lib/Toggle.svelte';
-	import Checkboxes from '$lib/Checkboxes.svelte';
-	import Select from '$lib/Select.svelte';
-	import { formatter } from '$lib/utils/formatters.js';
+	import Toggle from '#lib/Toggle.svelte';
+	import Checkboxes from '#lib/Checkboxes.svelte';
+	import Select from '#lib/Select.svelte';
+	import { formatter } from '#lib/utils/formatters.js';
 
 	/** @type {import('./$types').PageData} */
 	let { loggedIn, isAdmin } = $props();

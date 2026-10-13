@@ -1,6 +1,6 @@
 <script>
-	import { playChime, playChimeSequence, chimePatterns } from '$lib/utils/audio.js';
-	import { vibrate, vibratePatterns } from '$lib/utils/vibrate.js';
+	import { playChime, playChimeSequence, chimePatterns } from '#lib/utils/audio.js';
+	import { vibrate, vibratePatterns } from '#lib/utils/vibrate.js';
 
 	/** @type {{selected?: any, disabled?: boolean, options?: any, kind?: string}} */
 	let {

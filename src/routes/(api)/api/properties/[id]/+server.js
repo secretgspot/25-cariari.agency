@@ -1,5 +1,5 @@
 
-import { json } from '@sveltejs/kit';
+
 
 /**
  * @api {get} /api/properties/:id Request Property information
@@ -31,7 +31,7 @@ export async function GET(event) {
 			.ilike('msl', id)
 			.single());
 	} else {
-		return json({
+		return Response.json({
 			status: 'error',
 			error: {
 				code: 'INVALID_ID',
@@ -41,7 +41,7 @@ export async function GET(event) {
 	}
 
 	if (err || !data) {
-		return json({
+		return Response.json({
 			status: 'error',
 			error: {
 				code: 'NOT_FOUND',
@@ -51,7 +51,7 @@ export async function GET(event) {
 		}, { status: 404 });
 	}
 
-	return json({
+	return Response.json({
 		status: 'success',
 		data: data
 	});

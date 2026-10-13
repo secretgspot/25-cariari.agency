@@ -1,10 +1,10 @@
 <script>
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import LogoSvg from '$lib/LogoSvg.svelte';
-	import Nav from '$lib/Nav.svelte';
-	import Contact from '$lib/Contact.svelte';
-	import { LinkButton } from '$lib/buttons';
+	import LogoSvg from '#lib/LogoSvg.svelte';
+	import Nav from '#lib/Nav.svelte';
+	import Contact from '#lib/Contact.svelte';
+	import { LinkButton } from '#lib/buttons/index.js';
 
 	let { data, form } = $props();
 </script>

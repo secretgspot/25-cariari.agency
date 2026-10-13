@@ -1,9 +1,9 @@
 <script>
 	import { page } from '$app/state';
-	import Notify from '$lib/Notify.svelte';
-	import ErrorImage from '$lib/ErrorImage.svelte';
-	import { Button } from '$lib/buttons';
-	import Icon from '$lib/Icon.svelte';
+	import Notify from '#lib/Notify.svelte';
+	import ErrorImage from '#lib/ErrorImage.svelte';
+	import { Button } from '#lib/buttons/index.js';
+	import Icon from '#lib/Icon.svelte';
 </script>
 
 <main>

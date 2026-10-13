@@ -1,11 +1,11 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import pkg from 'maplibre-gl';
 	const { Map, Marker, GeolocateControl } = pkg;
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { isValidMarker, getPropertyIconName } from '$lib/utils/mapUtils.js';
-	import { prefersDarkTheme } from '$lib/utils/helpers.js';
+	import { isValidMarker, getPropertyIconName } from '#lib/utils/mapUtils.js';
+	import { prefersDarkTheme } from '#lib/utils/helpers.js';
 
 	/** @type {{markers: any[], onSelected: (id: string) => void}} */
 	let { markers = [], onSelected } = $props();
@@ -294,7 +294,7 @@
 			zoom: 16,
 			minZoom: 15,
 			maxZoom: 18,
-			maxBounds: maxBounds,
+			maxBounds,
 			attributionControl: false,
 
 			renderWorldCopies: false,
@@ -341,23 +341,23 @@
 		if (!browser) return;
 
 		setTimeout(() => {
-			try {
+				try {
 				if (
 					!mapElement ||
 					mapElement.clientWidth === 0 ||
 					mapElement.clientHeight === 0
 				) {
-					console.error('Map element not found or has no dimensions.');
-					return;
-				}
-				initializeMap();
-				if (window.ResizeObserver) {
-					resizeObserver = new ResizeObserver(handleResize);
-					resizeObserver.observe(mapElement);
-				}
+						console.error('Map element not found or has no dimensions.');
+						return;
+					}
+					initializeMap();
+					if (window.ResizeObserver) {
+						resizeObserver = new ResizeObserver(handleResize);
+						resizeObserver.observe(mapElement);
+					}
 			} catch (error) {
-				console.error('Error initializing MapLibre GL map:', error);
-			}
+					console.error('Error initializing MapLibre GL map:', error);
+				}
 		}, 0);
 	});
 

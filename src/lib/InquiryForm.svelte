@@ -1,6 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { Button } from '$lib/buttons';
+	import { Button } from '#lib/buttons/index.js';
 
 	/** @type {{data: any, form?: any}} */
 	let { data, form } = $props();

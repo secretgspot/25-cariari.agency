@@ -2,16 +2,16 @@
 	/** @type {import('./$types').PageData} */
 	import { navigating, page } from '$app/state';
 	import { goto, afterNavigate } from '$app/navigation';
-	import LogoSvg from '$lib/LogoSvg.svelte';
-	import Badge from '$lib/Badge.svelte';
-	import Icon from '$lib/Icon.svelte';
-	import Ad from '$lib/Ad.svelte';
-	import MapStatic from '$lib/map/MapStatic.svelte'; // MapStaticLibre
-	import { formatter } from '$lib/utils/formatters.js';
-	import { ago } from '$lib/utils/time.js';
-		import Nav from '$lib/Nav.svelte';
-		import InquiryForm from '$lib/InquiryForm.svelte';
-		// import JsonDump from '$lib/JSONDump.svelte';
+	import LogoSvg from '#lib/LogoSvg.svelte';
+	import Badge from '#lib/Badge.svelte';
+	import Icon from '#lib/Icon.svelte';
+	import Ad from '#lib/Ad.svelte';
+	import MapStatic from '#lib/map/MapStatic.svelte'; // MapStaticLibre
+	import { formatter } from '#lib/utils/formatters.js';
+	import { ago } from '#lib/utils/time.js';
+		import Nav from '#lib/Nav.svelte';
+		import InquiryForm from '#lib/InquiryForm.svelte';
+		// import JsonDump from '#lib/JSONDump.svelte';
 
 	/** @type {{data: any, form?: any}} */
 	let { data, form } = $props();

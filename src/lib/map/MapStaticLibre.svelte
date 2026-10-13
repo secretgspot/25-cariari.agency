@@ -3,7 +3,7 @@
 	import pkg from 'maplibre-gl';
 	const { Map, Marker } = pkg;
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { isValidPosition, normalizePosition } from '$lib/utils/mapUtils.js';
+	import { isValidPosition, normalizePosition } from '#lib/utils/mapUtils.js';
 	import mapStyle from './style.json';
 
 	let { position } = $props();

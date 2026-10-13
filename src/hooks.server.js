@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { dev } from '$app/environment';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$app/env/public';
+import { dev } from '$app/env';
 
-/** @type {import('@sveltejs/kit').Handle} */
+/** @type {import('@sveltejs/kit/hooks').Handle} */
 export async function handle({ event, resolve }) {
 	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
