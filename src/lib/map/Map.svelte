@@ -207,32 +207,85 @@
 			{ minZoom: 15, maxZoom: 18 },
 		);
 
+		let storedLayer = 'default';
+		try {
+			storedLayer = localStorage.getItem('map_layer') || 'default';
+		} catch {
+			storedLayer = 'default';
+		}
+		let currentLayer = storedLayer;
+		const initialBaseLayer = currentLayer === 'satellite' ? satelliteLayer : defaultLayer;
+
 		markersLayer = L.layerGroup();
 		map = L.map(mapElement, {
 			center,
 			zoom: 16,
 			maxBounds,
 			maxBoundsViscosity: 0.8,
-			layers: [defaultLayer, markersLayer],
+			layers: [initialBaseLayer, markersLayer],
 			zoomControl: false,
 			attributionControl: false,
 			preferCanvas: true,
 		});
 
-		// Add controls
-		const layersControl = L.control
-			.layers({ Default: defaultLayer, Satellite: satelliteLayer }, null, {
-				position: 'bottomright',
-			})
-			.addTo(map);
+		function createLayerToggleControl() {
+			const LayerToggleControl = L.Control.extend({
+				options: { position: 'bottomright' },
+				onAdd: function () {
+					const container = L.DomUtil.create('div', 'leaflet-control-layer-toggle');
+					const button = L.DomUtil.create('button', 'layer-toggle-btn', container);
+					button.type = 'button';
 
-		const layersIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="21" height="21"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="50" d="m280.902 37.262 145.533 64.627c41.933 18.5 41.933 49.086 0 67.586l-145.533 64.626c-16.527 7.4-43.66 7.4-60.187 0L75.182 169.475c-41.933-18.5-41.933-49.086 0-67.586l145.533-64.627c16.527-7.4 43.66-7.4 60.187 0Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M34 236.573c0 20.72 15.54 44.646 34.533 53.033l167.487 74.493c12.827 5.674 27.38 5.674 39.96 0l167.487-74.493C462.46 281.219 478 257.293 478 236.573"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="30" d="M34 359.906c0 22.94 13.567 43.66 34.533 53.034l167.487 74.493c12.827 5.673 27.38 5.673 39.96 0l167.487-74.493C464.433 403.566 478 382.846 478 359.906"/></svg>`;
-		const layersToggle = layersControl
-			.getContainer()
-			.querySelector('.leaflet-control-layers-toggle');
-		if (layersToggle) {
-			layersToggle.innerHTML = layersIcon;
+					const mapIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="18" height="18"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="36" d="m180 440-148-80V72l148 80 152-80 148 80v288l-148-80-152 80Z"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="36" d="M180 152v288M332 72v288"/></svg>`;
+					const satelliteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 512 512" width="18" height="18"><circle cx="256" cy="256" r="180" stroke="currentColor" stroke-width="36"/><ellipse cx="256" cy="256" rx="90" ry="180" stroke="currentColor" stroke-width="30"/><path stroke="currentColor" stroke-width="30" d="M80 256h352M108 160h296M108 352h296"/><path stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="36" d="M420 110 A 240 100 45 0 1 92 402"/><circle cx="420" cy="110" r="22" fill="var(--accent)"/></svg>`;
+
+					function updateButtonUI() {
+						if (currentLayer === 'default') {
+							button.innerHTML = `
+								<span class="layer-icon">${satelliteIcon}</span>
+								<span class="layer-label">Satellite</span>
+							`;
+							button.setAttribute('aria-label', 'Switch to Satellite view');
+							button.setAttribute('title', 'Switch to Satellite view');
+						} else {
+							button.innerHTML = `
+								<span class="layer-icon">${mapIcon}</span>
+								<span class="layer-label">Default</span>
+							`;
+							button.setAttribute('aria-label', 'Switch to Default view');
+							button.setAttribute('title', 'Switch to Default view');
+						}
+					}
+
+					updateButtonUI();
+
+					L.DomEvent.disableClickPropagation(container);
+					L.DomEvent.on(button, 'click', (e) => {
+						L.DomEvent.stop(e);
+						if (currentLayer === 'default') {
+							map.removeLayer(defaultLayer);
+							map.addLayer(satelliteLayer);
+							currentLayer = 'satellite';
+						} else {
+							map.removeLayer(satelliteLayer);
+							map.addLayer(defaultLayer);
+							currentLayer = 'default';
+						}
+						try {
+							localStorage.setItem('map_layer', currentLayer);
+						} catch {
+							// ignore storage error
+						}
+						updateButtonUI();
+					});
+
+					return container;
+				}
+			});
+			map.addControl(new LayerToggleControl());
 		}
+
+		createLayerToggleControl();
 
 		createToggleControl();
 
@@ -286,5 +339,52 @@
 		background: none !important;
 		border: none !important;
 		box-shadow: none !important;
+	}
+
+	:global(.leaflet-control-layer-toggle) {
+		margin-right: var(--size-3, 12px) !important;
+		margin-bottom: var(--size-3, 12px) !important;
+		background: none !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+
+	:global(.layer-toggle-btn) {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: var(--surface-1, #1e1e1e);
+		color: var(--text-1, #f0f0f0);
+		border: var(--border-size-1, 1px) solid var(--surface-4, rgba(255, 255, 255, 0.2));
+		border-radius: var(--radius-2, 6px);
+		padding: var(--size-2, 6px) var(--size-3, 12px);
+		font-family: inherit;
+		font-size: var(--font-size-0, 0.85rem);
+		font-weight: 600;
+		cursor: pointer;
+		user-select: none;
+		box-shadow: var(--shadow-2, 0 3px 6px rgba(0, 0, 0, 0.2));
+		backdrop-filter: blur(8px);
+		transition: background var(--transition, 0.15s ease), border-color var(--transition, 0.15s ease), transform var(--transition, 0.15s ease);
+	}
+
+	:global(.layer-toggle-btn:hover) {
+		background: var(--surface-2, #2a2a2a);
+		border-color: var(--accent, #d4af37);
+		transform: translateY(-1px);
+	}
+
+	:global(.layer-toggle-btn:active) {
+		transform: scale(0.96);
+	}
+
+	:global(.layer-toggle-btn .layer-icon) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(.layer-toggle-btn .layer-label) {
+		letter-spacing: 0.02em;
 	}
 </style>
