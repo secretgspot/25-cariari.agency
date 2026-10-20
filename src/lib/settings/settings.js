@@ -9,6 +9,9 @@ const DEFAULT_SETTINGS = {
 	// Color Theme
 	theme: 'System', // System, Light, Dark
 
+	// Map Base Layer
+	map_layer: 'default', // default | satellite
+
 	// Audio Effects
 	button_sounds: true,
 	// navigation_sound: false,

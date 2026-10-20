@@ -5,13 +5,20 @@
 		disableWakeLock,
 		prefersDarkTheme,
 	} from '#lib/utils/helpers.js';
-	import { isEmpty } from '#lib/utils/validators.js';
+	import {
+		isValidMarker,
+		getPropertyIconName,
+		isMarkerSelected,
+	} from '#lib/utils/mapUtils.js';
 	import { formatLargeNumber } from '#lib/utils/formatters.js';
 	import { browser } from '$app/env';
+	import { settings } from '#lib/settings/settings.js';
+	import { get } from 'svelte/store';
+	import { playButtonSound } from '#lib/utils/audio.js';
+	import { vibrateButton } from '#lib/utils/vibrate.js';
 
-	// import { playButtonSound } from '#lib/utils/audio.js';
 	// --- State ---
-	let { markers = [], onSelected } = $props();
+	let { markers = [], onSelected, onDeselect, selectedId = null } = $props();
 	let mapElement;
 	let map = $state(null);
 	let L = $state(null);
@@ -38,38 +45,33 @@
 		});
 	}
 
-	function getIconName(propertyFor) {
-		if (Array.isArray(propertyFor))
-			return propertyFor.join('_').replace(/[^a-zA-Z0-9_]/g, '_');
-		return typeof propertyFor === 'string'
-			? propertyFor.replace(/[^a-zA-Z0-9_]/g, '_')
-			: 'default';
-	}
-
 	function addMarkers() {
 		if (!markersLayer) return;
 		markersLayer.clearLayers();
 
-		const validMarkers = markers.filter(
-			(m) =>
-				m?.id &&
-				m?.location &&
-				!isEmpty(m.location.lat) &&
-				!isEmpty(m.location.lng) &&
-				!isNaN(Number(m.location.lat)) &&
-				!isNaN(Number(m.location.lng)) &&
-				m.is_active,
-		);
+		const validMarkers = markers.filter(isValidMarker);
 
 		validMarkers.forEach(({ id, msl, property_for, location, price }) => {
-			const iconName = getIconName(property_for);
-			const marker = L.marker([location.lat, location.lng], { property_id: id, icon: icons[iconName] || icons.default });
+			const iconName = getPropertyIconName(property_for);
+			const isCurrent = isMarkerSelected(id, msl, selectedId);
+			const marker = L.marker([location.lat, location.lng], {
+				property_id: id,
+				property_msl: msl,
+				icon: icons[iconName] || icons.default,
+				zIndexOffset: isCurrent ? 1000 : 0,
+			});
 			const tooltipText = `${msl || 'N/A'} - ${Array.isArray(property_for) ? property_for.join(', ') : property_for || 'N/A'}${price ? ` ${formatLargeNumber(price)}` : ''}`;
 
-			marker.bindTooltip(tooltipText, { permanent: false, direction: 'top', offset: [0, -10] });
+			marker.bindTooltip(tooltipText, {
+				permanent: false,
+				direction: 'top',
+				offset: [0, -10],
+			});
 
 			marker.on('click', (e) => {
-				// playButtonSound('click');
+				L.DomEvent.stopPropagation(e);
+				playButtonSound('click');
+				vibrateButton('click');
 				if (onSelected && e.target.options.property_id) {
 					onSelected(e.target.options.property_id);
 				}
@@ -77,6 +79,30 @@
 			});
 
 			markersLayer.addLayer(marker);
+			if (isCurrent) {
+				const el = marker.getElement?.();
+				if (el) el.classList.add('is-selected');
+			}
+		});
+	}
+
+	function updateSelectedMarker() {
+		if (!markersLayer) return;
+		markersLayer.eachLayer((layer) => {
+			const el = layer.getElement?.();
+			if (!el) return;
+			const isCurrent = isMarkerSelected(
+				layer.options?.property_id,
+				layer.options?.property_msl,
+				selectedId,
+			);
+			if (isCurrent) {
+				el.classList.add('is-selected');
+				layer.setZIndexOffset(1000);
+			} else {
+				el.classList.remove('is-selected');
+				layer.setZIndexOffset(0);
+			}
 		});
 	}
 
@@ -194,8 +220,8 @@
 		// Create map
 		const isDark = prefersDarkTheme();
 		const tileUrl = isDark
-			? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.jpg'
-			: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.jpg';
+			? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+			: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 
 		const defaultLayer = L.tileLayer(tileUrl, {
 			subdomains: 'abcd',
@@ -207,13 +233,8 @@
 			{ minZoom: 15, maxZoom: 18 },
 		);
 
-		let storedLayer = 'default';
-		try {
-			storedLayer = localStorage.getItem('map_layer') || 'default';
-		} catch {
-			storedLayer = 'default';
-		}
-		let currentLayer = storedLayer;
+		const currentSettings = get(settings);
+		let currentLayer = currentSettings.map_layer || 'default';
 		const initialBaseLayer = currentLayer === 'satellite' ? satelliteLayer : defaultLayer;
 
 		markersLayer = L.layerGroup();
@@ -262,6 +283,8 @@
 					L.DomEvent.disableClickPropagation(container);
 					L.DomEvent.on(button, 'click', (e) => {
 						L.DomEvent.stop(e);
+						playButtonSound('click');
+						vibrateButton('click');
 						if (currentLayer === 'default') {
 							map.removeLayer(defaultLayer);
 							map.addLayer(satelliteLayer);
@@ -271,16 +294,12 @@
 							map.addLayer(defaultLayer);
 							currentLayer = 'default';
 						}
-						try {
-							localStorage.setItem('map_layer', currentLayer);
-						} catch {
-							// ignore storage error
-						}
+						settings.update((s) => ({ ...s, map_layer: currentLayer }));
 						updateButtonUI();
 					});
 
 					return container;
-				}
+				},
 			});
 			map.addControl(new LayerToggleControl());
 		}
@@ -295,10 +314,25 @@
 			resizeObserver.observe(mapElement);
 		}
 
+		// Handle map background clicks (deselect property)
+		map.on('click', () => {
+			if (onDeselect) onDeselect();
+		});
+
 		// Add markers once map is ready
 		map.whenReady(() => {
 			addMarkers();
 			map.invalidateSize();
+			if (selectedId) {
+				const target = markers.find(
+					(m) =>
+						m.id === selectedId ||
+						(m.msl && m.msl.toLowerCase() === String(selectedId).toLowerCase()),
+				);
+				if (target?.location?.lat && target?.location?.lng) {
+					map.setView([target.location.lat, target.location.lng], 18);
+				}
+			}
 			console.log('🗺 Map is ready');
 		});
 	});
@@ -314,11 +348,17 @@
 		if (map) map.remove();
 	});
 
-	// Reactively update markers when markers prop changes
+	let previousMarkers;
+
+	// Reactively sync markers and active marker styling
 	$effect(() => {
-		if (map && markersLayer) {
+		if (!map || !markersLayer) return;
+
+		if (markers !== previousMarkers) {
+			previousMarkers = markers;
 			addMarkers();
 		}
+		updateSelectedMarker();
 	});
 </script>
 
@@ -365,7 +405,10 @@
 		user-select: none;
 		box-shadow: var(--shadow-2, 0 3px 6px rgba(0, 0, 0, 0.2));
 		backdrop-filter: blur(8px);
-		transition: background var(--transition, 0.15s ease), border-color var(--transition, 0.15s ease), transform var(--transition, 0.15s ease);
+		transition:
+			background var(--transition, 0.15s ease),
+			border-color var(--transition, 0.15s ease),
+			transform var(--transition, 0.15s ease);
 	}
 
 	:global(.layer-toggle-btn:hover) {
@@ -386,5 +429,28 @@
 
 	:global(.layer-toggle-btn .layer-label) {
 		letter-spacing: 0.02em;
+	}
+
+	:global(.leaflet-marker-icon.is-selected) {
+		outline: 3px solid var(--accent, #d4af37) !important;
+		outline-offset: 3px !important;
+		border-radius: 50% !important;
+		filter: drop-shadow(0 0 8px var(--accent, #d4af37)) !important;
+		animation: marker-outline-pulse 1.6s infinite ease-in-out !important;
+		z-index: 1000 !important;
+	}
+
+	@keyframes marker-outline-pulse {
+		0%,
+		100% {
+			outline-color: var(--accent, #d4af37);
+			outline-offset: 2px;
+			box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.75);
+		}
+		50% {
+			outline-color: #ffffff;
+			outline-offset: 5px;
+			box-shadow: 0 0 0 8px rgba(212, 175, 55, 0);
+		}
 	}
 </style>

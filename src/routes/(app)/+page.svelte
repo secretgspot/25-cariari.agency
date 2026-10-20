@@ -1,33 +1,52 @@
 <script>
 	import { onMount } from 'svelte';
 	import { navigating, page } from '$app/state';
+	import { replaceState } from '$app/navigation';
+	import { browser } from '$app/env';
 	import LogoSvg from '#lib/LogoSvg.svelte';
-	import Map from '#lib/map/Map.svelte'; // MapLibre
+	import Map from '#lib/map/Map.svelte';
 	import Preview from '#lib/Preview.svelte';
 	import Nav from '#lib/Nav.svelte';
-	import JsonDump from '#lib/JSONDump.svelte';
-	import Checkbox from '#lib/Checkbox.svelte';
+	import FilterChips from '#lib/FilterChips.svelte';
+	import FilterChip from '#lib/FilterChip.svelte';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
 
-	let loading = $state(data.loading ?? false),
-		error = '',
-		message = '',
-		showPreview = false,
-		selectedProperty = $state();
+	let loading = $state(data.loading ?? false);
+	let selectedProperty = $state(null);
 
 	let saleFilter = $state(true);
 	let rentFilter = $state(true);
 
-	const filteredProperties = $derived(() => {
+	const saleCount = $derived.by(() => {
+		if (!data?.properties || !Array.isArray(data.properties)) return 0;
+		return data.properties.filter((property) => {
+			const propertyFor = Array.isArray(property.property_for)
+				? property.property_for
+				: (property.property_for || '').split(',').map((s) => s.trim());
+			return propertyFor.includes('Sale');
+		}).length;
+	});
+
+	const rentCount = $derived.by(() => {
+		if (!data?.properties || !Array.isArray(data.properties)) return 0;
+		return data.properties.filter((property) => {
+			const propertyFor = Array.isArray(property.property_for)
+				? property.property_for
+				: (property.property_for || '').split(',').map((s) => s.trim());
+			return propertyFor.includes('Rent');
+		}).length;
+	});
+
+	const filteredProperties = $derived.by(() => {
 		if (!data || !Array.isArray(data.properties)) {
 			return [];
 		}
 		return data.properties.filter((property) => {
 			const propertyFor = Array.isArray(property.property_for)
 				? property.property_for
-				: property.property_for.split(',').map((s) => s.trim());
+				: (property.property_for || '').split(',').map((s) => s.trim());
 
 			if (saleFilter && propertyFor.includes('Sale')) return true;
 			if (rentFilter && propertyFor.includes('Rent')) return true;
@@ -35,8 +54,51 @@
 		});
 	});
 
-	onMount(async () => {
+	function selectProperty(id) {
+		if (selectedProperty === id) {
+			// Clicking the active property again closes the preview pane
+			selectedProperty = null;
+			if (browser) {
+				const url = new URL(window.location.href);
+				url.searchParams.delete('property');
+				replaceState(url.toString(), page.state);
+			}
+			return;
+		}
+
+		selectedProperty = id;
+		if (browser) {
+			const url = new URL(window.location.href);
+			if (id) {
+				const match = data?.properties?.find((p) => p.id === id);
+				url.searchParams.set('property', match?.msl || id);
+			} else {
+				url.searchParams.delete('property');
+			}
+			replaceState(url.toString(), page.state);
+		}
+	}
+
+	onMount(() => {
 		loading = false;
+		const syncFromUrl = () => {
+			if (!browser) return;
+			const propParam = new URL(window.location.href).searchParams.get('property');
+			if (propParam && data?.properties) {
+				const match = data.properties.find(
+					(p) => p.id === propParam || (p.msl && p.msl.toLowerCase() === propParam.toLowerCase())
+				);
+				selectedProperty = match ? match.id : null;
+			} else {
+				selectedProperty = null;
+			}
+		};
+
+		syncFromUrl();
+		window.addEventListener('popstate', syncFromUrl);
+		return () => {
+			window.removeEventListener('popstate', syncFromUrl);
+		};
 	});
 </script>
 
@@ -44,7 +106,6 @@
 	<title>Cariari Agency - Costa Rica Real Estate</title>
 </svelte:head>
 
-<!-- <JsonDump name="data" {data} /> -->
 {#if !navigating.complete && !loading}
 	<LogoSvg animate={true} kind="gold" fixed invert />
 {/if}
@@ -52,28 +113,28 @@
 <main class:preview={selectedProperty}>
 	<section class="map-wrapper">
 		<Nav />
-		<div class="filter-controls">
-			<Checkbox
-				name="sale"
+		<FilterChips>
+			<FilterChip
+				bind:active={saleFilter}
 				label="Sale"
-				kind="circle"
 				color="var(--sale)"
-				bind:checked={saleFilter} />
-			<Checkbox
-				name="rent"
+				count={saleCount} />
+			<FilterChip
+				bind:active={rentFilter}
 				label="Rent"
-				kind="circle"
 				color="var(--rent)"
-				bind:checked={rentFilter} />
-		</div>
+				count={rentCount} />
+		</FilterChips>
 		<Map
-			markers={filteredProperties()}
+			markers={filteredProperties}
+			selectedId={selectedProperty}
 			onSelected={(id) => {
-				selectedProperty = id;
+				selectProperty(id);
+			}}
+			onDeselect={() => {
+				selectProperty(null);
 			}} />
 	</section>
-
-	<!-- <JsonDump name="filteredProperties" {filteredProperties} /> -->
 
 	{#if selectedProperty}
 		<aside class="preview-wrapper">
@@ -85,7 +146,6 @@
 	{/if}
 </main>
 
-<!-- {/if} -->
 <style>
 	main {
 		display: grid;
@@ -103,7 +163,6 @@
 		}
 	}
 	.preview-wrapper {
-		/* preview wrapper */
 		@media (min-width: 768px) {
 			height: 100dvh;
 			display: grid;
@@ -112,21 +171,5 @@
 		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
 			overflow-y: scroll;
 		}
-	}
-
-	.filter-controls {
-		display: flex;
-		gap: var(--size-3);
-		position: absolute;
-		top: calc(var(--size-3) * 3);
-		right: 0;
-		user-select: none;
-		z-index: 3;
-		background: var(--surface-1);
-		padding: var(--size-1);
-		padding-right: var(--size-6);
-		border-radius: var(--radius-2);
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
 	}
 </style>

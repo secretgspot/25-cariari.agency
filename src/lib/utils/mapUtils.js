@@ -74,3 +74,17 @@ export const normalizePosition = (pos) => {
 		return null;
 	}
 };
+
+
+/**
+ * Checks if a marker matches the currently selected identifier (id or MSL).
+ * @param {string} id - Property ID.
+ * @param {string} [msl] - Property MSL code.
+ * @param {string|null} selected - Currently selected identifier.
+ * @returns {boolean}
+ */
+export const isMarkerSelected = (id, msl, selected) => {
+	if (!selected) return false;
+	const sel = String(selected).toLowerCase();
+	return id === selected || (msl && msl.toLowerCase() === sel);
+};
