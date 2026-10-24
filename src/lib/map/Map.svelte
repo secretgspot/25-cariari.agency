@@ -72,10 +72,18 @@
 				L.DomEvent.stopPropagation(e);
 				playButtonSound('click');
 				vibrateButton('click');
-				if (onSelected && e.target.options.property_id) {
-					onSelected(e.target.options.property_id);
+				const clickedId = e.target.options.property_id;
+				const isAlreadySelected = isMarkerSelected(
+					clickedId,
+					e.target.options.property_msl,
+					selectedId,
+				);
+				if (onSelected && clickedId) {
+					onSelected(clickedId);
 				}
-				map.setView(e.target.getLatLng(), 18, { animate: true, pan: { duration: 0.3 } });
+				if (!isAlreadySelected) {
+					centerMarker(e.target.getLatLng());
+				}
 			});
 
 			markersLayer.addLayer(marker);
@@ -84,6 +92,33 @@
 				if (el) el.classList.add('is-selected');
 			}
 		});
+	}
+
+	function centerMarker(latlng) {
+		if (!map) return;
+		const zoom = 18;
+		let offsetX = 0;
+		let offsetY = 0;
+
+		if (typeof window !== 'undefined') {
+			const isMobile = window.innerWidth < 768;
+			if (isMobile) {
+				// Offset so the pin lands centered in the upper ~50% visible map space
+				offsetY = Math.round(window.innerHeight * 0.22);
+			} else if (window.innerWidth < 1200) {
+				// Offset so the pin is centered in the open map area left of the 380px drawer
+				offsetX = 100;
+			}
+		}
+
+		if (offsetX === 0 && offsetY === 0) {
+			map.setView(latlng, zoom, { animate: true, pan: { duration: 0.35 } });
+			return;
+		}
+
+		const targetPoint = map.project(latlng, zoom).add([offsetX, offsetY]);
+		const targetLatLng = map.unproject(targetPoint, zoom);
+		map.setView(targetLatLng, zoom, { animate: true, pan: { duration: 0.35 } });
 	}
 
 	function updateSelectedMarker() {
@@ -330,7 +365,7 @@
 						(m.msl && m.msl.toLowerCase() === String(selectedId).toLowerCase()),
 				);
 				if (target?.location?.lat && target?.location?.lng) {
-					map.setView([target.location.lat, target.location.lng], 18);
+					centerMarker([target.location.lat, target.location.lng]);
 				}
 			}
 			console.log('🗺 Map is ready');

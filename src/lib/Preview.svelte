@@ -1,6 +1,5 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { fade } from 'svelte/transition';
 	import Badge from '#lib/Badge.svelte';
 	import { Button } from '#lib/buttons/index.js';
 	import Ad from '#lib/Ad.svelte';
@@ -8,9 +7,11 @@
 	import { ago } from '#lib/utils/time.js';
 	import { Spinner } from '#lib/loaders/index.js';
 	import Icon from '#lib/Icon.svelte';
+	import { playButtonSound } from '#lib/utils/audio.js';
+	import { vibrateButton } from '#lib/utils/vibrate.js';
 
-	/** @type {{data: any}} */
-	let { property_id, supabase, is_admin } = $props();
+	/** @type {{property_id: any, supabase: any, is_admin: boolean, onclose?: () => void}} */
+	let { property_id, supabase, is_admin, onclose } = $props();
 
 	// console.log('Preview.svelte property_id:', property_id);
 	// console.log('Preview.svelte supabase:', supabase);
@@ -38,6 +39,12 @@
 	$effect(() => {
 		if (supabase) loadDetails();
 	});
+
+	function handleClose() {
+		playButtonSound('click');
+		vibrateButton('click');
+		if (onclose) onclose();
+	}
 </script>
 
 {#if loading}
@@ -45,6 +52,20 @@
 {/if}
 
 <section class="preview-content" class:loading>
+	{#if onclose}
+		<!-- Close button: visible on desktop drawer only; hidden on mobile (drag handle serves this purpose) -->
+		<button
+			type="button"
+			class="preview-close"
+			onclick={handleClose}
+			aria-label="Close preview">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</button>
+	{/if}
+
 	{#if is_admin}
 		<Button
 			class="admin-edit"
@@ -78,7 +99,7 @@
 
 	<div class="content scroller">
 		<!-- {JSON.stringify(data, null, 2)} -->
-		<div class="preview-group" transition:fade={{ duration: 300 }}>
+		<div class="preview-group">
 			<!--
 			<div class="land_use">
 				 {#each property.property_for as p_for}
@@ -153,19 +174,60 @@
 </section>
 
 <style>
+	/* Close button — only visible on desktop (≥768px) */
+	.preview-close {
+		position: absolute;
+		top: var(--size-2, 8px);
+		left: var(--size-2, 8px);
+		z-index: 5;
+		display: none; /* hidden on mobile — drag handle handles dismiss */
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: var(--radius-round, 999px);
+		background: rgba(0, 0, 0, 0.55);
+		color: #ffffff;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		cursor: pointer;
+		backdrop-filter: blur(8px);
+		transition: transform 0.15s ease, background 0.15s ease;
+
+		@media (min-width: 768px) {
+			display: inline-flex;
+		}
+	}
+	.preview-close:hover {
+		transform: scale(1.08);
+		background: rgba(0, 0, 0, 0.75);
+	}
+	.preview-close:active {
+		transform: scale(0.95);
+	}
+
 	.preview-content {
 		position: relative;
 		z-index: 3;
 		background: var(--surface-1);
 		color: var(--text-1);
-		display: grid;
-		grid-template-rows: minmax(min-content, 30vh) 1fr minmax(min-content, 111px) minmax(
-				min-content,
-				90px
-			);
+		/* Mobile: flex column, scrollable */
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		overflow-y: auto;
+		overflow-x: hidden;
+		overscroll-behavior-y: contain;
+		-webkit-overflow-scrolling: touch;
 
 		@media (min-width: 768px) {
+			/* Desktop: fixed grid rows, no scroll on section itself */
+			display: grid;
+			grid-template-rows: minmax(min-content, 30vh) 1fr minmax(min-content, 111px) minmax(
+					min-content,
+					90px
+				);
 			height: 100dvh;
+			overflow-y: hidden;
 		}
 
 		:global(.admin-edit) {
@@ -189,6 +251,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		flex-shrink: 0;
 	}
 
 	.image {
@@ -196,6 +259,12 @@
 		height: 100%;
 		object-fit: cover;
 		aspect-ratio: 5 / 4;
+		/* Cap image height on mobile so price/details are always visible at peek */
+		max-height: 180px;
+
+		@media (min-width: 768px) {
+			max-height: unset;
+		}
 	}
 
 	.content {
@@ -203,9 +272,11 @@
 		flex-direction: column;
 		align-items: center;
 		flex: 1;
-		overflow-y: auto;
-		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
-			overflow-y: unset;
+		/* Mobile: don't set overflow here — parent .preview-content scrolls */
+		overflow-y: visible;
+
+		@media (min-width: 768px) {
+			overflow-y: auto;
 		}
 
 		.badge-group {
@@ -220,12 +291,12 @@
 			flex-direction: column;
 			justify-content: space-evenly;
 			width: 100%;
-			padding: 2rem 3rem 0rem;
+			padding: 1.2rem 2rem 0;
 
-			/* .land_use {
-				display: flex;
-				justify-content: space-between;
-			} */
+			@media (min-width: 768px) {
+				padding: 2rem 3rem 0;
+			}
+
 			.type_age {
 				text-transform: uppercase;
 				color: var(--text-2);
@@ -236,12 +307,6 @@
 				justify-content: space-between;
 				margin: 0.3rem 0;
 			}
-			/* .loc_address {
-				font-size: smaller;
-				display: flex;
-				flex-direction: column;
-				color: var(--color-dark);
-			} */
 		}
 
 		.description {
@@ -286,7 +351,6 @@
 		align-items: center;
 	}
 	.loading {
-		/* background: red; */
 		filter: grayscale(1) blur(3px);
 	}
 	@media (prefers-color-scheme: dark) {

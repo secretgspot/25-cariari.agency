@@ -130,8 +130,10 @@ body {
 	font-family: var(--font-rounded-sans);
 	background: var(--surface-1);
 	color: var(--text-1);
-	/* height: 100%; */
 	min-height: 100%;
+	/* Prevent horizontal overflow and rubber-banding on mobile */
+	overflow-x: hidden;
+	overscroll-behavior: none;
 }
 
 
