@@ -180,7 +180,7 @@
 		top: var(--size-2, 8px);
 		left: var(--size-2, 8px);
 		z-index: 5;
-		display: none; /* hidden on mobile — drag handle handles dismiss */
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		width: 32px;
@@ -193,9 +193,6 @@
 		backdrop-filter: blur(8px);
 		transition: transform 0.15s ease, background 0.15s ease;
 
-		@media (min-width: 768px) {
-			display: inline-flex;
-		}
 	}
 	.preview-close:hover {
 		transform: scale(1.08);
@@ -210,14 +207,14 @@
 		z-index: 3;
 		background: var(--surface-1);
 		color: var(--text-1);
-		/* Mobile: flex column, scrollable */
+		/* Mobile preview participates in document scrolling below the sticky map. */
 		display: flex;
 		flex-direction: column;
-		height: 100%;
-		overflow-y: auto;
-		overflow-x: hidden;
-		overscroll-behavior-y: contain;
-		-webkit-overflow-scrolling: touch;
+		height: auto;
+		min-height: 60dvh;
+		overflow-y: visible;
+		overflow-x: clip;
+		overscroll-behavior-y: auto;
 
 		@media (min-width: 768px) {
 			/* Desktop: fixed grid rows, no scroll on section itself */
@@ -271,7 +268,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		flex: 1;
+		flex: 0 0 auto;
 		/* Mobile: don't set overflow here — parent .preview-content scrolls */
 		overflow-y: visible;
 
@@ -320,7 +317,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: flex-end;
-		flex: 1;
+		flex: 0 0 auto;
 	}
 
 	footer {
