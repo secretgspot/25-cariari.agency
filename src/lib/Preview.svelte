@@ -58,8 +58,19 @@
 			type="button"
 			class="preview-close"
 			onclick={handleClose}
-			aria-label="Close preview">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+			aria-label="Close preview"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
@@ -72,7 +83,8 @@
 			size="icon"
 			{loading}
 			disabled={loading}
-			onclick={() => goto(`/${property.id}/edit`)}>
+			onclick={() => goto(`/${property.id}/edit`)}
+		>
 			{#snippet icon()}
 				<Icon kind="modify" size="27" />
 			{/snippet}
@@ -87,13 +99,15 @@
 				src={property.photo}
 				alt="{property.msl} - {property.land_use}"
 				loading="eager"
-				intrinsicsize="450x360" />
+				intrinsicsize="450x360"
+			/>
 		{:else}
 			<img
 				class="image"
 				src="/placeholder/450x360.png"
 				alt="Property placeholder"
-				loading="eager" />
+				loading="eager"
+			/>
 		{/if}
 	</figure>
 
@@ -164,7 +178,8 @@
 			sound_pattern="swipe"
 			{loading}
 			disabled={loading}
-			onclick={() => goto(`/${property.msl}`)}>
+			onclick={() => goto(`/${property.msl}`)}
+		>
 			{#snippet icon()}
 				<Icon kind="view" size="27" />
 			{/snippet}
@@ -191,8 +206,9 @@
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		cursor: pointer;
 		backdrop-filter: blur(8px);
-		transition: transform 0.15s ease, background 0.15s ease;
-
+		transition:
+			transform 0.15s ease,
+			background 0.15s ease;
 	}
 	.preview-close:hover {
 		transform: scale(1.08);

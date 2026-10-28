@@ -105,6 +105,7 @@
 			position: fixed;
 			top: var(--size-2);
 			left: var(--size-2);
+			z-index: 15;
 		}
 		&.invert {
 			mix-blend-mode: difference;
