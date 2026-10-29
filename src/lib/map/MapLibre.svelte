@@ -37,7 +37,7 @@
 	const defaultCenter = [-84.16046, 9.97088];
 	const maxBounds = [
 		[-84.1789, 9.962],
-		[-84.1423, 9.9802],
+		[-84.1423, 9.9842],
 	];
 
 	const LIGHT_STYLE = 'https://tiles.openfreemap.org/styles/positron';
