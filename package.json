@@ -10,7 +10,7 @@
 	},
 	"type": "module",
 	"engines": {
-		"node": ">=24.0.0"
+		"node": "24.x"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^8.0.0",
