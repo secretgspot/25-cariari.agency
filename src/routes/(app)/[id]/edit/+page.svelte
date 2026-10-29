@@ -29,6 +29,7 @@
 
 	// Rune-based Reactive State and Computations
 	let propertyData = $state({
+		is_active: true,
 		property_for: [],
 		features: [],
 		photos: [],

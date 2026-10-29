@@ -9,7 +9,7 @@
 	import {
 		isMarkerSelected,
 		isValidMarker,
-		getPropertyIconName,
+		getPropertyMarkerBackground,
 	} from '#lib/utils/mapUtils.js';
 	import { playButtonSound } from '#lib/utils/audio.js';
 	import { vibrateButton } from '#lib/utils/vibrate.js';
@@ -31,6 +31,7 @@
 	let markerLayers = [];
 	let lastMarkerSignature = '';
 	let lastSelectedId = null;
+	let freshnessInterval = null;
 
 	const defaultCenter = [-84.16046, 9.97088];
 	const maxBounds = [
@@ -250,9 +251,26 @@
 				const propertyFor = Array.isArray(marker.property_for)
 					? marker.property_for.join(',')
 					: String(marker.property_for || '');
-				return `${marker.id}|${marker.msl || ''}|${propertyFor}|${marker.location?.lat ?? ''}|${marker.location?.lng ?? ''}`;
+				return [
+					marker.id,
+					marker.msl || '',
+					propertyFor,
+					marker.location?.lat ?? '',
+					marker.location?.lng ?? '',
+					marker.created_at || '',
+				].join('|');
 			})
 			.join(';');
+	}
+
+	function updateMarkerFreshness(now = Date.now()) {
+		for (const item of markerLayers) {
+			item.artwork.style.background = getPropertyMarkerBackground(
+				item.propertyFor,
+				item.createdAt,
+				now,
+			);
+		}
 	}
 
 	function syncMarkers() {
@@ -264,11 +282,22 @@
 		markerLayers = [];
 
 		const validMarkers = (markers ?? []).filter(isValidMarker);
+		const now = Date.now();
 		validMarkers.forEach((marker) => {
 			const element = document.createElement('button');
 			element.type = 'button';
 			element.className = 'property-marker';
 			element.title = marker.msl || 'Property';
+			const propertyFor = Array.isArray(marker.property_for)
+				? marker.property_for
+				: String(marker.property_for || '')
+						.split(',')
+						.map((type) => type.trim())
+						.filter(Boolean);
+			element.setAttribute(
+				'aria-label',
+				`${marker.msl || 'Property'}: ${propertyFor.join(', ') || 'Listing type unavailable'}`,
+			);
 			element.style.border = 'none';
 			element.style.width = '21px';
 			element.style.height = '21px';
@@ -278,7 +307,11 @@
 
 			const artwork = document.createElement('span');
 			artwork.className = 'property-marker-art';
-			artwork.style.backgroundImage = `url('/map/${getPropertyIconName(marker.property_for)}.svg')`;
+			artwork.style.background = getPropertyMarkerBackground(
+				propertyFor,
+				marker.created_at,
+				now,
+			);
 			element.appendChild(artwork);
 
 			const instance = new maplibregl.Marker({ element, anchor: 'center' })
@@ -304,7 +337,15 @@
 				updateMarkerSelectionState();
 			});
 
-			markerLayers.push({ id: marker.id, msl: marker.msl, element, instance });
+			markerLayers.push({
+				id: marker.id,
+				msl: marker.msl,
+				element,
+				artwork,
+				propertyFor,
+				createdAt: marker.created_at,
+				instance,
+			});
 		});
 
 		lastMarkerSignature = getMarkerSignature(markers ?? []);
@@ -446,10 +487,12 @@
 				updateMarkerSelectionState();
 			});
 		});
+		freshnessInterval = setInterval(updateMarkerFreshness, 24 * 60 * 60 * 1000);
 
 		return () => {
 			unsubscribe();
 			unsubscribeTheme();
+			if (freshnessInterval) clearInterval(freshnessInterval);
 			if (resizeObserver) resizeObserver.disconnect();
 		};
 	});
@@ -512,15 +555,17 @@
 	:global(.property-marker-art) {
 		position: absolute;
 		inset: 0;
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-position: center;
-		transform: translateY(2px);
-		transition: transform 150ms ease;
+		border: 1px solid rgba(255, 255, 255, 0.85);
+		border-radius: 50%;
+		box-sizing: border-box;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+		transition:
+			transform 150ms ease,
+			background 300ms ease;
 	}
 
 	:global(.property-marker.is-selected .property-marker-art) {
-		transform: translateY(2px) scale(1.12);
+		transform: scale(1.12);
 	}
 
 	:global(.property-marker.is-selected) {

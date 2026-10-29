@@ -1,5 +1,59 @@
 import { isEmpty } from './validators.js';
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const MARKER_FADE_DAYS = 30;
+const MARKER_COLORS = {
+	sale: { fresh: '#67F5A5', base: '#14AE5C' },
+	rent: { fresh: '#FFD166', base: '#E5A000' },
+	unknown: '#6B7280',
+};
+
+function interpolateHexColor(start, end, progress) {
+	const channels = [1, 3, 5].map((index) => {
+		const startValue = Number.parseInt(start.slice(index, index + 2), 16);
+		const endValue = Number.parseInt(end.slice(index, index + 2), 16);
+		return Math.round(startValue + (endValue - startValue) * progress)
+			.toString(16)
+			.padStart(2, '0');
+	});
+
+	return `#${channels.join('')}`;
+}
+
+/**
+ * Returns a color-only marker background, fading new listings to their base colors over 30 days.
+ * @param {string|string[]} propertyFor - The property's listing type(s).
+ * @param {string} createdAt - The property's database creation timestamp.
+ * @param {number} [now] - Current time in milliseconds, useful for deterministic checks.
+ * @returns {string} A CSS color or split-color background.
+ */
+export const getPropertyMarkerBackground = (propertyFor, createdAt, now = Date.now()) => {
+	const types = Array.isArray(propertyFor)
+		? propertyFor
+		: typeof propertyFor === 'string'
+			? propertyFor.split(',').map((type) => type.trim())
+			: [];
+	const hasSale = types.includes('Sale');
+	const hasRent = types.includes('Rent');
+
+	if (!hasSale && !hasRent) return MARKER_COLORS.unknown;
+
+	const createdTime = typeof createdAt === 'string' ? Date.parse(createdAt) : Number.NaN;
+	const age = Number.isFinite(createdTime)
+		? Math.max(0, now - createdTime)
+		: MARKER_FADE_DAYS * DAY_IN_MS;
+	const progress = Math.min(1, age / (MARKER_FADE_DAYS * DAY_IN_MS));
+	const getColor = ({ fresh, base }) => interpolateHexColor(fresh, base, progress);
+
+	if (hasSale && hasRent) {
+		const saleColor = getColor(MARKER_COLORS.sale);
+		const rentColor = getColor(MARKER_COLORS.rent);
+		return `linear-gradient(90deg, ${saleColor} 50%, ${rentColor} 50%)`;
+	}
+
+	return getColor(hasSale ? MARKER_COLORS.sale : MARKER_COLORS.rent);
+};
+
 /**
  * Validates if a marker object has valid and active location data.
  * @param {object} marker - The marker object to validate.
