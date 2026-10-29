@@ -8,6 +8,7 @@
 	import Preview from '#lib/Preview.svelte';
 	import Nav from '#lib/Nav.svelte';
 	import Filters from '#lib/Filters.svelte';
+	import { isFreshProperty } from '#lib/utils/mapUtils.js';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
@@ -20,6 +21,7 @@
 	let rentFilter = $state(true);
 	let layoutFilter = $state('Any');
 	let priceFilter = $state('Any');
+	let listingAgeFilter = $state('Any');
 
 	const isMobile = $derived(innerWidth < 768);
 
@@ -73,6 +75,9 @@
 				(priceFilter === '$800k+' && price > 800000);
 			if (!matchesPrice) return false;
 
+			const fresh = isFreshProperty(property.created_at);
+			if (listingAgeFilter === 'Fresh' && !fresh) return false;
+
 			if (!search) return true;
 
 			const haystack = [
@@ -96,6 +101,7 @@
 		quickSearch = '';
 		layoutFilter = 'Any';
 		priceFilter = 'Any';
+		listingAgeFilter = 'Any';
 	}
 
 	function selectProperty(id) {
@@ -164,6 +170,7 @@
 			bind:rentFilter
 			bind:layoutFilter
 			bind:priceFilter
+			bind:listingAgeFilter
 			bind:quickSearch
 			{saleCount}
 			{rentCount}

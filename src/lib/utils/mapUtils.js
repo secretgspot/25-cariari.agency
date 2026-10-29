@@ -1,7 +1,7 @@
 import { isEmpty } from './validators.js';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const MARKER_FADE_DAYS = 30;
+export const PROPERTY_FRESHNESS_DAYS = 30;
 const MARKER_COLORS = {
 	sale: { fresh: '#67F5A5', base: '#14AE5C' },
 	rent: { fresh: '#FFD166', base: '#E5A000' },
@@ -19,6 +19,17 @@ function interpolateHexColor(start, end, progress) {
 
 	return `#${channels.join('')}`;
 }
+
+/**
+ * Returns whether a listing is within its first 30 days on the market.
+ * @param {string} createdAt - The property's database creation timestamp.
+ * @param {number} [now] - Current time in milliseconds, useful for deterministic checks.
+ * @returns {boolean}
+ */
+export const isFreshProperty = (createdAt, now = Date.now()) => {
+	const createdTime = typeof createdAt === 'string' ? Date.parse(createdAt) : Number.NaN;
+	return Number.isFinite(createdTime) && now - createdTime < PROPERTY_FRESHNESS_DAYS * DAY_IN_MS;
+};
 
 /**
  * Returns a color-only marker background, fading new listings to their base colors over 30 days.
@@ -41,8 +52,8 @@ export const getPropertyMarkerBackground = (propertyFor, createdAt, now = Date.n
 	const createdTime = typeof createdAt === 'string' ? Date.parse(createdAt) : Number.NaN;
 	const age = Number.isFinite(createdTime)
 		? Math.max(0, now - createdTime)
-		: MARKER_FADE_DAYS * DAY_IN_MS;
-	const progress = Math.min(1, age / (MARKER_FADE_DAYS * DAY_IN_MS));
+		: PROPERTY_FRESHNESS_DAYS * DAY_IN_MS;
+	const progress = Math.min(1, age / (PROPERTY_FRESHNESS_DAYS * DAY_IN_MS));
 	const getColor = ({ fresh, base }) => interpolateHexColor(fresh, base, progress);
 
 	if (hasSale && hasRent) {

@@ -11,6 +11,7 @@
 	 *   rentCount?: number;
 	 *   layoutFilter?: string;
 	 *   priceFilter?: string;
+	 *   listingAgeFilter?: string;
 	 *   quickSearch?: string;
 	 *   onreset?: () => void;
 	 * }}
@@ -22,6 +23,7 @@
 		rentCount = 0,
 		layoutFilter = $bindable('Any'),
 		priceFilter = $bindable('Any'),
+		listingAgeFilter = $bindable('Any'),
 		quickSearch = $bindable(''),
 		onreset,
 	} = $props();
@@ -32,6 +34,7 @@
 	const activeSecondaryCount = $derived(
 		(layoutFilter !== 'Any' ? 1 : 0) +
 			(priceFilter !== 'Any' ? 1 : 0) +
+			(listingAgeFilter !== 'Any' ? 1 : 0) +
 			(quickSearch.trim() !== '' ? 1 : 0),
 	);
 
@@ -52,6 +55,7 @@
 		rentFilter = true;
 		layoutFilter = 'Any';
 		priceFilter = 'Any';
+		listingAgeFilter = 'Any';
 		quickSearch = '';
 		if (onreset) onreset();
 	}
@@ -66,6 +70,12 @@
 		playButtonSound('click');
 		vibrateButton('click');
 		priceFilter = val;
+	}
+
+	function setListingAge(val) {
+		playButtonSound('click');
+		vibrateButton('click');
+		listingAgeFilter = val;
 	}
 
 	function handleKeydown(e) {
@@ -218,6 +228,27 @@
 							class="segment-btn"
 							class:active={priceFilter === opt.id}
 							onclick={() => setPrice(opt.id)}
+						>
+							{opt.label}
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="filter-group">
+				<span class="group-label">On Market</span>
+				<div
+					class="segmented-control age-segmented-control"
+					role="group"
+					aria-label="Filter by listing age"
+				>
+					{#each [{ id: 'Any', label: 'Any' }, { id: 'Fresh', label: 'Fresh <30d' }] as opt}
+						<button
+							type="button"
+							class="segment-btn"
+							class:active={listingAgeFilter === opt.id}
+							aria-pressed={listingAgeFilter === opt.id}
+							onclick={() => setListingAge(opt.id)}
 						>
 							{opt.label}
 						</button>
@@ -409,6 +440,10 @@
 		padding: 2px;
 		border-radius: var(--radius-1, 4px);
 		border: 1px solid var(--surface-3);
+	}
+
+	.age-segmented-control {
+		grid-template-columns: repeat(2, 1fr);
 	}
 
 	.segment-btn {
