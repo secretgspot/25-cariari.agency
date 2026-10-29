@@ -571,29 +571,29 @@
 
 	:global(.property-marker) {
 		background-color: transparent;
-		filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.25));
+		/* filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.25)); */
 	}
 
 	:global(.property-marker-art) {
 		position: absolute;
 		inset: 0;
-		border: 1px solid rgba(255, 255, 255, 0.85);
+		/* border: 1px solid rgba(255, 255, 255, 0.85); */
 		border-radius: 50%;
 		box-sizing: border-box;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+		/* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); */
 		transition:
 			transform 150ms ease,
 			background 300ms ease;
 	}
 
 	:global(.property-marker.is-selected .property-marker-art) {
-		transform: scale(1.12);
+		transform: scale(1.5);
 	}
 
-	:global(.property-marker.is-selected) {
+	/* :global(.property-marker.is-selected) {
 		filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0))
 			drop-shadow(0 14px 20px rgba(212, 175, 55, 0.4));
-	}
+	} */
 
 	:global(.map-tooltip) {
 		padding: 0.35rem 0.5rem;
