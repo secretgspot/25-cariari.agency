@@ -1,68 +1,60 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import { isEmpty } from '#lib/utils/validators.js';
 	import { browser } from '$app/env';
+	import maplibregl from 'maplibre-gl';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+	import { isValidPosition, normalizePosition } from '#lib/utils/mapUtils.js';
 
 	let { position = $bindable({}) } = $props();
 
 	let mapElement;
-	let mapInstance = $state(null);
-	let leafletInstance = $state(null);
-	let marker = $state(null);
-	let pickerIcon = $state(null);
+	let mapInstance = $state.raw(null);
+	let markerInstance = $state.raw(null);
 	let isMapReady = $state(false);
 	let resizeObserver;
+	let lastPositionKey = null;
 
 	const DEFAULT_POSITION = { lat: 9.97088, lng: -84.16046 };
-
-	// --- Helper Functions ---
-
-	const isValidPosition = (pos) =>
-		pos &&
-		typeof pos === 'object' &&
-		!isEmpty(pos.lat) &&
-		!isEmpty(pos.lng) &&
-		!isNaN(Number(pos.lat)) &&
-		!isNaN(Number(pos.lng)) &&
-		Math.abs(Number(pos.lat)) <= 90 &&
-		Math.abs(Number(pos.lng)) <= 180;
-
-	const normalizePosition = (pos) => {
-		if (!pos) return null;
-		try {
-			if (Array.isArray(pos) && pos.length >= 2) {
-				return { lat: Number(pos[0]), lng: Number(pos[1]) };
-			}
-			if (typeof pos === 'object' && pos.lat !== undefined && pos.lng !== undefined) {
-				return { lat: Number(pos.lat), lng: Number(pos.lng) };
-			}
-			return null;
-		} catch (error) {
-			console.error('Error normalizing position:', error);
-			return null;
-		}
+	const PICKER_MAX_BOUNDS = [
+		[-84.1789, 9.962],
+		[-84.1423, 9.9802],
+	];
+	const SATELLITE_STYLE = {
+		version: 8,
+		sources: {
+			'esri-satellite': {
+				type: 'raster',
+				tiles: [
+					'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+				],
+				tileSize: 256,
+				attribution:
+					'© Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+			},
+		},
+		layers: [{ id: 'esri-satellite-layer', type: 'raster', source: 'esri-satellite' }],
 	};
 
 	// --- Event Handlers (Update State Only) ---
 
-	const handleMarkerDrag = (e) => {
-		const newLatLng = e.target.getLatLng();
+	const handleMarkerDragEnd = () => {
+		const newLatLng = markerInstance?.getLngLat();
 		if (newLatLng) {
 			position = { lat: newLatLng.lat, lng: newLatLng.lng };
 		}
 	};
 
-	const handleMapClick = (e) => {
-		if (e.latlng) {
-			position = { lat: e.latlng.lat, lng: e.latlng.lng };
+	const handleMapClick = (event) => {
+		if (event.lngLat) {
+			position = { lat: event.lngLat.lat, lng: event.lngLat.lng };
 		}
 	};
 
 	export function updategps(coords) {
 		if (!coords) return;
 		const newPosition = {
-			lat: coords.latitude || coords.lat,
-			lng: coords.longitude || coords.lng,
+			lat: coords.latitude ?? coords.lat,
+			lng: coords.longitude ?? coords.lng,
 		};
 		if (isValidPosition(newPosition)) {
 			position = newPosition;
@@ -71,153 +63,136 @@
 		}
 	}
 
-	// --- Lifecycle and Initialization ---
+	function initializeMap() {
+		const normalizedPosition = normalizePosition(position);
+		const initialPosition = isValidPosition(normalizedPosition)
+			? normalizedPosition
+			: DEFAULT_POSITION;
+
+		mapInstance = new maplibregl.Map({
+			container: mapElement,
+			style: SATELLITE_STYLE,
+			center: [initialPosition.lng, initialPosition.lat],
+			zoom: 15,
+			minZoom: 15,
+			maxZoom: 18,
+			maxBounds: PICKER_MAX_BOUNDS,
+			attributionControl: false,
+			scrollZoom: true,
+			dragRotate: false,
+			touchPitch: false,
+			renderWorldCopies: false,
+		});
+
+		mapInstance.on('click', handleMapClick);
+		mapInstance.on('load', () => {
+			isMapReady = true;
+			mapInstance.resize();
+		});
+	}
 
 	onMount(() => {
-		if (!browser) return;
+		if (!browser || !mapElement) return;
 
-		const init = async () => {
-			if (!mapElement) {
-				console.error('Map element not found');
-				return;
-			}
-
-			leafletInstance = await import('leaflet');
-
-			pickerIcon = leafletInstance.icon({
-				iconUrl: '/map/marker-icon.svg',
-				iconSize: [25, 41],
-				iconAnchor: [13, 41],
-			});
-
-			/*
-			 * https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.{ext}
-			 * stadiamaps styles https://docs.stadiamaps.com/themes/
-			 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png
-			 * https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}@2x.png
-			 * https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png
-			 * https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}@2x.png
-			 * https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png
-			 * https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}@2x.png
-			 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png
-			 * https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}@2x.png
-			 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg
-			 * https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}@2x.jpg
-			 * https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
-			 */
-
-			const baseLayer = leafletInstance.tileLayer(
-				'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-				{
-				subdomains: 'abcd',
-				minZoom: 15,
-				maxZoom: 18,
-				ext: 'jpg',
-					errorTileUrl:
-						'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-				},
-			);
-
-			const initialPos = isValidPosition(position) ? position : DEFAULT_POSITION;
-			const maxBounds = leafletInstance.latLngBounds([
-				[9.9802, -84.1789],
-				[9.962, -84.1423],
-			]);
-
-			mapInstance = leafletInstance.map(mapElement, {
-				zoomControl: false,
-				center: [initialPos.lat, initialPos.lng],
-				maxBounds,
-				maxBoundsViscosity: 0.8,
-				zoom: 15,
-				attributionControl: false,
-				scrollWheelZoom: true,
-				layers: [baseLayer],
-				preferCanvas: true,
-			});
-
-			mapInstance.on('click', handleMapClick);
-
+		try {
+			initializeMap();
 			if (window.ResizeObserver) {
-				resizeObserver = new ResizeObserver(() => mapInstance.invalidateSize());
+				resizeObserver = new ResizeObserver(() => mapInstance?.resize());
 				resizeObserver.observe(mapElement);
 			}
-
-			mapInstance.whenReady(() => {
-				isMapReady = true;
-				mapInstance.invalidateSize();
-				console.log('🗺 Position picker map ready');
-			});
-		};
-
-		init().catch((error) => console.error('Error initializing map:', error));
+		} catch (error) {
+			console.error('Error initializing MapLibre position picker:', error);
+		}
 	});
 
 	onDestroy(() => {
 		if (resizeObserver) resizeObserver.disconnect();
-		if (marker) marker.off('dragend', handleMarkerDrag);
+		if (markerInstance) {
+			markerInstance.off('dragend', handleMarkerDragEnd);
+			markerInstance.remove();
+			markerInstance = null;
+		}
 		if (mapInstance) {
 			mapInstance.off('click', handleMapClick);
 			mapInstance.remove();
+			mapInstance = null;
 		}
 	});
 
 	// --- Reactive Effect (Single Source of Truth for UI Updates) ---
 
 	$effect(() => {
-		if (!isMapReady || !leafletInstance) return;
+		if (!isMapReady || !mapInstance) return;
 
 		const validPosition = normalizePosition(position);
 
 		if (!isValidPosition(validPosition)) {
-			if (marker) {
-				marker.remove();
-				marker = null;
+			if (markerInstance) {
+				markerInstance.off('dragend', handleMarkerDragEnd);
+				markerInstance.remove();
+				markerInstance = null;
 			}
+			lastPositionKey = null;
 			return;
 		}
 
-		const latLng = leafletInstance.latLng(validPosition.lat, validPosition.lng);
+		const lngLat = [validPosition.lng, validPosition.lat];
+		const positionKey = `${validPosition.lat},${validPosition.lng}`;
 
-		if (!marker) {
-			marker = leafletInstance
-				.marker(latLng, { icon: pickerIcon, draggable: true })
-				.on('dragend', handleMarkerDrag)
+		if (!markerInstance) {
+			const element = document.createElement('div');
+			element.className = 'map-picker-marker';
+			markerInstance = new maplibregl.Marker({
+				element,
+				anchor: 'bottom',
+				offset: [-0.5, 0],
+				draggable: true,
+			})
+				.setLngLat(lngLat)
 				.addTo(mapInstance);
+			markerInstance.on('dragend', handleMarkerDragEnd);
 		} else {
-			const currentLatLng = marker.getLatLng();
-			if (!currentLatLng.equals(latLng)) {
-				marker.setLatLng(latLng);
+			const currentLngLat = markerInstance.getLngLat();
+			if (currentLngLat.lng !== lngLat[0] || currentLngLat.lat !== lngLat[1]) {
+				markerInstance.setLngLat(lngLat);
 			}
 		}
 
-		// Center the view on the marker
-		mapInstance.setView(latLng, mapInstance.getZoom() || 16, {
-			animate: true,
-			pan: { duration: 0.3 },
-		});
+		if (positionKey !== lastPositionKey) {
+			lastPositionKey = positionKey;
+			mapInstance.easeTo({
+				center: lngLat,
+				zoom: mapInstance.getZoom() || 16,
+				duration: 300,
+				essential: true,
+			});
+		}
 	});
 </script>
 
 <div id="map-canvas" class="map" bind:this={mapElement}></div>
 
 <style>
-	@import './leaflet.css';
+	@import './maplibre-gl.css';
 
 	.map {
 		height: 222px;
 		width: 100%;
 		z-index: 1;
-		/* Ensure minimum dimensions */
 		min-height: 200px;
 		min-width: 200px;
 		border-radius: var(--radius-2);
 		overflow: hidden;
 	}
 
-	/* @media (prefers-color-scheme: dark) {
-		.map {
-			filter: invert(1) brightness(var(--brightness-map)) hue-rotate(180deg);
+		:global(.map-picker-marker) {
+			width: 25px;
+			height: 41px;
+			background: url('/map/marker-icon.svg') center / contain no-repeat;
+			cursor: grab;
 		}
-	} */
+
+		:global(.map-picker-marker:active) {
+			cursor: grabbing;
+		}
 </style>

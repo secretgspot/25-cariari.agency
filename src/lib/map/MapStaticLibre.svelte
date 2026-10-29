@@ -69,8 +69,14 @@
 		if (!coords) return MAIN_MAX_BOUNDS;
 		const [lng, lat] = coords;
 		return [
-			[Math.min(MAIN_MAX_BOUNDS[0][0], lng - 0.005), Math.min(MAIN_MAX_BOUNDS[0][1], lat - 0.005)],
-			[Math.max(MAIN_MAX_BOUNDS[1][0], lng + 0.005), Math.max(MAIN_MAX_BOUNDS[1][1], lat + 0.005)],
+			[
+				Math.min(MAIN_MAX_BOUNDS[0][0], lng - 0.005),
+				Math.min(MAIN_MAX_BOUNDS[0][1], lat - 0.005),
+			],
+			[
+				Math.max(MAIN_MAX_BOUNDS[1][0], lng + 0.005),
+				Math.max(MAIN_MAX_BOUNDS[1][1], lat + 0.005),
+			],
 		];
 	}
 
