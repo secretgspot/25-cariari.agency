@@ -8,7 +8,7 @@
 	import Preview from '#lib/Preview.svelte';
 	import Nav from '#lib/Nav.svelte';
 	import Filters from '#lib/Filters.svelte';
-	import { isFreshProperty } from '#lib/utils/mapUtils.js';
+	import { isFreshProperty, isValidMarker } from '#lib/utils/mapUtils.js';
 
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
@@ -25,73 +25,74 @@
 
 	const isMobile = $derived(innerWidth < 768);
 
-	const saleCount = $derived.by(() => {
-		if (!data?.properties || !Array.isArray(data.properties)) return 0;
-		return data.properties.filter((property) => {
-			const propertyFor = Array.isArray(property.property_for)
-				? property.property_for
-				: (property.property_for || '').split(',').map((s) => s.trim());
-			return propertyFor.includes('Sale');
-		}).length;
+	function getPropertyFor(property) {
+		return Array.isArray(property.property_for)
+			? property.property_for
+			: (property.property_for || '').split(',').map((type) => type.trim());
+	}
+
+	function matchesSecondaryFilters(property) {
+		const propertyFor = getPropertyFor(property);
+		const beds = Number(property.beds ?? 0);
+		const price = Number(property.price ?? 0);
+
+		const matchesLayout =
+			layoutFilter === 'Any' ||
+			(layoutFilter === '2+ beds' && beds >= 2) ||
+			(layoutFilter === '3+ beds' && beds >= 3) ||
+			(layoutFilter === '4+ beds' && beds >= 4);
+		if (!matchesLayout) return false;
+
+		const matchesPrice =
+			priceFilter === 'Any' ||
+			(priceFilter === 'Up to $400k' && price <= 400000) ||
+			(priceFilter === '$400k - $800k' && price >= 400000 && price <= 800000) ||
+			(priceFilter === '$800k+' && price > 800000);
+		if (!matchesPrice) return false;
+
+		if (listingAgeFilter === 'Fresh' && !isFreshProperty(property.created_at)) return false;
+
+		const search = quickSearch.trim().toLowerCase();
+		if (!search) return true;
+
+		const haystack = [
+			property.msl,
+			property.land_use,
+			property.building_style,
+			propertyFor.join(' '),
+			property.description,
+		]
+			.filter(Boolean)
+			.join(' ')
+			.toLowerCase();
+
+		return haystack.includes(search);
+	}
+
+	const matchingProperties = $derived.by(() => {
+		if (!data?.properties || !Array.isArray(data.properties)) return [];
+		return data.properties.filter(
+			(property) => isValidMarker(property) && matchesSecondaryFilters(property),
+		);
 	});
 
-	const rentCount = $derived.by(() => {
-		if (!data?.properties || !Array.isArray(data.properties)) return 0;
-		return data.properties.filter((property) => {
-			const propertyFor = Array.isArray(property.property_for)
-				? property.property_for
-				: (property.property_for || '').split(',').map((s) => s.trim());
-			return propertyFor.includes('Rent');
-		}).length;
-	});
+	const saleCount = $derived(
+		matchingProperties.filter((property) => getPropertyFor(property).includes('Sale')).length,
+	);
+	const rentCount = $derived(
+		matchingProperties.filter((property) => getPropertyFor(property).includes('Rent')).length,
+	);
 
 	const filteredProperties = $derived.by(() => {
 		if (!data || !Array.isArray(data.properties)) return [];
 
-		const search = quickSearch.trim().toLowerCase();
 		return data.properties.filter((property) => {
-			const propertyFor = Array.isArray(property.property_for)
-				? property.property_for
-				: (property.property_for || '').split(',').map((s) => s.trim());
-			const beds = Number(property.beds ?? 0);
-			const price = Number(property.price ?? 0);
+			const propertyFor = getPropertyFor(property);
 
 			const matchesType =
 				(propertyFor.includes('Sale') && saleFilter) ||
 				(propertyFor.includes('Rent') && rentFilter);
-			if (!matchesType) return false;
-
-			const matchesLayout =
-				layoutFilter === 'Any' ||
-				(layoutFilter === '2+ beds' && beds >= 2) ||
-				(layoutFilter === '3+ beds' && beds >= 3) ||
-				(layoutFilter === '4+ beds' && beds >= 4);
-			if (!matchesLayout) return false;
-
-			const matchesPrice =
-				priceFilter === 'Any' ||
-				(priceFilter === 'Up to $400k' && price <= 400000) ||
-				(priceFilter === '$400k - $800k' && price >= 400000 && price <= 800000) ||
-				(priceFilter === '$800k+' && price > 800000);
-			if (!matchesPrice) return false;
-
-			const fresh = isFreshProperty(property.created_at);
-			if (listingAgeFilter === 'Fresh' && !fresh) return false;
-
-			if (!search) return true;
-
-			const haystack = [
-				property.msl,
-				property.land_use,
-				property.building_style,
-				propertyFor.join(' '),
-				property.description,
-			]
-				.filter(Boolean)
-				.join(' ')
-				.toLowerCase();
-
-			return haystack.includes(search);
+			return matchesType && matchesSecondaryFilters(property);
 		});
 	});
 
