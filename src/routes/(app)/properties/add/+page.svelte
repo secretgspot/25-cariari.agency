@@ -1,4 +1,5 @@
 <script>
+	import { untrack } from 'svelte';
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { enhance, applyAction } from '$app/forms';
@@ -28,14 +29,14 @@
 	let loading = $state(false);
 	let error = $state('');
 	let message = $state('');
-	let isAdmin = data.is_admin;
+	let isAdmin = $derived(data.is_admin);
 	let uploadingPhotos = $state(false);
 	let uploadedPhotoDetails = $state([]);
 	let gps = $state();
 
 	const property = $state({
 		is_active: true,
-		msl: data.msl,
+		msl: untrack(() => data.msl),
 		property_for: [],
 		location: {},
 		features: [],

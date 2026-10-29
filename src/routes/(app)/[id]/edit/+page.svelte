@@ -29,17 +29,23 @@
 
 	// Rune-based Reactive State and Computations
 	let propertyData = $state({
-		...data.property,
-		property_for: data.property?.property_for || [],
-		features: data.property?.features || [],
-		photos: data.property?.photos || [],
-		location: data.property?.location || { lat: null, lng: null },
+		property_for: [],
+		features: [],
+		photos: [],
+		location: { lat: null, lng: null },
 	});
 
 	// This effect will run whenever `data.property` changes
 	$effect(() => {
-		if (data.property) {
-			propertyData = { ...data.property };
+		const property = data.property;
+		if (property) {
+			propertyData = {
+				...property,
+				property_for: property.property_for || [],
+				features: property.features || [],
+				photos: property.photos || [],
+				location: property.location || { lat: null, lng: null },
+			};
 		}
 	});
 
@@ -47,7 +53,7 @@
 	let loading = $state(false);
 	let errorMessage = $state('');
 	let message = $state('');
-	let isAdmin = data.is_admin || false;
+	let isAdmin = $derived(data.is_admin || false);
 	let uploadingPhotos = $state(false);
 	let uploadedPhotoDetails = $state([]);
 	let gps = $state();

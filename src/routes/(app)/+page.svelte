@@ -12,7 +12,7 @@
 	/** @type {{data: any, supabase: any}} */
 	let { data } = $props();
 
-	let loading = $state(data.loading ?? false);
+	let loading = $derived(data.loading ?? false);
 	let selectedProperty = $state(null);
 	let innerWidth = $state(typeof window !== 'undefined' ? window.innerWidth : 1024);
 	let quickSearch = $state('');
