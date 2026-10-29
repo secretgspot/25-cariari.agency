@@ -32,6 +32,7 @@
 	let lastMarkerSignature = '';
 	let lastSelectedId = null;
 	let freshnessInterval = null;
+	let preSelectionZoom = null;
 
 	const defaultCenter = [-84.16046, 9.97088];
 	const maxBounds = [
@@ -198,6 +199,19 @@
 		}
 	}
 
+	function rememberMapView() {
+		if (!mapInstance || preSelectionZoom !== null) return;
+		preSelectionZoom = mapInstance.getZoom();
+	}
+
+	function restoreMapView() {
+		if (!mapInstance || preSelectionZoom === null) return;
+
+		const zoom = preSelectionZoom;
+		preSelectionZoom = null;
+		mapInstance.easeTo({ zoom, duration: 350, essential: true });
+	}
+
 	function removeTooltip() {
 		if (!popup) return;
 		popup.remove();
@@ -332,6 +346,11 @@
 				playButtonSound('click');
 				vibrateButton('click');
 				const isAlreadySelected = isMarkerSelected(marker.id, marker.msl, selectedId);
+				if (isAlreadySelected) {
+					restoreMapView();
+				} else {
+					rememberMapView();
+				}
 				if (onSelected) onSelected(marker.id);
 				if (!isAlreadySelected) centerMapOnMarker(marker);
 				updateMarkerSelectionState();
@@ -444,6 +463,7 @@
 				const selectedMarker = getSelectedMarker();
 				if (selectedMarker?.location) {
 					pinnedTooltipMarker = selectedMarker;
+					rememberMapView();
 					centerMapOnMarker(selectedMarker);
 					showMarkerTooltip(selectedMarker);
 				}
@@ -453,6 +473,7 @@
 		mapInstance.on('click', () => {
 			pinnedTooltipMarker = null;
 			removeTooltip();
+			restoreMapView();
 			if (onDeselect) onDeselect();
 		});
 	}
@@ -510,6 +531,7 @@
 			if (!selectedId) {
 				pinnedTooltipMarker = null;
 				removeTooltip();
+				restoreMapView();
 			} else {
 				const selectedMarker = getSelectedMarker();
 				if (selectedMarker) {
