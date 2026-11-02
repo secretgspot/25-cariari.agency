@@ -50,9 +50,12 @@
 
 	<aside class="filter-wrapper">
 		<div class="filter-sticky">
-			<h3 class="filter-count">Showing {filtered.length} / {totalDisplayCount}</h3>
-
-			<Filter loggedIn={data.is_logged_in} isAdmin={data.is_admin} />
+			<Filter
+				loggedIn={data.is_logged_in}
+				isAdmin={data.is_admin}
+				filteredCount={filtered.length}
+				totalCount={totalDisplayCount}
+			/>
 		</div>
 	</aside>
 </main>
@@ -63,20 +66,17 @@
 		grid-template-areas:
 			'properties-filter'
 			'properties-list';
+		grid-template-columns: minmax(0, 1fr);
 
 		@media (min-width: 768px) {
-			grid-template-areas:
-				'properties-list'
-				'properties-filter';
-			grid-template-rows: 1fr;
-			grid-template-columns: 1fr 369px;
+			grid-template-areas: 'properties-list properties-filter';
+			grid-template-columns: minmax(0, 1fr) minmax(300px, 369px);
+			align-items: start;
 		}
 
 		@media (min-width: 481px) and (max-width: 991px) and (orientation: landscape) {
-			grid-template-areas:
-				'properties-filter'
-				'properties-list';
-			grid-template-columns: unset;
+			grid-template-areas: 'properties-filter' 'properties-list';
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 
@@ -117,18 +117,20 @@
 		FILTER SECTION
 	 */
 	.filter-wrapper {
+		grid-area: properties-filter;
 		position: relative;
 
 		.filter-sticky {
 			position: sticky;
-			top: 0;
+			top: var(--size-3);
+			padding: var(--size-9) 0 0;
 		}
+	}
 
-		h3.filter-count {
-			white-space: nowrap;
-			margin: 0;
-			padding-block-start: var(--size-9);
-			margin-inline: var(--size-3);
+	@media (max-width: 767px) {
+		.filter-wrapper .filter-sticky {
+			position: static;
+			padding: 4.5rem var(--size-3) 0;
 		}
 	}
 </style>
