@@ -39,6 +39,21 @@ export const isFreshProperty = (createdAt, now = Date.now()) => {
  * @returns {string} A CSS color or split-color background.
  */
 export const getPropertyMarkerBackground = (propertyFor, createdAt, now = Date.now()) => {
+	const { sale, rent, hasSale, hasRent } = getPropertyMarkerColors(propertyFor, createdAt, now);
+
+	if (!hasSale && !hasRent) return MARKER_COLORS.unknown;
+	if (hasSale && hasRent) return `linear-gradient(90deg, ${sale} 50%, ${rent} 50%)`;
+	return hasSale ? sale : rent;
+};
+
+/**
+ * Returns the freshness-adjusted sale and rent colors for a listing marker.
+ * @param {string|string[]} propertyFor - The property's listing type(s).
+ * @param {string} createdAt - The property's database creation timestamp.
+ * @param {number} [now] - Current time in milliseconds, useful for deterministic checks.
+ * @returns {{sale: string, rent: string, hasSale: boolean, hasRent: boolean}}
+ */
+export const getPropertyMarkerColors = (propertyFor, createdAt, now = Date.now()) => {
 	const types = Array.isArray(propertyFor)
 		? propertyFor
 		: typeof propertyFor === 'string'
@@ -47,8 +62,6 @@ export const getPropertyMarkerBackground = (propertyFor, createdAt, now = Date.n
 	const hasSale = types.includes('Sale');
 	const hasRent = types.includes('Rent');
 
-	if (!hasSale && !hasRent) return MARKER_COLORS.unknown;
-
 	const createdTime = typeof createdAt === 'string' ? Date.parse(createdAt) : Number.NaN;
 	const age = Number.isFinite(createdTime)
 		? Math.max(0, now - createdTime)
@@ -56,13 +69,12 @@ export const getPropertyMarkerBackground = (propertyFor, createdAt, now = Date.n
 	const progress = Math.min(1, age / (PROPERTY_FRESHNESS_DAYS * DAY_IN_MS));
 	const getColor = ({ fresh, base }) => interpolateHexColor(fresh, base, progress);
 
-	if (hasSale && hasRent) {
-		const saleColor = getColor(MARKER_COLORS.sale);
-		const rentColor = getColor(MARKER_COLORS.rent);
-		return `linear-gradient(90deg, ${saleColor} 50%, ${rentColor} 50%)`;
-	}
-
-	return getColor(hasSale ? MARKER_COLORS.sale : MARKER_COLORS.rent);
+	return {
+		sale: getColor(MARKER_COLORS.sale),
+		rent: getColor(MARKER_COLORS.rent),
+		hasSale,
+		hasRent,
+	};
 };
 
 /**

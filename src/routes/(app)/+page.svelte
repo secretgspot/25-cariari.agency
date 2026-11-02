@@ -31,8 +31,7 @@
 			: (property.property_for || '').split(',').map((type) => type.trim());
 	}
 
-	function matchesSecondaryFilters(property) {
-		const propertyFor = getPropertyFor(property);
+	function matchesSecondaryFilters(property, propertyFor = getPropertyFor(property)) {
 		const beds = Number(property.beds ?? 0);
 		const price = Number(property.price ?? 0);
 
@@ -69,32 +68,31 @@
 		return haystack.includes(search);
 	}
 
-	const matchingProperties = $derived.by(() => {
-		if (!data?.properties || !Array.isArray(data.properties)) return [];
-		return data.properties.filter(
-			(property) => isValidMarker(property) && matchesSecondaryFilters(property),
-		);
-	});
+	const filterResults = $derived.by(() => {
+		const filteredProperties = [];
+		let saleCount = 0;
+		let rentCount = 0;
 
-	const saleCount = $derived(
-		matchingProperties.filter((property) => getPropertyFor(property).includes('Sale')).length,
-	);
-	const rentCount = $derived(
-		matchingProperties.filter((property) => getPropertyFor(property).includes('Rent')).length,
-	);
-
-	const filteredProperties = $derived.by(() => {
-		if (!data || !Array.isArray(data.properties)) return [];
-
-		return data.properties.filter((property) => {
+		for (const property of data?.properties ?? []) {
 			const propertyFor = getPropertyFor(property);
+			if (!isValidMarker(property) || !matchesSecondaryFilters(property, propertyFor)) {
+				continue;
+			}
 
-			const matchesType =
-				(propertyFor.includes('Sale') && saleFilter) ||
-				(propertyFor.includes('Rent') && rentFilter);
-			return matchesType && matchesSecondaryFilters(property);
-		});
+			const isSale = propertyFor.includes('Sale');
+			const isRent = propertyFor.includes('Rent');
+			if (isSale) saleCount += 1;
+			if (isRent) rentCount += 1;
+			if ((isSale && saleFilter) || (isRent && rentFilter)) {
+				filteredProperties.push(property);
+			}
+		}
+
+		return { filteredProperties, saleCount, rentCount };
 	});
+	const filteredProperties = $derived(filterResults.filteredProperties);
+	const saleCount = $derived(filterResults.saleCount);
+	const rentCount = $derived(filterResults.rentCount);
 
 	function resetFilters() {
 		saleFilter = true;

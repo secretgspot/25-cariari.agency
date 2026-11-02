@@ -9,7 +9,7 @@ Production real estate listing platform for Cariari / La Asunción de Heredia, C
 - **Framework:** [SvelteKit 2](https://svelte.dev/docs/kit/introduction) with [Svelte 5 Runes](https://svelte.dev/docs/svelte/overview)
 - **Bundler:** Vite 5
 - **Backend / Database:** [Supabase](https://supabase.com/docs) (PostgreSQL, SSR Auth, Storage)
-- **Maps:** [Leaflet](https://leafletjs.com/reference.html) (interactive property markers & static preview)
+- **Maps:** [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for the interactive property map; Leaflet remains in legacy map, picker, and preview components
 - **Email:** Nodemailer (Gmail SMTP transport) for contact form & property inquiry alerts
 - **QR Codes:** `@svelte-put/qr` (dynamic printable flyer QR codes)
 - **Image Optimization:** CompressorJS (client-side image compression before upload)
@@ -34,7 +34,7 @@ cariari-agency/
 │   │   └── sitemap.xml/        # Dynamic SEO XML sitemap generator
 │   ├── lib/                    # Reusable Svelte 5 components & helpers
 │   │   ├── InquiryForm.svelte  # Lead capture form with honeypot & email alerts
-│   │   ├── map/                # Leaflet map explorer & picker components
+│   │   ├── map/                # MapLibre explorer, marker layer, controls, and Leaflet picker/preview components
 │   │   ├── auth/               # TokenVerification OTP component
 │   │   ├── buttons/            # UI button primitives
 │   │   ├── toasts/             # Toast notification state
