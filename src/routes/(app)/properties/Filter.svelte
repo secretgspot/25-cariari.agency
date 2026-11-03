@@ -5,8 +5,47 @@
 	import Select from '#lib/Select.svelte';
 	import { formatter } from '#lib/utils/formatters.js';
 
-	/** @type {{ loggedIn: boolean, isAdmin: boolean, filteredCount: number, totalCount: number }} */
-	let { loggedIn, isAdmin, filteredCount, totalCount } = $props();
+	/** @type {{ loggedIn: boolean, isAdmin: boolean, filteredCount: number, totalCount: number, rentMax: number | null, priceMax: number | null }} */
+	let { loggedIn, isAdmin, filteredCount, totalCount, rentMax, priceMax } = $props();
+
+	let rentMin = $derived(rentMax === null ? 0 : Math.min(100, rentMax));
+	let priceMin = $derived(priceMax === null ? 0 : Math.min(10000, priceMax));
+	let rentValue = $derived(
+		rentMax === null
+			? 0
+			: $filterStore.rent === null
+				? rentMax
+				: Math.min(Number($filterStore.rent), rentMax)
+	);
+	let priceValue = $derived(
+		priceMax === null
+			? 0
+			: $filterStore.price === null
+				? priceMax
+				: Math.min(Number($filterStore.price), priceMax)
+	);
+	let rentStep = $derived(getSliderStep(rentMin, rentMax ?? rentMin, 100));
+	let priceStep = $derived(getSliderStep(priceMin, priceMax ?? priceMin, 10000));
+
+	function getSliderStep(min, max, preferredStep) {
+		const decimalPlaces = Math.max(
+			...[min, max, preferredStep].map((value) => String(value).split('.')[1]?.length ?? 0)
+		);
+		const scale = 10 ** decimalPlaces;
+		let range = Math.round((max - min) * scale);
+		let step = Math.round(preferredStep * scale);
+
+		while (step !== 0) {
+			[range, step] = [step, range % step];
+		}
+
+		return range / scale || preferredStep;
+	}
+
+	function setPriceFilter(field, event) {
+		const value = Number(event.currentTarget.value);
+		filterStore.update((current) => ({ ...current, [field]: value }));
+	}
 </script>
 
 <section class="filters" aria-label="Property filters">
@@ -49,15 +88,19 @@
 					{#if $filterStore.filter_for.includes('Rent')}
 						<label class="price-option" for="rent-filter">
 							<span class="price-label">Monthly rent</span>
-							<output for="rent-filter">{formatter.format($filterStore.rent)}</output>
+							<output for="rent-filter">
+								{rentMax === null ? 'Unavailable' : formatter.format(rentValue)}
+							</output>
 							<input
 								type="range"
 								name="rent-filter"
 								id="rent-filter"
-								min="100"
-								max="10000"
-								step="100"
-								bind:value={$filterStore.rent}
+								min={rentMin}
+								max={rentMax ?? 0}
+								step={rentStep}
+								disabled={rentMax === null}
+								value={rentValue}
+								oninput={(event) => setPriceFilter('rent', event)}
 							/>
 						</label>
 					{/if}
@@ -65,15 +108,19 @@
 					{#if $filterStore.filter_for.includes('Sale')}
 						<label class="price-option" for="price-filter">
 							<span class="price-label">Sale price</span>
-							<output for="price-filter">{formatter.format($filterStore.price)}</output>
+							<output for="price-filter">
+								{priceMax === null ? 'Unavailable' : formatter.format(priceValue)}
+							</output>
 							<input
 								type="range"
 								name="price-filter"
 								id="price-filter"
-								min="10000"
-								max="10000000"
-								step="10000"
-								bind:value={$filterStore.price}
+								min={priceMin}
+								max={priceMax ?? 0}
+								step={priceStep}
+								disabled={priceMax === null}
+								value={priceValue}
+								oninput={(event) => setPriceFilter('price', event)}
 							/>
 						</label>
 					{/if}

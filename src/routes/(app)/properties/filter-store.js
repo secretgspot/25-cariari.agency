@@ -3,8 +3,8 @@ import { writable } from 'svelte/store';
 export const filterStore = writable({
 	filter_type: 'Residential',
 	filter_for: ['Rent', 'Sale'],
-	rent: 10000,
-	price: 10000000,
+	rent: null,
+	price: null,
 	beds: 'Any',
 	baths: 'Any',
 	lot_size: '',
@@ -13,6 +13,35 @@ export const filterStore = writable({
 	user_only: false,
 	msl: ''
 });
+
+export function getPriceFilterLimits(properties = [], active = true) {
+	const maxFor = (transaction, field) => {
+		let max = null;
+
+		for (const property of properties) {
+			if (property.is_active !== active) continue;
+
+			const propertyTypes = Array.isArray(property.property_for)
+				? property.property_for
+				: String(property.property_for ?? '')
+						.split(',')
+						.map((type) => type.trim());
+			if (!propertyTypes.includes(transaction)) continue;
+
+			const value = Number(property[field]);
+			if (Number.isFinite(value) && value > 0 && (max === null || value > max)) {
+				max = value;
+			}
+		}
+
+		return max;
+	};
+
+	return {
+		rent: maxFor('Rent', 'rent'),
+		price: maxFor('Sale', 'price')
+	};
+}
 
 export function getFilteredProperties(properties, filter, user) {
 	// If MSL filter is present, it overrides all other filters
@@ -44,12 +73,12 @@ export function getFilteredProperties(properties, filter, user) {
 		}
 
 		// Filter by rent price
-		if (filter.filter_for.includes('Rent') && property.rent > filter.rent) {
+		if (filter.filter_for.includes('Rent') && filter.rent !== null && property.rent > filter.rent) {
 			return false;
 		}
 
 		// Filter by sale price
-		if (filter.filter_for.includes('Sale') && property.price > filter.price) {
+		if (filter.filter_for.includes('Sale') && filter.price !== null && property.price > filter.price) {
 			return false;
 		}
 
@@ -95,5 +124,3 @@ export function getFilteredProperties(properties, filter, user) {
 		return true;
 	});
 }
-
-

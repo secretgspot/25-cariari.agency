@@ -6,15 +6,32 @@
 	import Filter from './Filter.svelte';
 	import Logo from '#lib/Logo.svelte';
 	import Nav from '#lib/Nav.svelte';
-	import { filterStore, getFilteredProperties } from './filter-store.js';
+	import {
+		filterStore,
+		getFilteredProperties,
+		getPriceFilterLimits
+	} from './filter-store.js';
 
 	/** @type {import('./$types').PageData} */
 	let { data } = $props();
 
 	// console.log('(app)/properties/+page.svelte data: ', data);
 
+	let priceLimits = $derived(getPriceFilterLimits(data.properties, $filterStore.active));
+	let effectiveFilter = $derived({
+		...$filterStore,
+		rent:
+			$filterStore.rent === null || priceLimits.rent === null
+				? priceLimits.rent
+				: Math.min(Number($filterStore.rent), priceLimits.rent),
+		price:
+			$filterStore.price === null || priceLimits.price === null
+				? priceLimits.price
+				: Math.min(Number($filterStore.price), priceLimits.price)
+	});
+
 	let filtered = $derived(
-		getFilteredProperties(data.properties, $filterStore, data.user),
+		getFilteredProperties(data.properties, effectiveFilter, data.user),
 	);
 	let totalDisplayCount = $derived(
 		data.properties.filter(
@@ -55,6 +72,8 @@
 				isAdmin={data.is_admin}
 				filteredCount={filtered.length}
 				totalCount={totalDisplayCount}
+				rentMax={priceLimits.rent}
+				priceMax={priceLimits.price}
 			/>
 		</div>
 	</aside>
