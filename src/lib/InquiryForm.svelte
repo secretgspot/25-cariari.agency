@@ -69,6 +69,7 @@
 						id="name"
 						name="name"
 						autocomplete="name"
+						maxlength="200"
 						required
 						placeholder="Juan Pérez"
 						value={form?.data?.name ?? ''}
@@ -83,6 +84,7 @@
 											id="phone"
 											name="phone"
 											autocomplete="tel"
+											maxlength="50"
 											required
 											placeholder="+506 8888-8888"
 											value={form?.data?.phone ?? ''}
@@ -97,6 +99,7 @@
 						id="email"
 						name="email"
 						autocomplete="email"
+						maxlength="254"
 						required
 						placeholder="juan@example.com"
 						value={form?.data?.email ?? ''}
@@ -110,6 +113,7 @@
 						id="message"
 						name="message"
 						rows="5"
+						maxlength="5000"
 						placeholder="I'm interested in this property. Please tell me more about..."
 					>{form?.data?.message ?? ''}</textarea>
 				</fieldset>
@@ -118,7 +122,7 @@
 			<!-- Honeypot field for bot detection -->
 			<div class="honeypot" aria-hidden="true">
 				<label for="website">Website</label>
-				<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+				<input type="text" id="website" name="website" tabindex="-1" autocomplete="new-password" />
 			</div>
 
 			<input type="hidden" name="property_id" value={propertyId} />

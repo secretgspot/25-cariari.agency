@@ -1,20 +1,20 @@
 # Cariari.Agency — Web Application
 
-Production real estate listing platform for Cariari / La Asunción de Heredia, Costa Rica. Built with SvelteKit 2 (Svelte 5 Runes) and Supabase, deployed on Vercel.
+Real estate listing platform for Cariari / La Asunción de Heredia, Costa Rica. Built with SvelteKit 3, Svelte 5, and Supabase. Vercel is the configured deployment target; production deployment was not verified as part of the repository audit.
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Framework:** [SvelteKit 2](https://svelte.dev/docs/kit/introduction) with [Svelte 5 Runes](https://svelte.dev/docs/svelte/overview)
-- **Bundler:** Vite 5
+- **Framework:** [SvelteKit](https://svelte.dev/docs/kit/introduction) 3 with [Svelte 5 Runes](https://svelte.dev/docs/svelte/overview)
+- **Bundler:** Vite 8
 - **Backend / Database:** [Supabase](https://supabase.com/docs) (PostgreSQL, SSR Auth, Storage)
-- **Maps:** [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for the interactive property map; Leaflet remains in legacy map, picker, and preview components
+- **Maps:** [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for the active map, property preview, and listing-location picker. Legacy Leaflet components remain in the repository and are candidates for removal after usage is confirmed.
 - **Email:** Nodemailer (Gmail SMTP transport) for contact form & property inquiry alerts
 - **QR Codes:** `@svelte-put/qr` (dynamic printable flyer QR codes)
 - **Image Optimization:** CompressorJS (client-side image compression before upload)
 - **Styling:** Open Props + Custom CSS design tokens
-- **Hosting:** Vercel (`@sveltejs/adapter-auto`)
+- **Hosting:** Vercel target (`@sveltejs/adapter-auto`)
 
 ---
 
@@ -48,7 +48,7 @@ cariari-agency/
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the `cariari-agency/` root (do NOT commit to git):
+Use Node.js 24.x and create a `.env` file in the project root (do NOT commit to git):
 
 ```env
 # Public Supabase Config
@@ -57,7 +57,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 
 # Server Private Config (Email Notifications)
 VITE_GOOGLE_EMAIL=<your-gmail-address>
-VITE_GOOGLE_PASSWORD=<your-gmail-app-password>
+VITE_GOOGLE_EMAIL_PASSWORD=<your-gmail-app-password>
 DEFAULT_AGENT_EMAIL=<fallback-agency-email>
 ```
 
@@ -78,9 +78,14 @@ npm run dev:host
 # Production build
 npm run build
 
+# Run unit tests
+npm test
+
 # Preview production build locally
 npm run preview
 ```
+
+`package-lock.json` is checked in so installs and CI use the same dependency tree. The local production build succeeds, but `adapter-auto` cannot identify a production platform when run outside the deployment environment.
 
 ---
 

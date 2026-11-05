@@ -171,14 +171,4 @@
 			max-width: 54ch;
 		}
 	}
-	input[type='text'],
-	input[type='email'] {
-		display: block;
-		padding: var(--size-2);
-		color: var(--text-1);
-		border: var(--border-size-1) solid var(--surface-4);
-		border-radius: var(--radius-2);
-		width: 100%;
-		background: transparent;
-	}
 </style>

@@ -1,4 +1,6 @@
-# Todo (will be implemented at user specified request)
+# Legacy Todo (not current)
+
+This checklist is an older backlog and has not been validated against the current code. Do not treat its unchecked items or estimates as current status. The November 2026 technical review and the session task tracker are the current record; this file should be reconciled or retired when the database, map, and product tasks are reprioritized.
 
 - [ ] when property deleted there should be a toaster notification of success or fail.
 

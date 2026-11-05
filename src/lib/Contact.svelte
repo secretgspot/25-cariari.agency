@@ -63,19 +63,19 @@
 			<div class="inputs">
 				<fieldset>
 					<legend>Name</legend>
-					<input type="text" id="name" name="name" autocomplete="name" required />
+					<input type="text" id="name" name="name" autocomplete="name" maxlength="200" required />
 				</fieldset>
 			</div>
 			<div class="inputs">
 				<fieldset>
 					<legend>Email</legend>
-					<input type="email" id="email" name="email" autocomplete="email" required />
+					<input type="email" id="email" name="email" autocomplete="email" maxlength="254" required />
 				</fieldset>
 			</div>
 			<div class="inputs">
 				<fieldset>
 					<legend>Message</legend>
-					<textarea id="message" name="message" rows="5"></textarea>
+					<textarea id="message" name="message" rows="5" maxlength="5000"></textarea>
 				</fieldset>
 			</div>
 			<div class="button-wrap">

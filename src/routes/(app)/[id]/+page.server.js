@@ -1,7 +1,9 @@
 import { error, fail } from '@sveltejs/kit';
 import { DEFAULT_AGENT_EMAIL, VITE_GOOGLE_EMAIL } from '$app/env/private';
 import transporter from '#lib/utils/emailSetup.server.js';
+import { createInquiryEmail } from '#lib/utils/emailTemplates.server.js';
 import { applyRateLimit } from '#lib/utils/rateLimit.js';
+import { isValidEmail, readTextField } from '#lib/utils/formFields.server.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -60,26 +62,28 @@ export const actions = {
 		// Honeypot check - if filled, it's a bot
 		const website = formData.get('website');
 		if (website) {
-			// Silently succeed for bots
-			return { success: true };
+			return fail(400, {
+				errors: { message: 'Unable to submit inquiry. Please refresh the page and try again.' },
+			});
 		}
 
 		// Validate required fields
-		const name = formData.get('name');
-		const phone = formData.get('phone');
-		const email = formData.get('email');
-		const propertyId = formData.get('property_id');
+		const name = readTextField(formData, 'name', { maxLength: 200 });
+		const phone = readTextField(formData, 'phone', { maxLength: 50 });
+		const email = readTextField(formData, 'email', { maxLength: 254 });
+		const propertyId = readTextField(formData, 'property_id', { maxLength: 36 });
+		const message = readTextField(formData, 'message', { required: false });
 
-		if (!name || !phone || !email || !propertyId) {
-			console.log('❌ Missing required fields');
-			return fail(400, { errors: { message: 'All required fields must be filled' } });
-		}
-
-		// Validate email format
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
-			console.log('❌ Invalid email format:', email);
-			return fail(400, { errors: { message: 'Invalid email format' } });
+		if (
+			!name ||
+			/[\u0000-\u001f\u007f]/.test(name) ||
+			!phone ||
+			!email ||
+			!isValidEmail(email) ||
+			!propertyId ||
+			message === null
+		) {
+			return fail(400, { errors: { message: 'Please provide valid contact details.' } });
 		}
 
 		// Verify property exists - get full contact info
@@ -100,7 +104,7 @@ export const actions = {
 			name,
 			phone,
 			email,
-			message: formData.get('message') || null,
+			message: message || null,
 			status: 'new'
 		};
 
@@ -125,29 +129,20 @@ export const actions = {
 				? `Listing Agent ${property.contact_realtor}`
 				: 'Listing Agent';
 
-			const agentPhone = property.contact_phone || null;
-
-			if (agentEmail) {
+			if (agentEmail && isValidEmail(agentEmail)) {
 				await new Promise((resolve, reject) => {
 					transporter.sendMail(
 						{
 							from: VITE_GOOGLE_EMAIL || 'Cariari Agency <noreply@cariari.agency>',
 							to: agentEmail,
-							subject: `New Inquiry for Property ${property.msl}`,
-							html: `
-								<div style="font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #333333;">
-									<h3 style="color: #000000; font-size: 20px; margin-bottom: 15px;">New Property Inquiry</h3>
-									<p style="margin-bottom: 8px;"><strong>Property:</strong> <span style="color: #000000;">${property.msl}</span></p>
-									<p style="margin-bottom: 8px;"><strong>Listing Agent:</strong> <span style="color: #000000;">${property.contact_realtor || 'Listing Agent'}</span></p>
-									<p style="margin-bottom: 20px;"><strong>From:</strong> <span style="color: #000000;">${name}</span> (${email})</p>
-									<p style="margin-bottom: 8px;"><strong>Phone:</strong> <span style="color: #000000;">${phone}</span></p>
-									<p style="margin-bottom: 8px;"><strong>Message:</strong></p>
-									<div style="background-color: #f8f8f8; border: 1px solid #e0e0e0; padding: 15px; border-radius: 5px; margin-top: 15px; word-wrap: break-word;">
-										${formData.get('message') || 'No message provided'}
-									</div>
-									<p style="margin-top: 20px; font-size: 14px; color: #777777;">This message was sent via the inquiry form on your website.</p>
-								</div>
-							`,
+							...createInquiryEmail({
+								msl: property.msl,
+								agentName: property.contact_realtor || 'Listing Agent',
+								name,
+								email,
+								phone,
+								message,
+							}),
 						},
 						(err, info) => {
 							if (err) {
@@ -161,6 +156,7 @@ export const actions = {
 					);
 				});
 			} else {
+				if (agentEmail) console.error('Listing agent email address is invalid.');
 				console.log(`📬 No email for ${agentName}, inquiry saved.`);
 			}
 		} catch (emailError) {
