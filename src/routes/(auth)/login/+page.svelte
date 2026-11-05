@@ -5,6 +5,8 @@
 	import Logo from '#lib/Logo.svelte';
 	import { Button } from '#lib/buttons/index.js';
 	import { isEmpty } from '#lib/utils/validators.js';
+	import { playNotificationSound } from '#lib/utils/audio.js';
+	import { vibrateNotification } from '#lib/utils/vibrate.js';
 	import TokenVerification from '#lib/auth/TokenVerification.svelte';
 
 	let { data } = $props();
@@ -71,9 +73,13 @@
 
 		if (verifyOtpError) {
 			// If verification fails, trigger shake animation and show error
+			playNotificationSound('fail');
+			vibrateNotification('fail');
 			errorMessage = verifyOtpError.message;
 		} else {
 			// If verification succeeds, show success message, invalidate all data, and redirect
+			playNotificationSound('success');
+			vibrateNotification('success');
 			successMessage = 'Successfully verified! Redirecting...';
 			currentView = 'verified';
 

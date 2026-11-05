@@ -10,12 +10,11 @@
 	 * - onComplete: callback when all digits are filled
 	 * - onError: callback when verification fails
 	 * - disabled: disable all inputs
-	 * - error: error message to display
+	 * - error: external error signal that triggers the shake animation
 	 * - autoFocus: auto-focus first input on mount
 	 */
 	
 	import { createEventDispatcher } from 'svelte';
-	import Notify from '#lib/Notify.svelte';
 	
 	// Extract props immediately to avoid "reference only captures initial value" warnings
 	let { 
@@ -34,8 +33,6 @@
 		let digits = $state([]);
 		let focusIndex = $state(0);
 		let shake = $state(false);
-		let showError = $state(false);
-		let errorMessage = $state('');
 
 		// Initialize digits array when length changes
 		$effect(() => {
@@ -115,8 +112,6 @@
 	
 	// Trigger shake animation
 	function triggerShake(message) {
-		errorMessage = message;
-		showError = true;
 		shake = true;
 		
 		setTimeout(() => {
@@ -131,12 +126,6 @@
 		
 		dispatch('error', { message });
 		onError?.(message);
-	}
-	
-	// Clear error
-	function clearError() {
-		showError = false;
-		errorMessage = '';
 	}
 	
 	// Focus first input on mount
@@ -156,12 +145,6 @@
 		}
 	});
 </script>
-
-{#if error || showError}
-	<Notify type="danger" role="alert">
-		{errorMessage || error}
-	</Notify>
-{/if}
 
 <div class="token-verification" role="group" aria-label="Verification code">
 	{#each Array(length) as _, index (index)}
