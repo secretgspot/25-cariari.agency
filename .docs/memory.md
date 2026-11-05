@@ -6,16 +6,7 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 ## Supabase Database Setup
 
-To set up the Supabase database for local development or a new environment, you can use the SQL backup files located in the `.docs/` directory. These files contain the database schema and sample data.
-
-1. **Navigate to the Supabase SQL Editor:**
-    Go to your Supabase project's dashboard and open the "SQL Editor".
-
-2. **Restore the Schema:**
-    Open the `july_2025_schema_backup.sql` file from the `.docs/` directory, copy its contents, and paste them into the Supabase SQL Editor. Run the query to create the database tables and relationships.
-
-3. **Populate the Database:**
-    Open the `july_2025_data_backup.sql` file from the `.docs/` directory, copy its contents, and paste them into the Supabase SQL Editor. Run the query to populate the tables with sample data.
+**Do not use the July 2025 SQL backups to set up a new or local database.** They do not represent the live schema and may recreate obsolete database behavior. The repository currently has no canonical, verified baseline. See [the Supabase setup status](../supabase/README.md) for the observed migration drift and the safe next steps. Do not change production schema or migration history as part of setup without a reviewed plan.
 
 ## Supabase Type Generation
 
