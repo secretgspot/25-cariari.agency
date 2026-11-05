@@ -91,31 +91,35 @@ npm run preview
 
 ## 📡 Public REST API
 
-All responses return standard JSON envelopes:
+The public API is read-only and does not require an API key. Successful responses use a JSON envelope:
 
 - `{"status": "success", "data": ...}`
-- `{"status": "error", "error": {"code": "...", "message": "..."}}`
+
+Errors use `{"status": "error", "error": {"code": "...", "message": "..."}}` and an appropriate HTTP status.
 
 ### 1. List Properties
 
 `GET /api/properties`
 
-**Available Query Parameters:**
+Returns a page of property records from the public `properties_preview` view. Supported query parameters:
 
-- `property_for` (string): Filter by type (`Sale`, `Rent`)
-- `price_max` (number): Maximum sale price
-- `rent_max` (number): Maximum rent price
-- `beds_min` (number): Minimum bedroom count
-- `baths_min` (number): Minimum bathroom count
-- `lot_size_min` (number): Minimum lot size in m²
-- `building_size_min` / `building_size_max` (number): Living area range in m²
-- `year_built_min` / `year_built_max` (number): Construction year range
-- `land_use` (string): Filter by zoning / property type (e.g., residential)
-- `msl` (string): Filter by MLS reference (partial match, e.g., `cr-001`)
-- `sort` (string): Field to sort by (`price`, `created_at`, `updated_at`)
-- `order` (`asc` | `desc`): Sort order
-- `page` (positive integer, default `1`): One-based results page
-- `limit` (positive integer, default `50`, maximum `100`): Results per page
+- `property_for` (`Sale` or `Rent`): Match a listing type.
+- `price_max` (number): Maximum sale price; properties with a zero price are excluded.
+- `rent_max` (number): Maximum rent; properties with a zero rent are excluded.
+- `beds_min`, `baths_min` (number): Minimum bedroom/bathroom count; zero values are excluded.
+- `lot_size_min` (number): Minimum lot size in m²; zero values are excluded.
+- `building_size_min`, `building_size_max` (number): Minimum and maximum building size in m². A zero size is excluded when using the minimum.
+- `year_built_min`, `year_built_max` (number): Minimum and maximum construction year. A zero year is excluded when using the minimum.
+- `land_use` (string): Case-insensitive partial match.
+- `msl` (string): Case-insensitive partial match, e.g. `CR-003`.
+- `contact_phone`, `contact_realtor`, `contact_email` (string): Case-insensitive partial matches.
+- `sort` (`price`, `created_at`, or `updated_at`) and `order` (`asc` or `desc`): Apply a sort when both are supplied. Without both, results default to `created_at` descending, then `updated_at` descending; ties are ordered by `id` descending.
+- `page` (positive integer, default `1`): One-based results page.
+- `limit` (positive integer, default `50`, maximum `100`): Results per page.
+
+Pagination values must be valid positive integers, and `limit` cannot exceed 100. Invalid pagination returns HTTP `400` with code `INVALID_PAGINATION`. Invalid sort/order values return HTTP `400` with code `INVALID_SORT` when both parameters are supplied.
+
+Example: `GET /api/properties?property_for=Sale&beds_min=3&page=1&limit=24`
 
 Successful list responses preserve the `data` array and include pagination metadata:
 
@@ -127,13 +131,26 @@ Successful list responses preserve the `data` array and include pagination metad
 }
 ```
 
+Database failures return HTTP `500` with code `DATABASE_ERROR`.
+
 The properties page progressively reveals matching listings in 24-item batches as you scroll, with an enhanced “Load more properties” button as a manual fallback. The address bar stays at `/properties`, and existing filters reset the displayed results when changed. The route currently loads the complete property set and filters it in the browser, so this limits rendered cards but does not reduce the initial data transfer.
 
 ### 2. Get Single Property
 
-`GET /api/properties/:id`
+`GET /api/properties/{id}`
 
-Supports retrieval by UUID or MLS identifier (e.g. `cr-003`).
+Returns one property from `properties_preview`, identified by its UUID or MSL value (e.g. `CR-003`):
+
+```json
+{
+  "status": "success",
+  "data": {}
+}
+```
+
+An identifier that is neither a UUID nor an MSL in the `CR-<digits>` format returns HTTP `404` with code `INVALID_ID`. A valid-format identifier with no matching property returns HTTP `404` with code `NOT_FOUND`.
+
+The public API currently supports `GET` only. Property creation, editing, delisting, and deletion are available through the authenticated website workflows, not public API endpoints.
 
 ---
 

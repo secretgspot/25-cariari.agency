@@ -1,118 +1,74 @@
-# Legacy Todo (not current)
+# Legacy checklist audit
 
-This checklist is an older backlog and has not been validated against the current code. Do not treat its unchecked items or estimates as current status. The November 2026 technical review and the session task tracker are the current record; this file should be reconciled or retired when the database, map, and product tasks are reprioritized.
+Reviewed against the application source and project configuration on 2026-11-05. This file records the audited state of the old checklist; it is not a commitment to implement optional or unmeasured work.
 
-- [ ] when property deleted there should be a toaster notification of success or fail.
+## Completed or already implemented
 
-## ⚡ PERFORMANCE OPTIMIZATION
+- [x] Property deletion reports success or failure with a toast.
+- [x] API property listing has bounded page/limit pagination and tests.
+- [x] Basic image optimization exists: uploads use browser-side CompressorJS; listing cards and uploader previews use lazy loading.
+- [x] Database TypeScript definitions exist in `src/database.types.ts`. Their accuracy still needs to be checked against a canonical schema.
+- [x] A Node built-in test suite and GitHub Actions validation workflow exist. The workflow currently fails at build because it does not provide the required environment variables.
+- [x] VS Code workspace settings exist.
+- [x] Dark/system theme preferences and other local settings are implemented.
+- [x] Loading feedback exists in several forms and views.
+- [x] PWA manifest and service worker caching/offline fallback exist. This is basic offline support, not a verified offline-first application.
+- [x] Responsive/mobile layouts exist; this does not certify every route or interaction for mobile.
+- [x] Authenticated property create, edit, delist, and delete flows exist as SvelteKit form actions.
 
-### 4. Bundle Size Reduction
+## Incomplete or potentially useful — decide whether to keep
 
-- [ ] **Audit CSS dependencies** - Replace Open Props with project-specific variables
-- [ ] **Implement code splitting** - Lazy load map and large components
-- [ ] **Tree shake unused code** - Remove dead code and unused dependencies
-- [ ] **Optimize bundle size** - Target 30-40% reduction
+### Performance and data
 
-### 5. Database Efficiency
+- [ ] Measure Core Web Vitals and actual property payload/load times before setting optimization targets.
+- [ ] Revisit server-side property filtering and incremental loading if measurements show the current full initial property load is too large.
+- [ ] Review indexes and profile slow queries after the canonical database schema is available. Current migration/schema drift makes a reliable index review premature.
+- [ ] Further reduce the MapLibre client chunk only if replacing MapLibre or reducing map functionality is acceptable. Current measured chunk: 1,029.18 kB (273.62 kB gzip). Route-level splitting exists, but MapLibre remains a large chunk required by map routes.
+- [ ] Review image output sizes/formats if real listing photos show a performance problem. Current client compression and lazy loading are already in place; server-side Sharp processing and automatic WebP conversion are not.
 
-- [ ] **Implement caching strategy** - Add Redis for API responses
-- [ ] **Optimize Supabase queries** - Reduce N+1 problems and add pagination
-- [ ] **Add query profiling** - Monitor and optimize slow queries
-- [ ] **Database indexing review** - Ensure optimal query performance
+### Types, tests, and errors
 
-### 6. Image Optimization
+- [ ] Add static analysis/type checking and decide whether to migrate selected JavaScript files to TypeScript. Do not treat a wholesale migration as required.
+- [ ] Verify/regenerate `src/database.types.ts` from a reviewed canonical schema.
+- [ ] Expand tests for critical flows. Current tests use Node's test runner (11 tests); component and browser end-to-end coverage are not configured.
+- [ ] Standardize error handling where needed. A global error page and form/API error feedback already exist; separate Svelte error boundaries and generic retry mechanisms are not currently configured.
+- [ ] Add targeted retry/recovery only for operations that can safely be retried. User-facing toast/error feedback is already used in key form flows.
 
-- [ ] **Implement Sharp.js processing** - Add server-side image processing
-- [ ] **Auto-convert to WebP** - Implement progressive image loading
-- [ ] **Add lazy loading** - Implement intersection observer for image optimization
-- [ ] **Improve Core Web Vitals** - Target better performance scores
+### Cleanup and observability
 
-## 🔧 CODE QUALITY & DEVELOPER EXPERIENCE
+- [ ] Review remaining debug logging selectively. Avoid deleting useful error/warning logs or adding a logging service without an operational need.
+- [ ] Add production error/performance monitoring only if desired; no application monitoring service is configured.
+- [ ] Continue removing code or dependencies only when unused status is confirmed.
 
-### 7. TypeScript Migration
+### API and forms
 
-- [ ] **Analyze JavaScript files** - Identify critical files for type safety
-- [ ] **Create database types** - Improve existing src/database.types.ts
-- [ ] **Convert key components** - Add TypeScript to main files and utilities
-- [ ] **Implement type checking** - Add strict type checking in CI/CD
+- [x] API usage is described in `README.md`; no separate OpenAPI specification is currently needed.
+- [ ] Complete validation of API filter values where needed. Pagination and sort inputs are already bounded/validated.
+- [ ] Add rate limiting for the public read API only if abuse or traffic warrants it. CORS configuration is needed only if cross-origin clients are intended.
+- [ ] Replace the process-local public-form rate limiter with a shared production-safe mechanism; this is already tracked as a current technical priority. Avoid adding a new hosted service such as Redis; first assess whether the existing database/infrastructure can provide the needed atomic coordination.
+- [ ] Decide whether there is a real machine-client use case for write API endpoints. This would add public HTTP operations for external software to create/update/delete listings; the current public API is read-only, while users already perform these actions through authenticated website forms.
+- [ ] Add API-key authentication only if write access for external machine clients is approved. API keys would be credentials those clients must store and send; they are not needed for the current authenticated website forms.
+- [ ] Improve the property feature/amenity input only if the existing comma-separated add/remove interaction is insufficient.
+- [ ] Decide whether users need a settings page. Preferences are stored locally and theme/map settings already work, but there is no dedicated settings route.
 
-### 8. Error Handling & Boundaries
+### Tooling, deployment, and mobile
 
-- [ ] **Add error boundaries** - Implement Svelte error boundaries
-- [ ] **Standardize error responses** - Create consistent error handling patterns
-- [ ] **Add error recovery** - Implement retry mechanisms for failed operations
-- [ ] **Improve user feedback** - Better error messaging and user guidance
+- [ ] Decide whether to add ESLint and Prettier; neither is configured.
+- [ ] Decide whether Husky hooks are useful; they are not configured.
+- [ ] Resolve the existing GitHub Actions build failure by providing the required CI environment values or changing the validation approach. GitHub Actions is optional; the current workflow runs tests and a build, not a deployment.
+- [ ] Verify mobile usability and offline behavior on target devices before adding more mobile/PWA work.
+- [ ] Tune touch gestures only if device testing identifies a problem; MapLibre already provides the map's core touch interactions.
+- [ ] Decide whether production deployment configuration needs tuning; Vercel is the configured target, and no separate deployment workflow is checked in.
 
-### 9. Production Code Cleanup
+## Removed from this legacy list by request
 
-- [ ] **Remove console logs** - Clean up debug statements from production code
-- [ ] **Implement logging service** - Add structured logging for production debugging
-- [ ] **Clean up unused code** - Remove development utilities and dead code
-- [ ] **Optimize console usage** - Replace console calls with proper logging
+- Map-specific enhancement checklist (the old Leaflet clustering, map interaction, accessibility, and progressive-loading bullets). The app now uses MapLibre; map bundle measurement/reduction is tracked separately in `TECHNICAL_STATUS.md`.
 
-## 🔗 API Enhancements for AI/MCP Interaction
+## Removed from consideration by user direction
 
-### 10. Enable Actions (Add `POST`, `PUT`, `DELETE`)
+- Replace Open Props with project-specific CSS variables. Open Props is intentionally used and should remain.
+- Add Redis or another new hosted caching/rate-limiting service. Avoid new external service dependencies; consider solutions within existing infrastructure if needed.
+- Add an OpenAPI endpoint/specification. The API is described in `README.md`; the user does not consider a separate OpenAPI spec necessary for current AI/MCP or developer use.
+- Set a fixed 30–40% bundle-reduction target. Measure actual impact and choose a feasible target first.
 
-- [ ] **Create Property:** `POST /api/properties`
-- [ ] **Update Property:** `PUT /api/properties/{id}` or `PATCH /api/properties/{id}`
-- [ ] **Delist/Deactivate Property:** `POST /api/properties/{id}/delist` or similar.
-- [ ] **Delete Property:** `DELETE /api/properties/{id}`
-
-### 11. Implement Robust Standards for Machine Readability
-
-- [ ] **OpenAPI (Swagger) Specification:** Create a `GET /api/openapi.json` endpoint.
-- [ ] **Auto-generate docs** - Use tools like OpenAPI Specification Generator
-
-### 12. Add Security and Access Control
-
-- [ ] **API Key Authentication:** Secure `POST`, `PUT`, `DELETE` endpoints with API keys.
-- [ ] **Rate Limiting:** Implement rate limiting to prevent abuse.
-- [ ] **Request validation** - Add input sanitization and validation
-- [ ] **CORS configuration** - Configure proper CORS policies
-
-## 🛠️ Modern Tech Stack Integration
-
-### 13. Testing Framework Setup
-
-- [ ] **Add Vitest + Testing Library** - Set up testing infrastructure
-- [ ] **Create component tests** - Test critical UI components
-- [ ] **Implement API tests** - Add end-to-end API testing
-- [ ] **CI/CD integration** - Add automated testing to pipelines
-
-### 14. Code Quality Tools
-
-- [ ] **Configure ESLint** - Set up code linting rules
-- [ ] **Add Prettier** - Configure code formatting
-- [ ] **Implement Husky** - Add pre-commit hooks
-- [ ] **Editor configuration** - Add VS Code workspace settings
-
-## 🎯 MAPPING & UI ENHANCEMENTS
-
-### 15. Map Functionality Improvements
-
-- [ ] **Implement Leaflet.markercluster** - Add marker clustering for performance
-- [ ] **Improve map interactions** - Better touch gestures and zoom controls
-- [ ] **Add accessibility features** - Screen reader support and keyboard navigation
-- [ ] **Optimize map loading** - Implement progressive map loading
-
-### 16. UI/UX Improvements
-
-- [ ] **Token input enhancement** - Improve feature/amenity input efficiency
-- [ ] **Settings page implementation** - User preferences and configurations
-- [ ] **Theming system** - Dark mode and custom theming support
-- [ ] **Loading states** - Better loading indicators and skeleton screens
-
-## 📱 Mobile & Responsiveness
-
-- [ ] **Progressive Web App** - Add PWA capabilities
-- [ ] **Mobile optimization** - Improve mobile interaction patterns
-- [ ] **Offline support** - Basic offline functionality for property viewing
-- [ ] **Touch gesture optimization** - Better mobile map interactions
-
-## 🚀 Deployment & Monitoring
-
-- [ ] **Performance monitoring** - Add application performance monitoring
-- [ ] **Error tracking** - Implement error reporting and analytics
-- [ ] **Automated deployments** - Set up CI/CD pipelines
-- [ ] **Environment optimization** - Production configuration tuning
+Client-side CompressorJS is intentionally retained: it resizes/compresses photos before upload, which addresses large phone-camera files exceeding upload limits. Server-side image processing would happen after the original upload and would not solve that initial size constraint without changing the upload flow.
