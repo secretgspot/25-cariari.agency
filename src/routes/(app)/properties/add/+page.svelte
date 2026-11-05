@@ -33,6 +33,7 @@
 	let uploadingPhotos = $state(false);
 	let uploadedPhotoDetails = $state([]);
 	let gps = $state();
+	let mslReservationToken = $state(null);
 
 	const property = $state({
 		is_active: true,
@@ -172,6 +173,24 @@
 			return;
 		}
 
+		const { data: reservations, error: reservationError } = await data.supabase.rpc(
+			'reserve_property_msl',
+			{ p_reservation_token: mslReservationToken },
+		);
+		const reservation = reservations?.[0];
+		if (reservationError || !reservation) {
+			console.error('Error reserving property MSL:', reservationError);
+			error = `Unable to reserve an MSL: ${reservationError?.message ?? 'No reservation was returned.'}`;
+			loading = false;
+			cancel();
+			return;
+		}
+
+		property.msl = reservation.msl;
+		mslReservationToken = reservation.reservation_token;
+		formData.set('msl', property.msl);
+		formData.set('msl_reservation_token', mslReservationToken);
+
 		// Client-side Photo Upload
 		const uploadResult = await uploadPhotos();
 		if (!uploadResult.success) {
@@ -245,8 +264,8 @@
 				<input
 					type="text"
 					placeholder="ex: CR-001"
-					bind:value={property.msl}
-					disabled={!isAdmin} />
+					value={property.msl}
+					readonly />
 			</fieldset>
 
 			<fieldset>

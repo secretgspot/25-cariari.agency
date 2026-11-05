@@ -296,6 +296,10 @@ export type Database = {
       }
     }
     Functions: {
+      confirm_property_msl_reservation: {
+        Args: { p_reservation_token: string; p_msl: string };
+        Returns: boolean;
+      };
       delete_claim: {
         Args: { uid: string; claim: string };
         Returns: string;
@@ -331,6 +335,13 @@ export type Database = {
       set_claim: {
         Args: { uid: string; claim: string; value: Json };
         Returns: string;
+      }
+      reserve_property_msl: {
+        Args: { p_reservation_token: string | null };
+        Returns: {
+          msl: string;
+          reservation_token: string;
+        }[];
       }
     }
     Enums: {

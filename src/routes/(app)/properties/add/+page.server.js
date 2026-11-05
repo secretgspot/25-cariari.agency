@@ -101,6 +101,22 @@ export const actions = {
 			contact_phone: formData.get('contact_phone'),
 			contact_realtor: formData.get('contact_realtor'),
 		};
+		const reservationToken = formData.get('msl_reservation_token');
+
+		if (
+			typeof property.msl !== 'string' ||
+			!/^CR-\d{3,}$/.test(property.msl) ||
+			typeof reservationToken !== 'string' ||
+			!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				reservationToken,
+			)
+		) {
+			return fail(400, {
+				error: true,
+				message: 'A valid MSL and reservation are required before adding a property.',
+				property,
+			});
+		}
 
 		// 1. Get the uploaded photo URLs/paths from the formData
 		// This will be an array of strings (JSON stringified URLs/paths)
@@ -113,6 +129,29 @@ export const actions = {
 		let newPropertyId = null;
 
 		try {
+			const { data: reservationConfirmed, error: reservationError } =
+				await supabaseClient.rpc('confirm_property_msl_reservation', {
+					p_reservation_token: reservationToken,
+					p_msl: property.msl,
+				});
+
+			if (reservationError) {
+				console.error('Error confirming property MSL reservation:', reservationError);
+				return fail(500, {
+					error: true,
+					message: `Unable to confirm the property MSL reservation: ${reservationError.message}`,
+					property,
+				});
+			}
+
+			if (!reservationConfirmed) {
+				return fail(409, {
+					error: true,
+					message: 'The MSL reservation expired. Please submit the form again to reserve an available MSL.',
+					property,
+				});
+			}
+
 			// 1. Insert new property into 'properties' table
 			// console.log('/properties/add/+page.server.js action -> add: ', property);
 			const { data: resData, error: resErr } = await supabaseClient

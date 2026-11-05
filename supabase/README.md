@@ -30,3 +30,7 @@ These are inspection findings, not authorization to change production. No live s
 5. Only after review, agree on a production history-reconciliation plan. Do **not** run `supabase db pull` or `supabase migration repair` against production as an exploratory step: these commands can update the remote migration history.
 
 The workspace has no database password and no Supabase CLI installed, so a complete `pg_dump`-style export could not be produced here. The read-only MCP inspection is insufficient to synthesize a reliable replacement baseline.
+
+## MSL allocation change
+
+The live `properties.msl` column is `NOT NULL` and already has the `properties_msl_key` unique constraint. Migration `20261105150257_reserve_property_msl.sql` adds the atomic lowest-available MSL reservation used by the add-property form; abandoned reservations expire after two hours so deleted numbers become reusable. It has been prepared locally but not applied to the live database. Review it against a canonical schema export and the migration history before deployment. Do not push the mismatched local migration directory to production as part of this change.
