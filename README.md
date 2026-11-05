@@ -9,7 +9,7 @@ Real estate listing platform for Cariari / La Asunción de Heredia, Costa Rica. 
 - **Framework:** [SvelteKit](https://svelte.dev/docs/kit/introduction) 3 with [Svelte 5 Runes](https://svelte.dev/docs/svelte/overview)
 - **Bundler:** Vite 8
 - **Backend / Database:** [Supabase](https://supabase.com/docs) (PostgreSQL, SSR Auth, Storage)
-- **Maps:** [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for the active map, property preview, and listing-location picker. Legacy Leaflet components remain in the repository and are candidates for removal after usage is confirmed.
+- **Maps:** [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for the active map, property preview, and listing-location picker.
 - **Email:** Nodemailer (Gmail SMTP transport) for contact form & property inquiry alerts
 - **QR Codes:** `@svelte-put/qr` (dynamic printable flyer QR codes)
 - **Image Optimization:** CompressorJS (client-side image compression before upload)
@@ -34,7 +34,7 @@ cariari-agency/
 │   │   └── sitemap.xml/        # Dynamic SEO XML sitemap generator
 │   ├── lib/                    # Reusable Svelte 5 components & helpers
 │   │   ├── InquiryForm.svelte  # Lead capture form with honeypot & email alerts
-│   │   ├── map/                # MapLibre explorer, marker layer, controls, and Leaflet picker/preview components
+│   │   ├── map/                # MapLibre explorer, marker layer, controls, picker, and property preview
 │   │   ├── auth/               # TokenVerification OTP component
 │   │   ├── buttons/            # UI button primitives
 │   │   ├── toasts/             # Toast notification state

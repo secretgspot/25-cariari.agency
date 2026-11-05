@@ -14,7 +14,7 @@
 	import Checkboxes from '#lib/Checkboxes.svelte';
 	import Toggle from '#lib/Toggle.svelte';
 	import Select from '#lib/Select.svelte';
-	import MapPicker from '#lib/map/MapPicker.svelte'; // MapPickerLibre
+	import MapPicker from '#lib/map/MapPicker.svelte';
 	import Uploader from '#lib/Uploader.svelte';
 	import Notify from '#lib/Notify.svelte';
 	import Dialog from '#lib/Dialog.svelte';

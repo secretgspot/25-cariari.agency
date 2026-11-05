@@ -23,9 +23,8 @@
 3. Bounded API pagination and progressively enhanced infinite scrolling on the properties route are implemented and verified. The route still loads its complete property set initially and filters it in the browser. Given the app's geographic scope, the expected dataset is no more than about 1,000 properties, so this is not an urgent optimization. Revisit after measuring real payload size and load time; if they become material, move property filtering and batch fetching to the server while keeping filter and cursor state out of the URL.
 4. Reconcile the local/remote migration histories and capture a canonical database baseline. This is currently blocked: the checked-in July 2025 dump is stale, and an exact schema-only export requires database credentials not available in the workspace. Do not replay or repair production migration history until the export is reviewed.
 5. Add static analysis/type checks and broaden critical-path test coverage.
-6. Measure and reduce the large map-related client chunk; remove only confirmed-unused map implementations and dependencies.
+6. Further reduce the map-related client chunk. The MapLibre chunk is 1,029.18 kB (273.62 kB gzip); the active package ships as a bundled UMD build, and the map is a primary feature. Confirmed-unused Leaflet components, CSS, and the unused map wrapper dependency have been removed. Further reduction requires choosing a replacement map implementation or reducing active map functionality.
 7. Reconcile the legacy checklist in `.docs/TODO.md` with the current task tracker.
-8. Product follow-ups: property comparison, featured/status listings, and a mobile filter drawer. Multi-agency support needs an authorization and data-isolation design before implementation.
 
 See [README.md](./README.md) for setup and commands. The session task tracker contains the detailed work breakdown and dependencies.
 
