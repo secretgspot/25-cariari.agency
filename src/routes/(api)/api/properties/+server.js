@@ -23,15 +23,40 @@
  * @apiParam {String} [msl] Filter by MLS number (partial match).
  * @apiParam {String} [sort] Field to sort by (e.g., "price", "created_at").
  * @apiParam {String} [order] Sort order ("asc" or "desc").
+ * @apiParam {Number} [page=1] One-based result page.
+ * @apiParam {Number} [limit=50] Results per page (maximum 100).
  *
  * @apiSuccess {Object[]} properties List of properties.
  */
+import {
+	DEFAULT_API_PAGE_SIZE,
+	MAX_API_PAGE_SIZE,
+	parsePagination
+} from '#lib/utils/pagination.js';
+
 export async function GET(event) {
 	const supabaseClient = event.locals.supabase;
 	const { searchParams } = new URL(event.request.url);
+	const pagination = parsePagination(searchParams, {
+		defaultLimit: DEFAULT_API_PAGE_SIZE,
+		maxLimit: MAX_API_PAGE_SIZE
+	});
+
+	if (pagination.error) {
+		return Response.json(
+			{
+				status: 'error',
+				error: {
+					code: 'INVALID_PAGINATION',
+					message: pagination.error
+				}
+			},
+			{ status: 400 }
+		);
+	}
 
 	let query = supabaseClient.from('properties_preview')
-		.select('*');
+		.select('*', { count: 'exact' });
 
 	// Filtering
 	let propertyForDebug = null;
@@ -92,16 +117,33 @@ export async function GET(event) {
 	const order = searchParams.get('order');
 
 	if (sort && order) {
+		if (!['price', 'created_at', 'updated_at'].includes(sort) || !['asc', 'desc'].includes(order)) {
+			return Response.json(
+				{
+					status: 'error',
+					error: {
+						code: 'INVALID_SORT',
+						message: 'Sort must be price, created_at, or updated_at, and order must be asc or desc.'
+					}
+				},
+				{ status: 400 }
+			);
+		}
 		query = query.order(sort, { ascending: order === 'asc' });
 	} else {
 		query = query.order('created_at', { ascending: false }).order('updated_at', { ascending: false });
 	}
+	query = query.order('id', { ascending: false }).range(
+		pagination.offset,
+		pagination.offset + pagination.limit - 1
+	);
 
-	let data, err;
+	let data, err, count;
 	try {
 		const result = await query;
 		data = result.data;
 		err = result.error;
+		count = result.count;
 	} catch (e) {
 		return Response.json({
 			status: 'error',
@@ -128,6 +170,12 @@ export async function GET(event) {
 
 	return Response.json({
 		status: 'success',
-		data: data
+		data: data ?? [],
+		pagination: {
+			page: pagination.page,
+			limit: pagination.limit,
+			total: count ?? 0,
+			totalPages: Math.ceil((count ?? 0) / pagination.limit)
+		}
 	});
 };

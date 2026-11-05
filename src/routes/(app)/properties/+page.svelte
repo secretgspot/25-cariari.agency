@@ -1,6 +1,7 @@
 <script>
 	import { navigating, page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import NothingToSee from '#lib/NothingToSee.svelte';
 	import Property from './Property.svelte';
 	import Filter from './Filter.svelte';
@@ -13,7 +14,15 @@
 	} from './filter-store.js';
 
 	/** @type {import('./$types').PageData} */
-	let { data } = $props();
+	let { data, form } = $props();
+
+	const initialBatchSize = 24;
+	// svelte-ignore state_referenced_locally
+	let visibleCount = $state(form?.visibleCount ?? initialBatchSize);
+	let previousFilter = JSON.stringify($filterStore);
+	let loadMoreForm = $state();
+	let loadMoreButton = $state();
+	let isLoadingMore = $state(false);
 
 	// console.log('(app)/properties/+page.svelte data: ', data);
 
@@ -33,6 +42,7 @@
 	let filtered = $derived(
 		getFilteredProperties(data.properties, effectiveFilter, data.user),
 	);
+	let visibleProperties = $derived(filtered.slice(0, visibleCount));
 	let totalDisplayCount = $derived(
 		data.properties.filter(
 			(p) =>
@@ -40,6 +50,56 @@
 				(p.land_use === $filterStore.filter_type || $filterStore.filter_type === 'Any'),
 		).length,
 	);
+
+	$effect(() => {
+		const filterSnapshot = JSON.stringify($filterStore);
+		if (filterSnapshot !== previousFilter) {
+			previousFilter = filterSnapshot;
+			visibleCount = initialBatchSize;
+		}
+	});
+
+	function loadMoreOnSubmit() {
+		const submittedFilter = JSON.stringify($filterStore);
+		isLoadingMore = true;
+
+		return async ({ result, update }) => {
+			if (result.type === 'success' && submittedFilter === JSON.stringify($filterStore)) {
+				visibleCount = result.data.visibleCount;
+			}
+
+			try {
+				await update({ reset: false, refreshAll: false });
+			} finally {
+				isLoadingMore = false;
+			}
+		};
+	}
+
+	function observeLoadMore(node) {
+		if (!('IntersectionObserver' in window)) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting && !isLoadingMore) {
+					loadMoreForm?.requestSubmit(loadMoreButton);
+				}
+			},
+			{ rootMargin: '600px 0px' }
+		);
+
+		observer.observe(node);
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
+
+	function nextVisibleCount() {
+		return Math.min(visibleCount + initialBatchSize, filtered.length);
+	}
 </script>
 
 <svelte:head>
@@ -55,13 +115,45 @@
 {/if}
 
 <main>
+	{#if form?.error}
+		<p class="load-more-error" role="alert">{form.error}</p>
+	{/if}
+
 	<article class="properties_list grid">
-		{#if filtered.length > 0}
-			{#each filtered as property (property.id)}
+		{#if visibleProperties.length > 0}
+			{#each visibleProperties as property (property.id)}
 				<Property {property} />
 			{/each}
+			<p class="load-more-status" aria-live="polite" aria-atomic="true">
+				{#if visibleProperties.length < filtered.length}
+					Showing {visibleProperties.length} of {filtered.length} properties
+				{:else}
+					Showing all {visibleProperties.length} properties
+				{/if}
+			</p>
 		{:else}
 			<NothingToSee />
+		{/if}
+
+		{#if visibleProperties.length < filtered.length}
+			<div class="load-more" use:observeLoadMore>
+				<form
+					bind:this={loadMoreForm}
+					method="POST"
+					use:enhance={loadMoreOnSubmit}
+					aria-busy={isLoadingMore}
+				>
+					<button
+						bind:this={loadMoreButton}
+						type="submit"
+						name="visibleCount"
+						value={nextVisibleCount()}
+						disabled={isLoadingMore}
+					>
+						{isLoadingMore ? 'Loading properties…' : 'Load more properties'}
+					</button>
+				</form>
+			</div>
 		{/if}
 	</article>
 
@@ -97,6 +189,49 @@
 			grid-template-areas: 'properties-filter' 'properties-list';
 			grid-template-columns: minmax(0, 1fr);
 		}
+	}
+
+	.load-more {
+		display: grid;
+		justify-items: center;
+		gap: var(--size-2);
+		padding: var(--size-4) 0 var(--size-8);
+	}
+
+	.load-more button {
+		min-height: 2.75rem;
+		padding: var(--size-2) var(--size-5);
+		border: 1px solid var(--surface-4);
+		border-radius: var(--radius-2);
+		background: var(--surface-1);
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.load-more button:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.load-more button:disabled {
+		cursor: wait;
+		opacity: 0.7;
+	}
+
+	.load-more-status {
+		grid-column: 1 / -1;
+		margin: 0;
+		padding: 0 0 var(--size-2);
+		color: var(--text-2);
+		font-size: 0.8rem;
+		font-variant-numeric: tabular-nums;
+		text-align: center;
+	}
+
+	.load-more-error {
+		color: var(--warning-content);
+		text-align: center;
 	}
 
 	/*

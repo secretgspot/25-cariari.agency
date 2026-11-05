@@ -114,6 +114,20 @@ All responses return standard JSON envelopes:
 - `msl` (string): Filter by MLS reference (partial match, e.g., `cr-001`)
 - `sort` (string): Field to sort by (`price`, `created_at`, `updated_at`)
 - `order` (`asc` | `desc`): Sort order
+- `page` (positive integer, default `1`): One-based results page
+- `limit` (positive integer, default `50`, maximum `100`): Results per page
+
+Successful list responses preserve the `data` array and include pagination metadata:
+
+```json
+{
+  "status": "success",
+  "data": [],
+  "pagination": { "page": 1, "limit": 50, "total": 0, "totalPages": 0 }
+}
+```
+
+The properties page progressively reveals matching listings in 24-item batches as you scroll, with an enhanced “Load more properties” button as a manual fallback. The address bar stays at `/properties`, and existing filters reset the displayed results when changed. The route currently loads the complete property set and filters it in the browser, so this limits rendered cards but does not reduce the initial data transfer.
 
 ### 2. Get Single Property
 
