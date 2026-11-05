@@ -1,36 +1,23 @@
-# Supabase Database Setup Status
+# Supabase Database Status
 
 ## Current state
 
-As of 2026-11-05, the live Supabase project (`gewanooofykqznuzrrno`) and the repository do not have a reconciled migration history or a complete, reviewed schema baseline.
+The live Supabase database is the source of truth. The user is not using a local database.
 
-- The live `public` schema has `properties`, `photos`, `inquiries`, and `site_settings`, plus the `properties_preview` view. RLS is enabled on the four tables.
-- `site_settings` is not present in `src/database.types.ts`.
-- The remote migration history has six entries from `20250709000` through `20250709005`. The local `supabase/migrations/` directory instead contains four migrations from August and September 2025/2026; none matches those remote entries.
-- The `.docs/july_2025_schema_backup.sql` predates the live `inquiries` and `site_settings` objects and has obsolete trigger/function definitions. It is not a valid baseline or restore procedure.
-- The live database has an `app_storage.populate_photos_table` trigger on storage inserts, while the property-creation server action also inserts photo rows. Verify their interaction before reproducing or changing this flow.
-- The live `delete_photos_from_bucket` function catches errors, so storage cleanup failures may not be visible to callers.
-- The Supabase security advisor reported `public.properties_preview` as a `SECURITY DEFINER` view (ERROR) and 12 mutable-function-search-path findings (WARN). The view is selectable by `anon` and `authenticated`.
-- Storage policies include broad `public` upload/update/delete permissions for the public `photos` bucket. Do not copy these into a new environment without an explicit policy review.
+- The current schema and data have been dumped outside this repository under the user's private backup folder. The schema dump includes the current `public` and custom `app_storage` objects, including inquiries, photo-related functions, and MSL reservation objects. The data dump contains application data; Storage photo bytes are intentionally excluded.
+- The dumps have not yet been restored and verified on a separate Supabase project. Treat them as recovery inputs, not a proven turnkey restore.
+- The remote migration history contains six legacy versions (`20250709000`–`20250709005`) and the applied MSL migration (`20261105150257`).
+- The repository retains the MSL migration because it is part of the deployed feature and is recorded remotely. Older local SQL drafts that did not match the remote migration ledger were removed; the current schema dump is the snapshot for recovery.
+- The old `.docs/july_2025_schema_backup.sql` was stale and has been removed.
 
-These are inspection findings, not authorization to change production. No live schema or migration history was changed during this audit.
+The schema/data dumps do not by themselves copy Supabase-managed Auth configuration/users, Storage bucket configuration, or Storage object bytes. Review those separately when moving to another Supabase project. The current dump has not been restore-tested, so verify recovery on a disposable destination before relying on it.
 
-## Safe path to a canonical baseline
+## Migration safety
 
-1. Use a Supabase CLI session with authorized database access and the project linked. Do not put database passwords in the repository or paste them into chat.
-2. Capture a schema-only dump of the application-owned schemas to a temporary/review location:
+The application is deployed against the current live database. Its migration history is still not a complete, reproducible history in this repository. Do **not** run `supabase db push` or `supabase migration repair` against production until we have reviewed a deliberate migration/baseline plan. `supabase db pull` does not apply schema changes to production, but it creates local migration files; it is not part of the current backup workflow. Do not mark legacy versions applied merely to silence history differences.
 
-   ```powershell
-   npx supabase db dump --remote --schema public,app_storage --file supabase\schema-review.sql
-   ```
+The SQL dump is a current-state backup, not a migration baseline. A future new-project setup should be tested from the dump before choosing whether to adopt a baseline migration workflow.
 
-   `db dump` is intended to export schema, not table data. Review its output and separately account for the Supabase-managed Storage bucket configuration and policies; do not treat a dump of application schemas alone as a complete fresh-project setup.
-3. Compare the export with every checked-in migration and the live objects. Resolve the differences in views, functions, triggers, RLS policies, grants, indexes, constraints, storage policies, and bucket configuration. Regenerate `src/database.types.ts` from the reviewed schema.
-4. Test a new-project setup and migration replay before designating any baseline canonical. Preserve the existing migration files until their effects and remote history are reconciled.
-5. Only after review, agree on a production history-reconciliation plan. Do **not** run `supabase db pull` or `supabase migration repair` against production as an exploratory step: these commands can update the remote migration history.
+## MSL allocation
 
-The workspace has no database password and no Supabase CLI installed, so a complete `pg_dump`-style export could not be produced here. The read-only MCP inspection is insufficient to synthesize a reliable replacement baseline.
-
-## MSL allocation change
-
-The live `properties.msl` column is `NOT NULL` and already has the `properties_msl_key` unique constraint. Migration `20261105150257_reserve_property_msl.sql` adds the atomic lowest-available MSL reservation used by the add-property form; abandoned reservations expire after two hours so deleted numbers become reusable. It has been prepared locally but not applied to the live database. Review it against a canonical schema export and the migration history before deployment. Do not push the mismatched local migration directory to production as part of this change.
+Migration `20261105150257_reserve_property_msl.sql` is applied in production and recorded in the remote migration history. It adds atomic lowest-available MSL reservations and database enforcement; abandoned reservations expire after two hours so deleted numbers can be reused. The deployed add-property flow was tested by adding and removing a property.

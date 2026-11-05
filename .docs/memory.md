@@ -6,7 +6,7 @@ Cariari.Agency is a real estate listing platform for Costa Rica, built with Svel
 
 ## Supabase Database Setup
 
-**Do not use the July 2025 SQL backups to set up a new or local database.** They do not represent the live schema and may recreate obsolete database behavior. The repository currently has no canonical, verified baseline. See [the Supabase setup status](../supabase/README.md) for the observed migration drift and the safe next steps. Do not change production schema or migration history as part of setup without a reviewed plan.
+The current schema and data have been dumped to the user's private backup folder, outside the repository. The dump has not been restore-tested and does not include Storage photo bytes or all Supabase-managed Auth/Storage configuration. See [the Supabase database status](../supabase/README.md). Do not run `supabase db push` or `migration repair` against production until a migration/baseline plan is reviewed. `db pull` generates local migration files and is not part of the current backup workflow.
 
 ## Supabase Type Generation
 
@@ -50,14 +50,14 @@ To ensure the project has up-to-date TypeScript definitions for the Supabase dat
 - **Frontend:** SvelteKit 2 (Svelte 5), Vite
 - **Backend/DB:** Supabase (PostgreSQL, Auth)
 - **Hosting:** Vercel
-- **Other:** Leaflet (maps), QR.js (QR codes)
+- **Other:** MapLibre (maps), QR.js (QR codes)
 
 ## Main Features
 
 - Property listing, filtering, and detail views
 - Add/Edit/Delete/Delist property (CRUD)
 - Print-friendly property pages with QR codes
-- Map-based property browsing (Leaflet)
+- Map-based property browsing (MapLibre)
 - User authentication (Supabase Auth)
 - Admin and regular user flows
 - Responsive, modern UI with reusable Svelte components
