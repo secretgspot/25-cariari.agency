@@ -20,7 +20,8 @@ Reviewed against the application source and project configuration on 2026-11-05.
 
 ### Performance and data
 
-- [ ] Measure Core Web Vitals and actual property payload/load times before setting optimization targets.
+- [x] Measure live Core Web Vitals indicators and property payload/load times; record the local and deployed baselines in `TECHNICAL_STATUS.md`.
+- [ ] Optional later follow-up: repeat mobile-throttled and field Core Web Vitals measurements, and investigate the slow first homepage navigation if it recurs or users report slowness. The current single-run results do not justify a performance code change.
 - [ ] Revisit server-side property filtering and incremental loading if measurements show the current full initial property load is too large.
 - [ ] Review indexes and profile slow queries after the canonical database schema is available. Current migration/schema drift makes a reliable index review premature.
 - [ ] Further reduce the MapLibre client chunk only if replacing MapLibre or reducing map functionality is acceptable. Current measured chunk: 1,029.18 kB (273.62 kB gzip). Route-level splitting exists, but MapLibre remains a large chunk required by map routes.
