@@ -103,28 +103,31 @@
 		listingAgeFilter = 'Any';
 	}
 
+	function updatePropertyUrl(id) {
+		if (!browser) return;
+
+		const url = new URL(window.location.href);
+		if (id) {
+			const match = data?.properties?.find((property) => property.id === id);
+			url.searchParams.set('property', match?.msl || id);
+		} else {
+			url.searchParams.delete('property');
+		}
+
+		if (url.href !== window.location.href) {
+			goto(url, { state: page.state, shallow: true, replace: true, reset: false });
+		}
+	}
+
 	function selectProperty(id) {
 		if (selectedProperty === id) {
 			selectedProperty = null;
-			if (browser) {
-				const url = new URL(window.location.href);
-				url.searchParams.delete('property');
-				goto(url, { state: page.state, shallow: true, replace: true, reset: false });
-			}
+			updatePropertyUrl(null);
 			return;
 		}
 
 		selectedProperty = id;
-		if (browser) {
-			const url = new URL(window.location.href);
-			if (id) {
-				const match = data?.properties?.find((p) => p.id === id);
-				url.searchParams.set('property', match?.msl || id);
-			} else {
-				url.searchParams.delete('property');
-			}
-			goto(url, { state: page.state, shallow: true, replace: true, reset: false });
-		}
+		updatePropertyUrl(id);
 	}
 
 	onMount(() => {
@@ -156,7 +159,7 @@
 	<title>Cariari Agency - Costa Rica Real Estate</title>
 </svelte:head>
 
-{#if !navigating.complete && !loading}
+{#if navigating.to && navigating.to.url.pathname !== page.url.pathname && !loading}
 	<LogoSvg animate={true} kind="gold" fixed invert />
 {/if}
 
