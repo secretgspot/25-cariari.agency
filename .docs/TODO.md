@@ -8,7 +8,7 @@ Reviewed against the application source and project configuration on 2026-11-05.
 - [x] API property listing has bounded page/limit pagination and tests.
 - [x] Basic image optimization exists: uploads use browser-side CompressorJS; listing cards and uploader previews use lazy loading.
 - [x] Database TypeScript definitions exist in `src/database.types.ts`. Their accuracy still needs to be checked against a canonical schema.
-- [x] A Node built-in test suite and GitHub Actions validation workflow exist. The workflow currently fails at build because it does not provide the required environment variables.
+- [x] A Node built-in test suite is available through `npm test`; Vercel builds the app on deployment.
 - [x] VS Code workspace settings exist.
 - [x] Dark/system theme preferences and other local settings are implemented.
 - [x] Loading feedback exists in several forms and views.
@@ -55,7 +55,6 @@ Reviewed against the application source and project configuration on 2026-11-05.
 
 - [ ] Decide whether to add ESLint and Prettier; neither is configured.
 - [ ] Decide whether Husky hooks are useful; they are not configured.
-- [ ] Resolve the existing GitHub Actions build failure by providing the required CI environment values or changing the validation approach. GitHub Actions is optional; the current workflow runs tests and a build, not a deployment.
 - [ ] Verify mobile usability and offline behavior on target devices before adding more mobile/PWA work.
 - [ ] Tune touch gestures only if device testing identifies a problem; MapLibre already provides the map's core touch interactions.
 - [ ] Decide whether production deployment configuration needs tuning; Vercel is the configured target, and no separate deployment workflow is checked in.
@@ -70,5 +69,6 @@ Reviewed against the application source and project configuration on 2026-11-05.
 - Add Redis or another new hosted caching/rate-limiting service. Avoid new external service dependencies; consider solutions within existing infrastructure if needed.
 - Add an OpenAPI endpoint/specification. The API is described in `README.md`; the user does not consider a separate OpenAPI spec necessary for current AI/MCP or developer use.
 - Set a fixed 30–40% bundle-reduction target. Measure actual impact and choose a feasible target first.
+- GitHub Actions CI. The validation workflow was removed by user choice; Vercel remains responsible for deployment builds and tests can be run locally with `npm test`.
 
 Client-side CompressorJS is intentionally retained: it resizes/compresses photos before upload, which addresses large phone-camera files exceeding upload limits. Server-side image processing would happen after the original upload and would not solve that initial size constraint without changing the upload flow.

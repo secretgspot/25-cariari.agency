@@ -85,7 +85,7 @@ npm test
 npm run preview
 ```
 
-`package-lock.json` is checked in so installs and CI use the same dependency tree. The local production build succeeds, but `adapter-auto` cannot identify a production platform when run outside the deployment environment.
+`package-lock.json` is checked in so installs use the same dependency tree. The local production build succeeds, but `adapter-auto` cannot identify a production platform when run outside the deployment environment. Vercel builds the app for deployment; run `npm test` locally to execute the test suite.
 
 ---
 

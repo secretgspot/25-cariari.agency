@@ -13,7 +13,7 @@
 | Inquiries | Public inquiry/contact forms save inquiries or send email notifications. User-provided email-template values are now validated and HTML-escaped. |
 | Authentication | Supabase SSR authentication and magic-link login are implemented. |
 | API and SEO | Read-only property API and dynamic sitemap routes are implemented. |
-| Tests and CI | Node test runner and GitHub Actions build/test workflow are configured. |
+| Tests and deployment | Node test runner is available locally; Vercel builds the app on deployment. GitHub Actions CI was removed by user choice. |
 | Dependency security | `npm audit --omit=dev` reported no production dependency advisories. |
 
 ## Remaining priorities
