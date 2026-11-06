@@ -111,6 +111,7 @@ export const actions = {
 				reservationToken,
 			)
 		) {
+			console.warn(`❌ Property add rejected: invalid MSL/reservation from user ${userId}`);
 			return fail(400, {
 				error: true,
 				message: 'A valid MSL and reservation are required before adding a property.',
@@ -136,7 +137,7 @@ export const actions = {
 				});
 
 			if (reservationError) {
-				console.error('Error confirming property MSL reservation:', reservationError);
+				console.error(`❌ Unable to confirm MSL ${property.msl} reservation for user ${userId}:`, reservationError.message);
 				return fail(500, {
 					error: true,
 					message: `Unable to confirm the property MSL reservation: ${reservationError.message}`,
@@ -145,6 +146,7 @@ export const actions = {
 			}
 
 			if (!reservationConfirmed) {
+				console.warn(`⏳ MSL ${property.msl} reservation expired for user ${userId}`);
 				return fail(409, {
 					error: true,
 					message: 'The MSL reservation expired. Please submit the form again to reserve an available MSL.',
@@ -161,7 +163,7 @@ export const actions = {
 				.maybeSingle();
 
 			if (resErr) {
-				console.error('Error inserting property:', resErr);
+				console.error(`❌ Failed to add property ${property.msl} for user ${userId}:`, resErr.message);
 				if (resErr instanceof AuthApiError && resErr.status === 400) {
 					return fail(400, {
 						error: true,
@@ -198,12 +200,13 @@ export const actions = {
 					.insert(photoRecords);
 
 				if (photosInsertError) {
-					console.error('Error inserting photo records:', photosInsertError);
+					console.error(`❌ Property ${property.msl} was added for user ${userId}, but saving ${photoRecords.length} photo records failed:`, photosInsertError.message);
 					// Consider cleanup here if property was created but photo records failed
 					return fail(500, { message: 'Failed to save photo references in the database.' });
 				}
 			}
 
+			console.log(`➕🏠 Property ${resData.msl} added by user ${userId} (${photoRecords.length} photos)`);
 			return {
 				success: true,
 				property_id: resData.id,
@@ -211,7 +214,7 @@ export const actions = {
 			};
 
 		} catch (error) {
-			console.error('Unhandled error in add property action:', error);
+			console.error(`❌ Unexpected error adding property ${property.msl} for user ${userId}:`, error.message);
 			// If a property was created but photo upload failed, you might want to clean up
 			if (newPropertyId) {
 				// Optionally delete the property if no photos were successfully linked

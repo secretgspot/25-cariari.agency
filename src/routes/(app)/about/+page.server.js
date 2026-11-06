@@ -12,10 +12,14 @@ export async function load() {
 
 export const actions = {
 	default: async ({ request }) => {
+		let senderName = 'unknown';
+		let senderEmail = 'unknown';
+
 		try {
 			// Rate limiting check (max 3 contact submissions per hour per client)
 			const rateLimit = applyRateLimit(request, 'contact');
 			if (!rateLimit.allowed) {
+				console.warn('🚦 Contact form rate limit reached');
 				const minutes = Math.ceil(rateLimit.retryAfter / 60);
 				return fail(429, {
 					rateLimited: true,
@@ -27,6 +31,8 @@ export const actions = {
 			const name = readTextField(formData, 'name', { maxLength: 200 });
 			const email = readTextField(formData, 'email', { maxLength: 254 });
 			const body = readTextField(formData, 'message', { required: false });
+			senderName = name || senderName;
+			senderEmail = email || senderEmail;
 
 			if (
 				!name ||
@@ -35,6 +41,7 @@ export const actions = {
 				!isValidEmail(email) ||
 				body === null
 			) {
+				console.warn('❌ Contact form rejected: invalid contact details');
 				return fail(400, { error: true, message: 'Please provide a valid name and email address.' });
 			}
 
@@ -48,10 +55,8 @@ export const actions = {
 				await new Promise((resolve, reject) => {
 					transporter.sendMail(message, (error, info) => {
 						if (error) {
-							console.error("📬 Error sending email:", error);
 							reject(error);
 						} else {
-							console.log("📬 Email sent:", info.response);
 							resolve(info);
 						}
 					});
@@ -59,10 +64,11 @@ export const actions = {
 			}
 
 			await sendEmail(message);
+			console.log(`✉️ Contact form email sent from ${senderName} <${senderEmail}>`);
 
 			return { success: true };
 		} catch (error) {
-			console.error("Error:", error);
+			console.error(`❌ Contact form email failed from ${senderName} <${senderEmail}>:`, error.message);
 			return fail(500, { error: true, message: 'Unable to send your message. Please try again.' });
 		}
 	}

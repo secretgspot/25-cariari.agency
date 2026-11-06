@@ -49,6 +49,7 @@ export const actions = {
 		// Rate limiting check (max 5 inquiries per hour per client)
 		const rateLimit = applyRateLimit(event.request, 'inquiry');
 		if (!rateLimit.allowed) {
+			console.warn('🚦 Inquiry form rate limit reached');
 			const minutes = Math.ceil(rateLimit.retryAfter / 60);
 			return fail(429, {
 				rateLimited: true,
@@ -62,6 +63,7 @@ export const actions = {
 		// Honeypot check - if filled, it's a bot
 		const website = formData.get('website');
 		if (website) {
+			console.warn('🤖 Inquiry form honeypot triggered');
 			return fail(400, {
 				errors: { message: 'Unable to submit inquiry. Please refresh the page and try again.' },
 			});
@@ -83,6 +85,7 @@ export const actions = {
 			!propertyId ||
 			message === null
 		) {
+			console.warn('❌ Inquiry form rejected: invalid contact details');
 			return fail(400, { errors: { message: 'Please provide valid contact details.' } });
 		}
 
@@ -94,7 +97,7 @@ export const actions = {
 			.single();
 
 		if (propError || !property) {
-			console.log('❌ Property not found:', propError?.message);
+			console.error(`❌ Inquiry rejected: property ${propertyId} not found for ${name} <${email}>:`, propError?.message);
 			return fail(404, { errors: { message: 'Property not found' } });
 		}
 
@@ -114,11 +117,11 @@ export const actions = {
 			.insert(inquiryData);
 
 		if (insertError) {
-			console.error('❌ Failed to save inquiry:', insertError);
+			console.error(`❌ Failed to save inquiry for property ${property.msl} from ${name} <${email}>:`, insertError.message);
 			return fail(500, { errors: { message: 'Failed to submit inquiry. Please try again.' } });
 		}
 
-		console.log(`📥 inquiery for ${property.msl} by ${name}`);
+		console.log(`📥 Inquiry saved for ${property.msl} from ${name} <${email}>`);
 
 		// Send email notification to listing agent (using shared transporter like contact form)
 		try {
@@ -146,21 +149,23 @@ export const actions = {
 						},
 						(err, info) => {
 							if (err) {
-								console.error('📬 Error sending email:', err);
 								reject(err);
 							} else {
-								console.log(`📬 Email sent to ${agentName}`);
+								console.log(`📬 Inquiry email sent for ${property.msl} to ${agentName}`);
 								resolve(info);
 							}
 						}
 					);
 				});
 			} else {
-				if (agentEmail) console.error('Listing agent email address is invalid.');
-				console.log(`📬 No email for ${agentName}, inquiry saved.`);
+				if (agentEmail) {
+					console.error(`📬 Invalid listing agent email for ${property.msl}; inquiry saved, notification not sent.`);
+				} else {
+					console.warn(`📬 No listing agent email for ${property.msl}; inquiry saved, notification not sent.`);
+				}
 			}
 		} catch (emailError) {
-			console.error('Failed to send email notification:', emailError);
+			console.error(`📬 Inquiry email failed for ${property.msl} from ${name} <${email}>:`, emailError.message);
 			// Don't fail the request if email fails - inquiry is saved
 		}
 

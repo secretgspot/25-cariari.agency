@@ -40,7 +40,7 @@ export async function load(event) {
 
 	// Boot user to whom this property doesn't belong to as long as it's not admin
 	if (user.id !== property.user_id && !isAdmin) {
-		console.log('⛔ YOU DON"T BELONG HERE!')
+		console.warn(`⛔ User ${user.id} denied access to edit property ${property.msl}`);
 		redirect(307, `/`);
 	}
 
@@ -108,6 +108,9 @@ export const actions = {
 			contact_phone: formData.get('contact_phone'),
 			contact_realtor: formData.get('contact_realtor'),
 		};
+		const propertyLabel = String(propertyUpdates.msl || propertyId)
+			.replace(/[\u0000-\u001f\u007f]/g, ' ')
+			.slice(0, 100);
 
 		// 1. Get the uploaded photo URLs/paths from the formData
 		// This will be an array of strings (JSON stringified URLs/paths)
@@ -129,7 +132,7 @@ export const actions = {
 				.maybeSingle();
 
 			if (resErr) {
-				console.error('Error updating property details:', resErr);
+				console.error(`❌ Failed to update property ${propertyLabel} for user ${userId}:`, resErr.message);
 				if (resErr instanceof AuthApiError && resErr.status === 400) {
 					return fail(400, {
 						error: true,
@@ -161,7 +164,7 @@ export const actions = {
 					.remove(filePathsToDelete);
 
 				if (storageError) {
-					console.error('Error deleting photos from storage:', storageError);
+					console.error(`🖼️ Failed to delete ${filePathsToDelete.length} photos from storage for property ${propertyLabel} by user ${userId}:`, storageError.message);
 					// Decide if you want to fail the whole update or just log the error
 				}
 
@@ -172,7 +175,7 @@ export const actions = {
 					.in('id', photoIdsToDelete);
 
 				if (dbError) {
-					console.error('Error deleting photos from database:', dbError);
+					console.error(`🖼️ Failed to delete ${photoIdsToDelete.length} photo records for property ${propertyLabel} by user ${userId}:`, dbError.message);
 					// Decide if you want to fail the whole update or just log the error
 				}
 			}
@@ -193,11 +196,12 @@ export const actions = {
 					.insert(photoRecords);
 
 				if (photosInsertError) {
-					console.error('Error inserting photo records:', photosInsertError);
+					console.error(`🖼️ Failed to save ${photoRecords.length} new photo records for property ${propertyLabel} by user ${userId}:`, photosInsertError.message);
 					return fail(500, { message: 'Failed to save new photo references.' });
 				}
 			}
 
+			console.log(`✏️🏠 Property ${resData.msl} updated by user ${userId} (${uploadedPhotoDetails.length} photos added, ${photosToDelete.length} removals requested)`);
 			return {
 				success: true,
 				property_id: resData.id,
@@ -205,7 +209,7 @@ export const actions = {
 			};
 
 		} catch (error) {
-			console.error('Unhandled error in edit property action:', error);
+			console.error(`❌ Unexpected error updating property ${propertyLabel} for user ${userId}:`, error.message);
 			return fail(500, { message: error.message || 'An unexpected error occurred during property update.' });
 		}
 	},
@@ -226,15 +230,23 @@ export const actions = {
 
 		const property_id = formData.get('id') || params.id;
 		const msl = formData.get('msl');
+		const propertyLabel = String(msl || property_id || 'unknown')
+			.replace(/[\u0000-\u001f\u007f]/g, ' ')
+			.slice(0, 100);
+		let removedStoragePhotoCount = 0;
 
 		// 1. Delete associated photos from Supabase Storage bucket
 		const filesToRemove = new Set();
 
 		// Fetch photo records from DB
-		const { data: photoRecords } = await supabaseClient
+		const { data: photoRecords, error: photoRecordsError } = await supabaseClient
 			.from('photos')
 			.select('file_path')
 			.eq('property_id', property_id);
+
+		if (photoRecordsError) {
+			console.error(`🖼️ Failed to load photo records for property ${property_id} before deletion by user ${user.id}:`, photoRecordsError.message);
+		}
 
 		if (photoRecords && photoRecords.length > 0) {
 			for (const p of photoRecords) {
@@ -244,9 +256,13 @@ export const actions = {
 
 		// Also list files in storage bucket under the property's MSL folder
 		if (msl) {
-			const { data: bucketFiles } = await supabaseClient.storage
+			const { data: bucketFiles, error: bucketListError } = await supabaseClient.storage
 				.from('photos')
 				.list(msl);
+
+			if (bucketListError) {
+				console.error(`🖼️ Failed to list storage photos for property ${msl} before deletion by user ${user.id}:`, bucketListError.message);
+			}
 
 			if (bucketFiles && bucketFiles.length > 0) {
 				for (const f of bucketFiles) {
@@ -261,13 +277,16 @@ export const actions = {
 				.remove(Array.from(filesToRemove));
 
 			if (storageError) {
-				console.error('Error deleting photos from storage bucket:', storageError);
+				console.error(`🖼️ Failed to delete ${filesToRemove.size} storage photos for property ${propertyLabel} by user ${user.id}:`, storageError.message);
+			} else {
+				removedStoragePhotoCount = filesToRemove.size;
 			}
 		}
 
 		// 2. Delete property from DB (cascades to 'photos' and 'inquiries' tables)
 		const { error: resErr } = await supabaseClient.from('properties').delete().eq('id', property_id);
 		if (resErr) {
+			console.error(`❌ Failed to delete property ${propertyLabel} by user ${user.id}:`, resErr.message);
 			if (resErr instanceof AuthApiError && resErr.status === 400) {
 				return fail(400, {
 					error: true,
@@ -279,6 +298,7 @@ export const actions = {
 				message: `Unable to delete property, ${resErr.message}`,
 			});
 		} else {
+			console.log(`🗑️🏠 Property ${propertyLabel} deleted by user ${user.id} (${removedStoragePhotoCount} storage photos removed)`);
 			redirect(303, '/properties');
 		}
 	},
@@ -300,6 +320,7 @@ export const actions = {
 		// push it to the server
 		const { data: resData, error: resErr } = await supabaseClient.from('properties').update({ is_active: false }).eq('id', property_id).select().single();
 		if (resErr) {
+			console.error(`❌ Failed to delist property ${property_id} by user ${user.id}:`, resErr.message);
 			if (resErr instanceof AuthApiError && resErr.status === 400) {
 				return fail(400, {
 					error: true,
@@ -314,6 +335,7 @@ export const actions = {
 			});
 		}
 
+		console.log(`📦🏠 Property ${resData.msl} delisted by user ${user.id}`);
 		return {
 			success: true,
 			message: `Property ${resData.msl} has been delisted!`,
@@ -321,5 +343,3 @@ export const actions = {
 		}
 	},
 };
-
-

@@ -43,7 +43,6 @@ export async function handle({ event, resolve }) {
 			}
 		}
 
-		console.log('hooks.server.js: user details fetched successfully 👍');
 		const is_logged_in = true;
 		const is_admin = user?.app_metadata?.claims_admin || false;
 

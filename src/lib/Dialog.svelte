@@ -10,7 +10,6 @@
 	};
 
 	const handleAlertConfirm = () => {
-		console.log('Alert OKAY clicked!');
 		// You can do something after the alert is confirmed
 	};
 
@@ -19,12 +18,10 @@
 	};
 
 	const handleConfirmAction = () => {
-		console.log('Confirm button clicked!');
 		// Perform action after confirmation
 	};
 
 	const handleCancelAction = () => {
-		console.log('Cancel button clicked!');
 		// Handle cancellation
 	};
 
