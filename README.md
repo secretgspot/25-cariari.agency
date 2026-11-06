@@ -117,7 +117,9 @@ Returns a page of property records from the public `properties_preview` view. Su
 - `page` (positive integer, default `1`): One-based results page.
 - `limit` (positive integer, default `50`, maximum `100`): Results per page.
 
-Pagination values must be valid positive integers, and `limit` cannot exceed 100. Invalid pagination returns HTTP `400` with code `INVALID_PAGINATION`. Invalid sort/order values return HTTP `400` with code `INVALID_SORT` when both parameters are supplied.
+Numeric filter values must be finite non-negative decimal numbers; year filters must be safe integers. `building_size_min` cannot exceed `building_size_max`, and `year_built_min` cannot exceed `year_built_max`. `property_for` accepts only `Sale` or `Rent` (case-insensitive). Text filters must contain 1–200 characters after trimming and cannot contain control characters. Each filter parameter may be supplied only once.
+
+Invalid filter values return HTTP `400` with code `INVALID_FILTER`. Pagination values must be valid positive integers, and `limit` cannot exceed 100; invalid pagination returns HTTP `400` with code `INVALID_PAGINATION`. Invalid sort/order values return HTTP `400` with code `INVALID_SORT` when both parameters are supplied.
 
 Example: `GET /api/properties?property_for=Sale&beds_min=3&page=1&limit=24`
 

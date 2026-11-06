@@ -34,6 +34,110 @@ import {
 	parsePagination
 } from '#lib/utils/pagination.js';
 
+const MAX_FILTER_TEXT_LENGTH = 200;
+const NUMERIC_FILTERS = [
+	{ param: 'price_max', column: 'price', method: 'lte', excludeZero: true },
+	{ param: 'rent_max', column: 'rent', method: 'lte', excludeZero: true },
+	{ param: 'beds_min', column: 'beds', method: 'gte', excludeZero: true },
+	{ param: 'baths_min', column: 'baths', method: 'gte', excludeZero: true },
+	{ param: 'lot_size_min', column: 'lot_size', method: 'gte', excludeZero: true },
+	{ param: 'year_built_min', column: 'year_built', method: 'gte', excludeZero: true, integer: true },
+	{ param: 'year_built_max', column: 'year_built', method: 'lte', integer: true },
+	{ param: 'building_size_min', column: 'building_size', method: 'gte', excludeZero: true },
+	{ param: 'building_size_max', column: 'building_size', method: 'lte' }
+];
+const TEXT_FILTERS = [
+	'contact_phone',
+	'contact_realtor',
+	'contact_email',
+	'land_use',
+	'msl'
+];
+
+function filterError(message) {
+	return Response.json(
+		{
+			status: 'error',
+			error: {
+				code: 'INVALID_FILTER',
+				message
+			}
+		},
+		{ status: 400 }
+	);
+}
+
+function validateFilters(searchParams) {
+	const numericValues = {};
+	const textValues = {};
+
+	for (const { param, integer } of NUMERIC_FILTERS) {
+		const values = searchParams.getAll(param);
+		if (!values.length) continue;
+		if (values.length !== 1) {
+			return { error: `${param} must be supplied only once.` };
+		}
+
+		const value = values[0].trim();
+		if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value)) {
+			return { error: `${param} must be a non-negative number.` };
+		}
+
+		const number = Number(value);
+		if (!Number.isFinite(number) || (integer && !Number.isSafeInteger(number))) {
+			return {
+				error: integer
+					? `${param} must be a non-negative safe integer.`
+					: `${param} must be a finite non-negative number.`
+			};
+		}
+		numericValues[param] = number;
+	}
+
+	for (const [minimum, maximum] of [
+		['year_built_min', 'year_built_max'],
+		['building_size_min', 'building_size_max']
+	]) {
+		if (
+			numericValues[minimum] !== undefined &&
+			numericValues[maximum] !== undefined &&
+			numericValues[minimum] > numericValues[maximum]
+		) {
+			return { error: `${minimum} cannot be greater than ${maximum}.` };
+		}
+	}
+
+	const propertyForValues = searchParams.getAll('property_for');
+	let propertyFor;
+	if (propertyForValues.length) {
+		if (propertyForValues.length !== 1) {
+			return { error: 'property_for must be supplied only once.' };
+		}
+		const normalized = propertyForValues[0].trim().toLowerCase();
+		if (normalized !== 'sale' && normalized !== 'rent') {
+			return { error: 'property_for must be Sale or Rent.' };
+		}
+		propertyFor = normalized === 'sale' ? 'Sale' : 'Rent';
+	}
+
+	for (const param of TEXT_FILTERS) {
+		const values = searchParams.getAll(param);
+		if (!values.length) continue;
+		if (values.length !== 1) {
+			return { error: `${param} must be supplied only once.` };
+		}
+		const value = values[0].trim();
+		if (!value || value.length > MAX_FILTER_TEXT_LENGTH || /[\u0000-\u001f\u007f]/.test(value)) {
+			return {
+				error: `${param} must contain between 1 and ${MAX_FILTER_TEXT_LENGTH} characters without control characters.`
+			};
+		}
+		textValues[param] = value;
+	}
+
+	return { numericValues, textValues, propertyFor };
+}
+
 export async function GET(event) {
 	const supabaseClient = event.locals.supabase;
 	const { searchParams } = new URL(event.request.url);
@@ -55,61 +159,31 @@ export async function GET(event) {
 		);
 	}
 
+	const filters = validateFilters(searchParams);
+	if (filters.error) {
+		return filterError(filters.error);
+	}
+
 	let query = supabaseClient.from('properties_preview')
 		.select('*', { count: 'exact' });
 
 	// Filtering
-	let propertyForDebug = null;
-	if (searchParams.has('property_for')) {
-		let value = searchParams.get('property_for');
-		propertyForDebug = value;
-		if (value) {
-			// Convert to Title Case for case-insensitive matching
-			value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-			query = query.filter('property_for', 'cs', `["${value}"]`);
+	const propertyForDebug = searchParams.get('property_for');
+	if (filters.propertyFor) {
+		query = query.filter('property_for', 'cs', `["${filters.propertyFor}"]`);
+	}
+
+	for (const { param, column, method, excludeZero } of NUMERIC_FILTERS) {
+		const value = filters.numericValues[param];
+		if (value === undefined) continue;
+		query = query[method](column, value);
+		if (excludeZero) query = query.gt(column, 0);
+	}
+	for (const param of TEXT_FILTERS) {
+		const value = filters.textValues[param];
+		if (value !== undefined) {
+			query = query.ilike(param, `%${value}%`);
 		}
-	}
-	if (searchParams.has('price_max')) {
-		query = query.lte('price', searchParams.get('price_max')).gt('price', 0);
-	}
-	if (searchParams.has('rent_max')) {
-		query = query.lte('rent', searchParams.get('rent_max')).gt('rent', 0);
-	}
-	if (searchParams.has('beds_min')) {
-		query = query.gte('beds', searchParams.get('beds_min')).gt('beds', 0);
-	}
-	if (searchParams.has('baths_min')) {
-		query = query.gte('baths', searchParams.get('baths_min')).gt('baths', 0);
-	}
-	if (searchParams.has('lot_size_min')) {
-		query = query.gte('lot_size', searchParams.get('lot_size_min')).gt('lot_size', 0);
-	}
-	if (searchParams.has('contact_phone')) {
-		query = query.ilike('contact_phone', `%${searchParams.get('contact_phone')}%`);
-	}
-	if (searchParams.has('contact_realtor')) {
-		query = query.ilike('contact_realtor', `%${searchParams.get('contact_realtor')}%`);
-	}
-	if (searchParams.has('contact_email')) {
-		query = query.ilike('contact_email', `%${searchParams.get('contact_email')}%`);
-	}
-	if (searchParams.has('year_built_min')) {
-		query = query.gte('year_built', searchParams.get('year_built_min')).gt('year_built', 0);
-	}
-	if (searchParams.has('year_built_max')) {
-		query = query.lte('year_built', searchParams.get('year_built_max'));
-	}
-	if (searchParams.has('land_use')) {
-		query = query.ilike('land_use', `%${searchParams.get('land_use')}%`);
-	}
-	if (searchParams.has('building_size_min')) {
-		query = query.gte('building_size', searchParams.get('building_size_min')).gt('building_size', 0);
-	}
-	if (searchParams.has('building_size_max')) {
-		query = query.lte('building_size', searchParams.get('building_size_max'));
-	}
-	if (searchParams.has('msl')) {
-		query = query.ilike('msl', `%${searchParams.get('msl')}%`);
 	}
 
 	// Sorting

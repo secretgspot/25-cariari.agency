@@ -44,7 +44,7 @@ Reviewed against the application source and project configuration on 2026-11-05.
 ### API and forms
 
 - [x] API usage is described in `README.md`; no separate OpenAPI specification is currently needed.
-- [ ] Complete validation of API filter values where needed. Pagination and sort inputs are already bounded/validated.
+- [x] Validate public property API filter inputs: numeric and year values, min/max ranges, property type, and text values; reject malformed inputs with `INVALID_FILTER`.
 - [ ] Add rate limiting for the public read API only if abuse or traffic warrants it. CORS configuration is needed only if cross-origin clients are intended.
 - [ ] **Deferred until database work resumes:** Replace the process-local public-form rate limiter with a shared, atomic mechanism using existing infrastructure. The current limit is best-effort per Vercel function instance. Avoid adding a new hosted service such as Redis.
 - [ ] Decide whether there is a real machine-client use case for write API endpoints. This would add public HTTP operations for external software to create/update/delete listings; the current public API is read-only, while users already perform these actions through authenticated website forms.
