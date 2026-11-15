@@ -196,6 +196,92 @@ export type Database = {
           }
         ];
       };
+      site_settings: {
+        Row: {
+          allowed_image_types: string;
+          contact_email: string;
+          contact_phone: string | null;
+          created_at: string;
+          default_agent_email: string;
+          enable_registration: boolean;
+          forward_inquiries_to_realtor: boolean;
+          google_maps_api_key: string | null;
+          id: number;
+          items_per_page: number;
+          maintenance_mode: boolean;
+          max_upload_size_mb: number;
+          office_address: string | null;
+          recaptcha_secret_key: string | null;
+          recaptcha_site_key: string | null;
+          site_name: string;
+          site_tagline: string | null;
+          social_facebook: string | null;
+          social_instagram: string | null;
+          social_linkedin: string | null;
+          social_youtube: string | null;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          allowed_image_types?: string;
+          contact_email?: string;
+          contact_phone?: string | null;
+          created_at?: string;
+          default_agent_email?: string;
+          enable_registration?: boolean;
+          forward_inquiries_to_realtor?: boolean;
+          google_maps_api_key?: string | null;
+          id?: number;
+          items_per_page?: number;
+          maintenance_mode?: boolean;
+          max_upload_size_mb?: number;
+          office_address?: string | null;
+          recaptcha_secret_key?: string | null;
+          recaptcha_site_key?: string | null;
+          site_name?: string;
+          site_tagline?: string | null;
+          social_facebook?: string | null;
+          social_instagram?: string | null;
+          social_linkedin?: string | null;
+          social_youtube?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          allowed_image_types?: string;
+          contact_email?: string;
+          contact_phone?: string | null;
+          created_at?: string;
+          default_agent_email?: string;
+          enable_registration?: boolean;
+          forward_inquiries_to_realtor?: boolean;
+          google_maps_api_key?: string | null;
+          id?: number;
+          items_per_page?: number;
+          maintenance_mode?: boolean;
+          max_upload_size_mb?: number;
+          office_address?: string | null;
+          recaptcha_secret_key?: string | null;
+          recaptcha_site_key?: string | null;
+          site_name?: string;
+          site_tagline?: string | null;
+          social_facebook?: string | null;
+          social_instagram?: string | null;
+          social_linkedin?: string | null;
+          social_youtube?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "site_settings_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     }
     Views: {
       properties_preview: {

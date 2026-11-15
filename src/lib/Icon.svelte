@@ -2,6 +2,7 @@
 	let { size = '69px', color = 'currentColor', kind } = $props();
 
 	let svgContent = $state('');
+	let viewBox = $state('0 0 512 512');
 
 	$effect(() => {
 		if (kind) {
@@ -16,6 +17,12 @@
 						const svgElement = doc.querySelector('svg');
 						if (svgElement) {
 							svgContent = svgElement.innerHTML; // Get inner HTML of SVG
+							const vb = svgElement.getAttribute('viewBox');
+							if (vb) {
+								viewBox = vb;
+							} else {
+								viewBox = '0 0 512 512';
+							}
 						} else {
 							svgContent = ''; // Handle cases where no SVG is found
 						}
@@ -38,7 +45,7 @@
 <svg
 	width={size}
 	height={size}
-	viewBox="0 0 512 512"
+	{viewBox}
 	fill="none"
 	stroke={color}
 	stroke-width="2"

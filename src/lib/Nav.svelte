@@ -36,6 +36,12 @@
 		</LinkButton>
 	{/if}
 	{#if page.data.is_logged_in}
+		{#if page.data.is_admin && page.url.pathname != '/admin/settings'}
+			<LinkButton href="/admin/settings" underline={false} title="Admin Settings" class="nav-link">
+				<span class="nav-icon"><Icon kind="modify" size="27" /></span>
+				<span class="nav-text">Settings</span>
+			</LinkButton>
+		{/if}
 		<form action="/logout" method="post" class="form-logout">
 			{#if page.data.is_admin}<span title="admin">🔥</span>{/if}
 			<LinkButton
@@ -60,7 +66,7 @@
 		top: var(--size-2);
 		right: 0;
 		user-select: none;
-		z-index: 3;
+		z-index: 20;
 		display: flex;
 		align-items: center;
 		gap: var(--size-3);
@@ -73,6 +79,7 @@
 
 		&.fixed {
 			position: fixed;
+			z-index: 30;
 		}
 		&.basic {
 			position: static;

@@ -266,7 +266,8 @@
 
 	fieldset input::placeholder,
 	fieldset textarea::placeholder {
-		color: var(--text-3);
+		color: var(--text-2);
+		opacity: 0.45;
 	}
 
 	fieldset input:focus,

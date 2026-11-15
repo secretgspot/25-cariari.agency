@@ -7,7 +7,7 @@
 	import { normalizePosition, isValidPosition } from '#lib/utils/mapUtils.js';
 
 	/** @type {{ position: { lat: number|string, lng: number|string }, zoom?: number }} */
-	let { position, zoom = 17 } = $props();
+	let { position, zoom = 14 } = $props();
 
 	let mapElement;
 	let mapInstance = null;

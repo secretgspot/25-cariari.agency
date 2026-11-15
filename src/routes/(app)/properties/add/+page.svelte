@@ -233,7 +233,8 @@
 				await applyAction(result);
 			}
 		};
-	}}>
+	}}
+>
 	<!-- PROPERTY TYPE -->
 	<section class="section section_property_type">
 		<div class="header">
@@ -255,17 +256,14 @@
 						kind="flip"
 						colored
 						on="Listed"
-						off="Delisted" />
+						off="Delisted"
+					/>
 				</fieldset>
 			{/if}
 
 			<fieldset class={property.is_active ? 'active' : 'removed'}>
 				<legend>MSL</legend>
-				<input
-					type="text"
-					placeholder="ex: CR-001"
-					value={property.msl}
-					readonly />
+				<input type="text" placeholder="ex: CR-001" value={property.msl} readonly />
 			</fieldset>
 
 			<fieldset>
@@ -298,7 +296,8 @@
 					name="address"
 					placeholder="ex: Avenida 52, Provincia Heredia, La Asunción, 40703"
 					autocomplete="off"
-					bind:value={property.address} />
+					bind:value={property.address}
+				/>
 			</fieldset>
 
 			<fieldset class="location">
@@ -307,12 +306,14 @@
 				<input
 					type="text"
 					placeholder="ex: -84.163443"
-					bind:value={property.location.lng} />
+					bind:value={property.location.lng}
+				/>
 				<Button
 					type="button"
 					size="block"
 					shadow
-					onclick={() => getPosition(property, gps)}>Get current GPS</Button>
+					onclick={() => getPosition(property, gps)}>Get current GPS</Button
+				>
 
 				<MapPicker bind:updategps={gps} bind:position={property.location} />
 			</fieldset>
@@ -337,7 +338,8 @@
 					name="contact_phone"
 					placeholder="ex: 1234-5678"
 					autocomplete="off"
-					bind:value={property.contact_phone} />
+					bind:value={property.contact_phone}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -347,7 +349,8 @@
 					name="contact_email"
 					placeholder="ex: this@that.there"
 					autocomplete="off"
-					bind:value={property.contact_email} />
+					bind:value={property.contact_email}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -356,7 +359,8 @@
 					type="text"
 					name="contact_realtor"
 					placeholder="ex: Re/Max or Jane Doe"
-					bind:value={property.contact_realtor} />
+					bind:value={property.contact_realtor}
+				/>
 			</fieldset>
 		</div>
 	</section>
@@ -381,7 +385,8 @@
 					min="1900"
 					max="2099"
 					step="1"
-					bind:value={property.year_built} />
+					bind:value={property.year_built}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -390,7 +395,8 @@
 					type="text"
 					name="building_style"
 					placeholder="ex: 2 Story"
-					bind:value={property.building_style} />
+					bind:value={property.building_style}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -400,7 +406,8 @@
 					name="lot_size"
 					placeholder="ex: 900"
 					min="0"
-					bind:value={property.lot_size} />
+					bind:value={property.lot_size}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -410,7 +417,8 @@
 					name="building_size"
 					placeholder="ex: 810"
 					min="0"
-					bind:value={property.building_size} />
+					bind:value={property.building_size}
+				/>
 			</fieldset>
 		</div>
 	</section>
@@ -433,7 +441,8 @@
 					name="beds"
 					placeholder="ex: 3"
 					min="0"
-					bind:value={property.beds} />
+					bind:value={property.beds}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -443,7 +452,8 @@
 					name="baths"
 					placeholder="ex: 3"
 					min="0"
-					bind:value={property.baths} />
+					bind:value={property.baths}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -453,7 +463,8 @@
 					name="half_baths"
 					placeholder="ex: 2"
 					min="0"
-					bind:value={property.half_baths} />
+					bind:value={property.half_baths}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -463,7 +474,8 @@
 					name="rooms"
 					placeholder="ex: 6"
 					min="0"
-					bind:value={property.rooms} />
+					bind:value={property.rooms}
+				/>
 			</fieldset>
 
 			<fieldset>
@@ -473,7 +485,8 @@
 					name="parking_spaces"
 					placeholder="ex: 9"
 					min="0"
-					bind:value={property.parking_spaces} />
+					bind:value={property.parking_spaces}
+				/>
 			</fieldset>
 		</div>
 	</section>
@@ -497,7 +510,8 @@
 						name="price"
 						placeholder="ex: 630000"
 						min="0"
-						bind:value={property.price} />
+						bind:value={property.price}
+					/>
 				</fieldset>
 			{/if}
 
@@ -509,7 +523,8 @@
 						name="rent"
 						placeholder="ex: 1800"
 						min="0"
-						bind:value={property.rent} />
+						bind:value={property.rent}
+					/>
 				</fieldset>
 			{/if}
 
@@ -520,17 +535,19 @@
 					name="taxes"
 					placeholder="ex: 1500"
 					min="0"
-					bind:value={property.taxes} />
+					bind:value={property.taxes}
+				/>
 			</fieldset>
 
 			<fieldset>
-				<legend>Fees (condo, asssociation) ($/month)</legend>
+				<legend>Fees (condo, association) ($/month)</legend>
 				<input
 					type="number"
 					name="fees"
 					placeholder="ex: 120"
 					min="0"
-					bind:value={property.fees} />
+					bind:value={property.fees}
+				/>
 			</fieldset>
 		</div>
 	</section>
@@ -556,11 +573,13 @@
 						onkeydown={(evt) => {
 							if (evt.key == 'Enter') evt.preventDefault();
 						}}
-						use:enter={(input) => addFeature(input, property)} />
+						use:enter={(input) => addFeature(input, property)}
+					/>
 					<Button
 						type="button"
 						size="icon"
-						onclick={() => addFeature(featureInput, property)}>
+						onclick={() => addFeature(featureInput, property)}
+					>
 						{#snippet icon()}
 							<Icon kind="plus" size="21" />
 						{/snippet}
@@ -589,7 +608,9 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 									stroke-linecap="round"
-									stroke-linejoin="round" /></svg>
+									stroke-linejoin="round"
+								/></svg
+							>
 							{feature}
 						</span>
 					{/each}
@@ -621,17 +642,20 @@
 			type="hidden"
 			hidden
 			name="location"
-			value={JSON.stringify(property.location)} />
+			value={JSON.stringify(property.location)}
+		/>
 		<input
 			type="hidden"
 			hidden
 			name="property_for"
-			value={JSON.stringify(property.property_for)} />
+			value={JSON.stringify(property.property_for)}
+		/>
 		<input
 			type="hidden"
 			hidden
 			name="features"
-			value={JSON.stringify(property.features)} />
+			value={JSON.stringify(property.features)}
+		/>
 
 		<!-- <Button type="button" disabled={loading || !formIsValid}
 				>Submit Changes

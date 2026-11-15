@@ -107,17 +107,35 @@
 
 		.basic {
 			+ label {
+				width: 3.25rem;
+				height: 1.75rem;
 				border: var(--border-size-1) solid var(--surface-4);
-				border-radius: var(--radius-2);
+				border-radius: var(--radius-round, 9999px);
 				padding: 2px;
+				position: relative;
+				transition: all var(--transition) ease;
+				background: var(--surface-2);
+
 				&:after {
-					border-radius: var(--radius-2);
-					background: var(--error);
+					width: calc(1.75rem - 6px);
+					height: calc(1.75rem - 6px);
+					border-radius: 50%;
+					background: var(--text-2);
+					position: absolute;
+					top: 2px;
+					left: 2px;
+					transition: all var(--transition) ease;
 				}
 			}
 
-			&:checked + label::after {
-				background: var(--success);
+			&:checked + label {
+				border-color: var(--accent);
+				background: rgba(212, 175, 55, 0.2);
+
+				&::after {
+					background: var(--accent);
+					left: calc(3.25rem - 1.75rem + 2px);
+				}
 			}
 		}
 
