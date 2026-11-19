@@ -2,10 +2,9 @@
 	import { enhance } from '$app/forms';
 	import Nav from '#lib/Nav.svelte';
 	import Icon from '#lib/Icon.svelte';
+	import Toggle from '#lib/Toggle.svelte';
 	import { Button } from '#lib/buttons/index.js';
 	import { addToast } from '#lib/toasts/index.js';
-	import { playChime } from '#lib/utils/audio.js';
-	import { vibrate, vibratePatterns } from '#lib/utils/vibrate.js';
 
 	/** @type {{ data: import('./$types').PageData, form: import('./$types').ActionData }} */
 	let { data, form } = $props();
@@ -51,14 +50,6 @@
 	let saving = $state(false);
 	let statusMessage = $state('');
 	let statusType = $state(''); // 'success' | 'error' | ''
-
-	function toggleSetting(key) {
-		settings[key] = !settings[key];
-		try {
-			playChime(settings[key] ? 587 : 440, 0.08, 0.15, 'sine');
-			vibrate(vibratePatterns.basic);
-		} catch {}
-	}
 </script>
 
 <svelte:head>
@@ -153,28 +144,15 @@
 						</p>
 					</div>
 
-					<div class="luxury-switch-group">
-						<button
-							type="button"
-							class="luxury-switch"
-							class:checked={settings.forward_inquiries_to_realtor}
-							role="switch"
-							aria-checked={settings.forward_inquiries_to_realtor}
-							aria-label="Toggle forwarding inquiries to listing agent"
-							onclick={() => toggleSetting('forward_inquiries_to_realtor')}>
-							<span class="switch-status-text">
-								{settings.forward_inquiries_to_realtor ? 'ON' : 'OFF'}
-							</span>
-							<span class="switch-slider">
-								<span class="switch-knob"></span>
-							</span>
-						</button>
-						<input
-							type="hidden"
-							name="forward_inquiries_to_realtor"
-							value={settings.forward_inquiries_to_realtor}
-						/>
-					</div>
+					<Toggle
+						name="forward_inquiries_to_realtor"
+						bind:checked={settings.forward_inquiries_to_realtor}
+						label={settings.forward_inquiries_to_realtor ? 'Forwarding' : 'Direct'}
+						kind="flip"
+						colored
+						on="Forward"
+						off="Direct"
+					/>
 				</div>
 
 				<!-- Visual routing indicator -->
@@ -375,28 +353,15 @@
 							Temporarily pauses public browsing with a maintenance screen.
 						</p>
 					</div>
-					<div class="luxury-switch-group">
-						<button
-							type="button"
-							class="luxury-switch"
-							class:checked={settings.maintenance_mode}
-							role="switch"
-							aria-checked={settings.maintenance_mode}
-							aria-label="Toggle maintenance mode"
-							onclick={() => toggleSetting('maintenance_mode')}>
-							<span class="switch-status-text">
-								{settings.maintenance_mode ? 'ON' : 'OFF'}
-							</span>
-							<span class="switch-slider">
-								<span class="switch-knob"></span>
-							</span>
-						</button>
-						<input
-							type="hidden"
-							name="maintenance_mode"
-							value={settings.maintenance_mode}
-						/>
-					</div>
+					<Toggle
+						name="maintenance_mode"
+						bind:checked={settings.maintenance_mode}
+						label={settings.maintenance_mode ? 'Active' : 'Off'}
+						kind="flip"
+						colored
+						on="ON"
+						off="OFF"
+					/>
 				</div>
 
 				<div class="toggle-item">
@@ -406,28 +371,15 @@
 							Enables new realtors to register accounts to list properties.
 						</p>
 					</div>
-					<div class="luxury-switch-group">
-						<button
-							type="button"
-							class="luxury-switch"
-							class:checked={settings.enable_registration}
-							role="switch"
-							aria-checked={settings.enable_registration}
-							aria-label="Toggle realtor registration"
-							onclick={() => toggleSetting('enable_registration')}>
-							<span class="switch-status-text">
-								{settings.enable_registration ? 'ON' : 'OFF'}
-							</span>
-							<span class="switch-slider">
-								<span class="switch-knob"></span>
-							</span>
-						</button>
-						<input
-							type="hidden"
-							name="enable_registration"
-							value={settings.enable_registration}
-						/>
-					</div>
+					<Toggle
+						name="enable_registration"
+						bind:checked={settings.enable_registration}
+						label={settings.enable_registration ? 'Allowed' : 'Disabled'}
+						kind="flip"
+						colored
+						on="ON"
+						off="OFF"
+					/>
 				</div>
 			</div>
 		</section>
@@ -680,87 +632,7 @@
 		}
 	}
 
-	.luxury-switch-group {
-		display: inline-flex;
-		align-items: center;
-		flex-shrink: 0;
-	}
 
-	.luxury-switch {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--size-3);
-		background: var(--surface-2);
-		border: 1px solid var(--surface-3);
-		border-radius: var(--radius-round, 9999px);
-		padding: 4px 6px 4px 14px;
-		cursor: pointer;
-		user-select: none;
-		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-
-		&:hover {
-			border-color: var(--accent);
-			background: var(--surface-3);
-		}
-
-		&:focus-visible {
-			outline: 2px solid var(--accent);
-			outline-offset: 2px;
-		}
-
-		&.checked {
-			background: rgba(46, 125, 50, 0.15);
-			border-color: var(--success);
-
-			.switch-status-text {
-				color: var(--success);
-			}
-
-			.switch-slider {
-				background: var(--success);
-				box-shadow: 0 0 12px rgba(46, 125, 50, 0.4);
-
-				.switch-knob {
-					transform: translateX(24px);
-					background: #ffffff;
-				}
-			}
-		}
-	}
-
-	.switch-status-text {
-		font-size: 0.82rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--text-2);
-		min-width: 2.2ch;
-		text-align: right;
-		transition: color 0.2s ease;
-	}
-
-	.switch-slider {
-		display: block;
-		width: 52px;
-		height: 28px;
-		border-radius: 9999px;
-		background: var(--surface-4);
-		position: relative;
-		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-		padding: 3px;
-		box-sizing: border-box;
-	}
-
-	.switch-knob {
-		display: block;
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: var(--text-2);
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-		transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
-	}
 
 	/* Routing Diagram Box */
 	.routing-explanation-box {

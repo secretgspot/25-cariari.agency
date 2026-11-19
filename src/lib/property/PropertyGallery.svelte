@@ -1,4 +1,6 @@
 <script>
+	import { Button } from '#lib/buttons/index.js';
+
 	/**
 	 * PropertyGallery.svelte
 	 * Modern, high-performance real-estate photo gallery component.
@@ -434,44 +436,19 @@
 					Photo {activeLightboxIndex + 1} of {photos.length}
 				</div>
 
-				<button
+				<Button
 					type="button"
+					size="icon"
+					outline
 					class="lightbox-close-btn"
-					onclick={closeLightbox}
 					aria-label="Close photo viewer (Press Escape)"
+					onclick={closeLightbox}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="22"
-						height="22"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
-				</button>
-			</div>
-
-			<!-- Main content area -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="lightbox-body" role="presentation" onclick={(e) => e.stopPropagation()}>
-				{#if photos.length > 1}
-					<button
-						type="button"
-						class="lightbox-nav-btn prev"
-						onclick={prevPhoto}
-						aria-label="Previous photo (Left arrow)"
-					>
+					{#snippet icon()}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							width="28"
-							height="28"
+							width="20"
+							height="20"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -479,9 +456,42 @@
 							stroke-linecap="round"
 							stroke-linejoin="round"
 						>
-							<polyline points="15 18 9 12 15 6"></polyline>
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
 						</svg>
-					</button>
+					{/snippet}
+				</Button>
+			</div>
+
+			<!-- Main content area -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="lightbox-body" role="presentation" onclick={(e) => e.stopPropagation()}>
+				{#if photos.length > 1}
+					<Button
+						type="button"
+						size="icon"
+						outline
+						class="lightbox-nav-btn prev"
+						onclick={prevPhoto}
+						aria-label="Previous photo (Left arrow)"
+					>
+						{#snippet icon()}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="15 18 9 12 15 6"></polyline>
+							</svg>
+						{/snippet}
+					</Button>
 				{/if}
 
 				<figure class="lightbox-stage">
@@ -497,26 +507,30 @@
 				</figure>
 
 				{#if photos.length > 1}
-					<button
+					<Button
 						type="button"
+						size="icon"
+						outline
 						class="lightbox-nav-btn next"
 						onclick={nextPhoto}
 						aria-label="Next photo (Right arrow)"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="28"
-							height="28"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						>
-							<polyline points="9 18 15 12 9 6"></polyline>
-						</svg>
-					</button>
+						{#snippet icon()}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<polyline points="9 18 15 12 9 6"></polyline>
+							</svg>
+						{/snippet}
+					</Button>
 				{/if}
 			</div>
 
@@ -580,7 +594,7 @@
 			width: 100%;
 			border-radius: var(--radius-3, 12px);
 			overflow: hidden;
-			background: var(--surface-2, #1c1c1e);
+			background: var(--surface-2);
 		}
 
 		/* 1 photo */
@@ -611,7 +625,7 @@
 
 		.mosaic-item {
 			position: relative;
-			background: var(--surface-3, #2c2c2e);
+			background: var(--surface-3);
 			overflow: hidden;
 		}
 
@@ -620,7 +634,7 @@
 			height: 100%;
 			object-fit: cover;
 			display: block;
-			transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+			transition: transform var(--transition) cubic-bezier(0.16, 1, 0.3, 1), filter var(--transition) ease;
 		}
 
 		.mosaic-item:hover img {
@@ -629,7 +643,7 @@
 		}
 
 		.mosaic-item:focus-visible {
-			outline: 2px solid var(--gold, #d4af37);
+			outline: 2px solid var(--accent);
 			outline-offset: -2px;
 			z-index: 2;
 		}
@@ -690,22 +704,22 @@
 			padding: 8px 14px;
 			font-size: 0.85rem;
 			font-weight: 600;
-			color: #fff;
-			background: rgba(18, 18, 20, 0.72);
+			color: var(--text-1);
+			background: transparent;
 			backdrop-filter: blur(10px);
 			-webkit-backdrop-filter: blur(10px);
-			border: 1px solid rgba(255, 255, 255, 0.25);
+			border: 1px solid var(--surface-3);
 			border-radius: var(--radius-round, 9999px);
-			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-			transition: all 0.2s ease;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+			transition: all var(--transition) ease;
 		}
 
 		.view-all-overlay:hover .view-all-glass-btn {
-			background: rgba(18, 18, 20, 0.9);
-			border-color: var(--gold, #d4af37);
-			color: var(--gold, #d4af37);
+			background: var(--surface-2);
+			border-color: var(--accent);
+			color: var(--accent);
 			transform: translateY(-2px);
-			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 		}
 	}
 
@@ -728,24 +742,24 @@
 		width: 100%;
 		border-radius: var(--radius-2, 8px);
 		overflow: hidden;
-		background: var(--surface-2, #1c1c1e);
+		background: var(--surface-2);
 	}
 
 	.mobile-counter-badge {
 		position: absolute;
 		top: var(--size-2, 10px);
 		right: var(--size-2, 10px);
-		background: rgba(10, 10, 10, 0.72);
+		background: var(--surface-2);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
-		color: #ffffff;
+		color: var(--text-1);
 		font-size: 0.78rem;
 		font-weight: 600;
 		padding: 4px 10px;
 		border-radius: var(--radius-round, 9999px);
 		z-index: 2;
 		pointer-events: none;
-		border: 1px solid rgba(255, 255, 255, 0.18);
+		border: 1px solid var(--surface-3);
 		letter-spacing: 0.5px;
 	}
 
@@ -794,22 +808,22 @@
 		width: 7px;
 		height: 7px;
 		border-radius: 50%;
-		background: var(--surface-4, rgba(150, 150, 150, 0.35));
+		background: var(--surface-4);
 		border: none;
 		padding: 0;
 		cursor: pointer;
-		transition: all 0.25s ease;
+		transition: all var(--transition) ease;
 	}
 
 	.carousel-dot.active {
-		background: var(--gold, #d4af37);
+		background: var(--accent);
 		width: 18px;
 		border-radius: var(--radius-round, 9999px);
 	}
 
 	.carousel-dots-overflow {
 		font-size: 0.7rem;
-		color: var(--text-2, #8e8e93);
+		color: var(--text-2);
 		letter-spacing: 1px;
 		margin-left: 2px;
 	}
@@ -821,13 +835,13 @@
 		position: fixed;
 		inset: 0;
 		z-index: 10000;
-		background: rgba(8, 8, 10, 0.94);
+		background: color-mix(in srgb, var(--surface-1) 94%, transparent);
 		backdrop-filter: blur(14px);
 		-webkit-backdrop-filter: blur(14px);
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		animation: lightboxFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		animation: lightboxFadeIn var(--transition) cubic-bezier(0.16, 1, 0.3, 1);
 		user-select: none;
 	}
 
@@ -844,36 +858,28 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: var(--size-3, 14px) var(--size-4, 20px);
-		color: #ffffff;
+		padding: var(--size-3) var(--size-4);
+		color: var(--text-1);
 		z-index: 2;
 	}
 
 	.lightbox-counter {
 		font-size: 0.92rem;
 		font-weight: 500;
-		color: var(--text-2, #b0b0b5);
+		color: var(--text-2);
 		letter-spacing: 0.3px;
 	}
 
-	.lightbox-close-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.1);
-		color: #ffffff;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	:global(.lightbox-close-btn.button) {
+		color: var(--text-1);
+		background: transparent;
+		transition: all var(--transition) ease;
 	}
 
-	.lightbox-close-btn:hover {
-		background: rgba(255, 255, 255, 0.22);
-		border-color: rgba(255, 255, 255, 0.4);
-		transform: scale(1.05);
+	:global(.lightbox-close-btn.button:hover) {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: var(--surface-2);
 	}
 
 	.lightbox-body {
@@ -904,8 +910,9 @@
 		height: auto;
 		object-fit: contain;
 		border-radius: var(--radius-2, 8px);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-		animation: photoZoom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+		border: 1px solid var(--surface-3);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+		animation: photoZoom var(--transition) cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	@keyframes photoZoom {
@@ -921,7 +928,7 @@
 
 	.lightbox-caption {
 		margin-top: 10px;
-		color: var(--text-2, #a0a0a5);
+		color: var(--text-2);
 		font-size: 0.85rem;
 		text-align: center;
 		max-width: 70ch;
@@ -930,46 +937,31 @@
 		white-space: nowrap;
 	}
 
-	.lightbox-nav-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.12);
-		color: #ffffff;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	:global(.lightbox-nav-btn.button) {
+		color: var(--text-1);
+		background: transparent;
+		transition: all var(--transition) ease;
 		z-index: 2;
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
 	}
 
-	.lightbox-nav-btn:hover {
-		background: rgba(255, 255, 255, 0.28);
-		border-color: var(--gold, #d4af37);
-		color: var(--gold, #d4af37);
-		transform: scale(1.08);
+	:global(.lightbox-nav-btn.button:hover) {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: var(--surface-2);
 	}
 
 	@media (max-width: 640px) {
-		.lightbox-nav-btn {
-			width: 38px;
-			height: 38px;
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
+		:global(.lightbox-nav-btn.button) {
+			position: absolute !important;
+			top: 50% !important;
+			transform: translateY(-50%) !important;
+			z-index: 10 !important;
 		}
-		.lightbox-nav-btn.prev {
-			left: 6px;
+		:global(.lightbox-nav-btn.button.prev) {
+			left: 8px !important;
 		}
-		.lightbox-nav-btn.next {
-			right: 6px;
-		}
-		.lightbox-nav-btn:hover {
-			transform: translateY(-50%) scale(1.05);
+		:global(.lightbox-nav-btn.button.next) {
+			right: 8px !important;
 		}
 		.lightbox-image {
 			max-width: 95vw;
@@ -984,7 +976,7 @@
 		padding: var(--size-2, 10px) var(--size-4, 20px) var(--size-3, 14px);
 		overflow-x: auto;
 		scrollbar-width: thin;
-		scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+		scrollbar-color: var(--surface-3) transparent;
 		justify-content: center;
 		z-index: 2;
 	}
@@ -993,7 +985,7 @@
 		height: 4px;
 	}
 	.lightbox-filmstrip::-webkit-scrollbar-thumb {
-		background: rgba(255, 255, 255, 0.25);
+		background: var(--surface-3);
 		border-radius: 4px;
 	}
 
@@ -1003,22 +995,23 @@
 		height: 40px;
 		border-radius: var(--radius-1, 4px);
 		overflow: hidden;
-		border: 2px solid transparent;
+		border: 1px solid var(--surface-3);
 		padding: 0;
-		background: #000;
+		background: transparent;
 		cursor: pointer;
-		opacity: 0.5;
-		transition: all 0.2s ease;
+		opacity: 0.55;
+		transition: all var(--transition) ease;
 	}
 
 	.filmstrip-thumb:hover {
-		opacity: 0.85;
+		opacity: 0.9;
+		border-color: var(--accent);
 	}
 
 	.filmstrip-thumb.active {
 		opacity: 1;
-		border-color: var(--gold, #d4af37);
-		transform: scale(1.08);
+		border-color: var(--accent);
+		transform: scale(1.06);
 	}
 
 	.filmstrip-thumb img {
