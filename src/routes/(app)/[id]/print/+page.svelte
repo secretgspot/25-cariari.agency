@@ -10,6 +10,8 @@
 
 	let { data } = $props();
 	// console.log('(app)/[id=uuid]/print/+page.svelte page:', page);
+
+	let showOnlyQr = $derived(page.url.searchParams.has('qr'));
 </script>
 
 <svelte:head>
@@ -21,10 +23,11 @@
 	<Nav fixed />
 {/if}
 
-<article class="print-property">
+<article class="print-property" class:only-qr={showOnlyQr}>
 	<!-- <h1>Print {slug} {JSON.stringify(query, null, 2)}</h1> -->
 
-	<div class="grid-container">
+	{#if !showOnlyQr}
+		<div class="grid-container">
 		<div class="qr">
 			<QR size={180} message="{page.url.hostname}/{data.property.id}/edit" />
 			<small>{page.url.hostname}/{data.property.id}/edit</small>
@@ -100,6 +103,7 @@
 			<Badge label="fees" value={data.property.fees} />
 		</div>
 	</div>
+	{/if}
 
 	<div class="property-listing">
 		<h2>Scan this QR to view details of this {data.property.msl} listing.</h2>
@@ -125,6 +129,10 @@
 		flex-direction: column;
 		margin: var(--size-8) 0;
 		gap: var(--size-2);
+
+		&.only-qr {
+			min-height: calc(80vh - var(--size-8));
+		}
 	}
 
 	.grid-container {

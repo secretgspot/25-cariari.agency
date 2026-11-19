@@ -235,7 +235,7 @@
 		</a>
 
 		<div class="utility-actions">
-			<a href="/{property.id}/print" class="utility-btn" title="Print property brochure">
+			<a href="/{property.id}/print?qr" class="utility-btn" title="Print property brochure">
 				<Icon kind="receipt" size="18" />
 				<span class="btn-text">Print Brochure</span>
 			</a>
