@@ -89,8 +89,7 @@
 		const lat = Number(marker.location.lat);
 		if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
 
-		const offsetX =
-			window.innerWidth >= 768 && window.innerWidth < 1200 ? 100 : 0;
+		const offsetX = window.innerWidth >= 768 && window.innerWidth < 1200 ? 100 : 0;
 		const camera = {
 			center: [lng, lat],
 			zoom: 18,
@@ -139,7 +138,7 @@
 			container: mapElement,
 			style: resolveStyle(currentLayer),
 			center: defaultCenter,
-			zoom: 16,
+			zoom: 15,
 			minZoom: 15,
 			maxZoom: 18,
 			maxBounds,
