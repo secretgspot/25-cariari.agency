@@ -389,30 +389,19 @@
 			</div>
 		</section>
 
-		<!-- SUBMIT ACTION BAR -->
-		<div class="action-bar">
-			<div class="action-info">
-				<span class="save-status">
-					{#if saving}
-						<span class="saving-pulse"></span> Saving changes to Supabase...
-					{:else}
-						All changes update database immediately upon saving.
-					{/if}
-				</span>
-			</div>
-			<div class="action-buttons">
-				<Button
-					type="submit"
-					loading={saving}
-					disabled={saving}
-					size="regular"
-					buzz
-					sound
-					class="save-button">
-					Save Settings
-				</Button>
-			</div>
-		</div>
+		<!-- FORM BUTTONS -->
+		<footer class="buttons-group">
+			<Button
+				type="submit"
+				shadow
+				loading={saving}
+				disabled={saving}>
+				{#snippet icon()}
+					<Icon kind="save" size="27" />
+				{/snippet}
+				Save Settings
+			</Button>
+		</footer>
 	</form>
 </main>
 
@@ -789,66 +778,12 @@
 		flex: 1;
 	}
 
-	/* Sticky Action Bar */
-	.action-bar {
-		position: sticky;
-		bottom: var(--size-3);
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--size-4);
-		padding: var(--size-3) var(--size-5);
-		border-radius: var(--radius-3);
-		background: var(--surface-1);
-		border: 1px solid rgba(212, 175, 55, 0.4);
-		box-shadow: var(--shadow-3);
-		backdrop-filter: blur(12px);
-		z-index: 10;
-		flex-wrap: wrap;
-	}
-
-	.action-info {
-		flex: 1;
-		min-width: 220px;
-	}
-
-	.save-status {
-		font-size: 0.85rem;
-		color: var(--text-2);
-		display: inline-flex;
-		align-items: center;
+	/* Form Submit Buttons */
+	footer.buttons-group {
+		display: grid;
+		justify-items: center;
 		gap: var(--size-2);
-	}
-
-	.saving-pulse {
-		display: inline-block;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--accent);
-		animation: pulse 1s infinite alternate;
-	}
-
-	.action-buttons {
-		display: flex;
-		align-items: center;
-		gap: var(--size-3);
-	}
-
-	:global(.save-button) {
-		background: var(--accent) !important;
-		color: var(--surface-1-dark) !important;
-		font-weight: 700 !important;
-		padding: 0.6rem 1.6rem !important;
-		border-radius: var(--radius-2) !important;
-		letter-spacing: 0.03em;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-		transition: transform 0.15s ease, filter 0.15s ease;
-
-		&:hover:not(:disabled) {
-			filter: brightness(1.1);
-			transform: translateY(-1px);
-		}
+		padding: var(--size-5) 0 var(--size-8);
 	}
 
 	@keyframes fadeIn {

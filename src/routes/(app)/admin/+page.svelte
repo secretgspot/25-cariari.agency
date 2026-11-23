@@ -96,6 +96,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-8);
+		width: 100%;
+		box-sizing: border-box;
+		min-width: 0;
 	}
 
 	.page-header {
@@ -104,6 +107,8 @@
 		gap: var(--size-2);
 		border-bottom: 1px solid var(--surface-3);
 		padding-bottom: var(--size-5);
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.header-badge {
@@ -123,10 +128,11 @@
 	}
 
 	h1 {
-		font-size: clamp(2.2rem, 4vw, 2.85rem);
+		font-size: clamp(1.8rem, 5vw, 2.85rem);
 		font-weight: 700;
-		line-height: 1.15;
+		line-height: 1.2;
 		margin: var(--size-1) 0;
+		word-break: break-word;
 	}
 
 	.header-desc {
@@ -146,8 +152,16 @@
 	/* Modules Grid */
 	.admin-sections-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-6);
+		width: 100%;
+		min-width: 0;
+	}
+
+	@media (min-width: 720px) {
+		.admin-sections-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	.section-card {
@@ -165,6 +179,8 @@
 		overflow: hidden;
 		box-shadow: var(--shadow-2);
 		backdrop-filter: blur(8px);
+		min-width: 0;
+		box-sizing: border-box;
 		transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
 
 		&:hover {

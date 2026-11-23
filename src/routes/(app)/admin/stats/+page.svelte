@@ -341,6 +341,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-6);
+		width: 100%;
+		box-sizing: border-box;
+		min-width: 0;
 	}
 
 	.page-header {
@@ -349,6 +352,8 @@
 		gap: var(--size-3);
 		border-bottom: 1px solid var(--surface-3);
 		padding-bottom: var(--size-5);
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.admin-breadcrumb {
@@ -388,16 +393,19 @@
 	}
 
 	h1 {
-		font-size: clamp(2rem, 3.5vw, 2.6rem);
+		font-size: clamp(1.65rem, 5vw, 2.6rem);
 		font-weight: 700;
-		line-height: 1.15;
+		line-height: 1.2;
 		margin: var(--size-2) 0;
+		word-break: break-word;
+		overflow-wrap: break-word;
 	}
 
 	.header-desc {
 		font-size: 1rem;
 		color: var(--text-2);
 		max-width: 680px;
+		line-height: 1.5;
 	}
 
 	.gold-text {
@@ -408,12 +416,26 @@
 	}
 
 	/* -------------------------------------------------------------
-	   KPI GRID
+	   KPI GRID (Fully Responsive)
 	   ------------------------------------------------------------- */
 	.kpi-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-4);
+		width: 100%;
+		min-width: 0;
+	}
+
+	@media (min-width: 580px) {
+		.kpi-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 960px) {
+		.kpi-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	.kpi-card {
@@ -426,6 +448,8 @@
 		flex-direction: column;
 		justify-content: space-between;
 		gap: var(--size-2);
+		min-width: 0;
+		box-sizing: border-box;
 		transition: border-color var(--transition), transform var(--transition);
 
 		&:hover {
@@ -448,10 +472,11 @@
 	}
 
 	.kpi-value {
-		font-size: 2rem;
+		font-size: clamp(1.6rem, 4vw, 2rem);
 		font-weight: 700;
 		letter-spacing: -0.5px;
 		color: var(--text-1);
+		word-break: break-all;
 
 		.unit {
 			font-size: 1rem;
@@ -479,12 +504,20 @@
 	}
 
 	/* -------------------------------------------------------------
-	   CARDS & ANALYTICS LAYOUT
+	   CARDS & ANALYTICS LAYOUT (Fully Responsive)
 	   ------------------------------------------------------------- */
 	.analytics-row {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-5);
+		width: 100%;
+		min-width: 0;
+	}
+
+	@media (min-width: 960px) {
+		.analytics-row {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	.card {
@@ -494,6 +527,15 @@
 		padding: var(--size-5);
 		box-shadow: var(--shadow-2);
 		backdrop-filter: blur(8px);
+		min-width: 0;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	@media (max-width: 600px) {
+		.card {
+			padding: var(--size-4);
+		}
 	}
 
 	.card-header {
@@ -511,11 +553,13 @@
 		display: flex;
 		align-items: center;
 		gap: var(--size-3);
+		min-width: 0;
 
 		h2 {
-			font-size: 1.25rem;
+			font-size: clamp(1.1rem, 3vw, 1.25rem);
 			font-weight: 700;
 			margin: 0;
+			word-break: break-word;
 		}
 	}
 
@@ -534,6 +578,7 @@
 		border-radius: var(--radius-2);
 		color: var(--accent);
 		border: 1px solid var(--surface-3);
+		flex-shrink: 0;
 	}
 
 	/* Tier progress bars */
@@ -541,6 +586,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-4);
+		width: 100%;
 	}
 
 	.tier-item {
@@ -553,6 +599,8 @@
 		display: flex;
 		justify-content: space-between;
 		font-size: 0.9rem;
+		flex-wrap: wrap;
+		gap: 4px;
 	}
 
 	.tier-label {
@@ -569,6 +617,8 @@
 		border-radius: var(--radius-round);
 		overflow: hidden;
 		border: 1px solid var(--surface-3);
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.progress-fill {
@@ -581,9 +631,17 @@
 	/* Velocity Brackets */
 	.velocity-brackets {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-3);
 		margin-bottom: var(--size-4);
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	@media (min-width: 480px) {
+		.velocity-brackets {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	.velocity-box {
@@ -596,6 +654,8 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 4px;
+		min-width: 0;
+		box-sizing: border-box;
 
 		&.fresh {
 			border-color: rgba(46, 160, 67, 0.4);
@@ -639,11 +699,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--size-2);
+		width: 100%;
 	}
 
 	.cost-stat {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 4px;
 		font-size: 0.9rem;
 	}
 
@@ -657,14 +721,19 @@
 	}
 
 	/* -------------------------------------------------------------
-	   TABLES
+	   TABLES (Scrollable container on mobile)
 	   ------------------------------------------------------------- */
 	.table-container {
+		width: 100%;
+		max-width: 100%;
 		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		box-sizing: border-box;
 	}
 
 	.stats-table {
 		width: 100%;
+		min-width: 520px;
 		border-collapse: collapse;
 		font-size: 0.95rem;
 
@@ -678,11 +747,13 @@
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
 			border-bottom: 1px solid var(--surface-3);
+			white-space: nowrap;
 		}
 
 		td {
 			padding: var(--size-3) var(--size-4);
 			border-bottom: 1px solid var(--surface-3);
+			white-space: nowrap;
 		}
 
 		tbody tr:hover {
@@ -709,7 +780,7 @@
 	}
 
 	/* -------------------------------------------------------------
-	   DEMAND & INQUIRIES SECTION
+	   DEMAND & INQUIRIES SECTION (Fully Responsive)
 	   ------------------------------------------------------------- */
 	.demand-pills {
 		display: flex;
@@ -744,13 +815,21 @@
 
 	.demand-metrics-strip {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-4);
 		background: var(--surface-2);
 		border: 1px solid var(--surface-3);
 		border-radius: var(--radius-2);
 		padding: var(--size-4);
 		margin-bottom: var(--size-5);
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	@media (min-width: 600px) {
+		.demand-metrics-strip {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	.demand-stat-box {
@@ -759,6 +838,7 @@
 		align-items: center;
 		text-align: center;
 		gap: 2px;
+		min-width: 0;
 	}
 
 	.demand-stat-num {
@@ -780,8 +860,16 @@
 
 	.top-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		grid-template-columns: 1fr;
 		gap: var(--size-4);
+		width: 100%;
+		min-width: 0;
+	}
+
+	@media (min-width: 640px) {
+		.top-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	.top-prop-card {
@@ -796,6 +884,8 @@
 		color: inherit;
 		position: relative;
 		overflow: hidden;
+		min-width: 0;
+		box-sizing: border-box;
 		transition: border-color var(--transition), transform var(--transition);
 
 		&:hover {
@@ -842,6 +932,8 @@
 		flex-direction: column;
 		gap: 2px;
 		overflow: hidden;
+		min-width: 0;
+		flex: 1;
 	}
 
 	.top-msl-row {
@@ -864,6 +956,7 @@
 		background: rgba(212, 175, 55, 0.12);
 		padding: 2px 6px;
 		border-radius: var(--radius-round);
+		flex-shrink: 0;
 	}
 
 	.top-address {
@@ -881,6 +974,55 @@
 		margin-top: 2px;
 		font-size: 0.85rem;
 		font-weight: 600;
+		flex-wrap: wrap;
+	}
+
+	.top-price {
+		color: var(--text-1);
+	}
+
+	.top-rent {
+		color: var(--accent);
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: var(--size-5);
+		color: var(--text-2);
+	}
+
+	/* -------------------------------------------------------------
+	   PRINT PRESENTATION MODE
+	   ------------------------------------------------------------- */
+	@media print {
+		:global(nav),
+		:global(.form-logout) {
+			display: none !important;
+		}
+
+		.stats-page {
+			padding: 0;
+			max-width: 100%;
+			color: #000 !important;
+			background: #fff !important;
+		}
+
+		.gold-text {
+			background: none !important;
+			-webkit-text-fill-color: #000 !important;
+			color: #000 !important;
+		}
+
+		.card, .kpi-card, .velocity-box, .demand-metrics-strip, .top-prop-card {
+			background: #fff !important;
+			border: 1px solid #ccc !important;
+			box-shadow: none !important;
+			color: #000 !important;
+		}
+
+		.kpi-value, .velocity-count, .demand-stat-num {
+			color: #000 !important;
+		}
 	}
 
 	.top-price {
