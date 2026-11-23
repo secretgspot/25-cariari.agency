@@ -60,10 +60,15 @@
 
 <main class="settings-page">
 	<header class="page-header">
-		<div class="header-badge">
-			<span class="badge-icon">🔥</span>
-			<span class="badge-text">Administrator Control Panel</span>
-		</div>
+		<nav class="admin-breadcrumb" aria-label="Breadcrumb">
+			<a href="/admin" class="breadcrumb-link">
+				<Icon kind="icon_arrow_left" size="16" />
+				<span>Admin Hub</span>
+			</a>
+			<span class="breadcrumb-sep">/</span>
+			<span class="breadcrumb-current">Site & Lead Settings</span>
+		</nav>
+
 		<h1 class="gold-text">Site & Lead Settings</h1>
 		<p class="header-desc">
 			Configure inquiry routing, agency contact credentials, and platform defaults.
@@ -422,25 +427,40 @@
 	.page-header {
 		margin-bottom: var(--size-6);
 		text-align: left;
+		display: flex;
+		flex-direction: column;
+		gap: var(--size-2);
 	}
 
-	.header-badge {
+	.admin-breadcrumb {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--size-2);
-		padding: var(--size-1) var(--size-3);
-		border-radius: var(--radius-pill, 9999px);
-		background: rgba(212, 175, 55, 0.12);
-		border: 1px solid rgba(212, 175, 55, 0.3);
-		margin-bottom: var(--size-2);
+		font-size: 0.9rem;
+		margin-bottom: var(--size-1);
 	}
 
-	.badge-text {
-		font-size: 0.8rem;
+	.breadcrumb-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--text-2);
+		text-decoration: none;
 		font-weight: 600;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		color: var(--accent);
+		transition: color var(--transition);
+
+		&:hover {
+			color: var(--accent);
+		}
+	}
+
+	.breadcrumb-sep {
+		color: var(--surface-4);
+	}
+
+	.breadcrumb-current {
+		color: var(--text-1);
+		font-weight: 600;
 	}
 
 	h1 {

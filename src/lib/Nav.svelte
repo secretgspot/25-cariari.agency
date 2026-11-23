@@ -36,10 +36,10 @@
 		</LinkButton>
 	{/if}
 	{#if page.data.is_logged_in}
-		{#if page.data.is_admin && page.url.pathname != '/admin/settings'}
-			<LinkButton href="/admin/settings" underline={false} title="Admin Settings" class="nav-link">
+		{#if page.data.is_admin && page.url.pathname != '/admin'}
+			<LinkButton href="/admin" underline={false} title="Admin Panel" class="nav-link">
 				<span class="nav-icon"><Icon kind="modify" size="27" /></span>
-				<span class="nav-text">Settings</span>
+				<span class="nav-text">Admin</span>
 			</LinkButton>
 		{/if}
 		<form action="/logout" method="post" class="form-logout">
