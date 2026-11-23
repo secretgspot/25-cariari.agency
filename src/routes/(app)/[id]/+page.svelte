@@ -31,14 +31,6 @@
 	const displayPrice = $derived(formatPrice(property.price));
 	const displayRent = $derived(formatPrice(property.rent));
 
-	// Primary price label for mobile sticky bar & headers
-	const primaryPriceFormatted = $derived.by(() => {
-		if (displayPrice && displayRent) return `${displayPrice} • ${displayRent}/mo`;
-		if (displayPrice) return displayPrice;
-		if (displayRent) return `${displayRent}/mo`;
-		return 'Contact for Price';
-	});
-
 	// Share handling with Web Share API and clipboard fallback
 	let shareCopied = $state(false);
 	async function handleShare() {
@@ -69,13 +61,6 @@
 			} catch (err) {
 				console.warn('Clipboard write failed:', err);
 			}
-		}
-	}
-
-	function scrollToInquiry() {
-		const el = document.getElementById('inquiry-section');
-		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 	}
 
@@ -463,20 +448,6 @@
 			</div>
 		</aside>
 	</div>
-
-	<!-- Mobile Fixed Bottom Action Bar (< 992px) -->
-	<div class="mobile-sticky-action-bar" aria-label="Mobile property action bar">
-		<div class="mobile-price-group">
-			<span class="mobile-price-val">{primaryPriceFormatted}</span>
-			<span class="mobile-msl-val">{property.msl}</span>
-		</div>
-		<button
-			type="button"
-			class="mobile-inquire-cta"
-			onclick={scrollToInquiry}>
-			Inquire Now
-		</button>
-	</div>
 </article>
 
 <style>
@@ -490,12 +461,6 @@
 		min-height: 100vh;
 		padding-top: calc(var(--size-8) * 1.5);
 		padding-bottom: calc(var(--size-8) * 3);
-	}
-
-	@media (max-width: 991px) {
-		.property-view-page {
-			padding-bottom: 100px; /* Space for mobile sticky bottom action bar */
-		}
 	}
 
 	/* Cinematic Hero Header */
@@ -1041,71 +1006,6 @@
 
 		&:hover {
 			text-decoration: underline;
-		}
-	}
-
-	/* ==========================================================================
-	   MOBILE STICKY BOTTOM ACTION BAR (< 992px)
-	   ========================================================================== */
-
-	.mobile-sticky-action-bar {
-		display: none;
-	}
-
-	@media (max-width: 991px) {
-		.mobile-sticky-action-bar {
-			display: flex;
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			z-index: 45;
-			align-items: center;
-			justify-content: space-between;
-			padding: var(--size-3) var(--size-4);
-			background: rgba(18, 18, 20, 0.88);
-			border-top: 1px solid var(--surface-3);
-			backdrop-filter: blur(16px);
-			-webkit-backdrop-filter: blur(16px);
-			box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-		}
-
-		.mobile-price-group {
-			display: flex;
-			flex-direction: column;
-			gap: 2px;
-		}
-
-		.mobile-price-val {
-			font-size: 1.15rem;
-			font-weight: 700;
-			color: var(--text-1);
-		}
-
-		.mobile-msl-val {
-			font-size: 0.75rem;
-			color: var(--text-2);
-			text-transform: uppercase;
-			letter-spacing: 0.5px;
-		}
-
-		.mobile-inquire-cta {
-			background: var(--gradient-gold);
-			color: #1a1a1a;
-			font-weight: 600;
-			font-size: 0.95rem;
-			padding: 0.65rem 1.4rem;
-			border: none;
-			border-radius: var(--radius-round);
-			cursor: pointer;
-			transition: transform 0.15s ease, opacity 0.15s ease;
-
-			&:hover {
-				opacity: 0.92;
-			}
-			&:active {
-				transform: scale(0.97);
-			}
 		}
 	}
 </style>
